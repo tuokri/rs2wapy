@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="rs2wapy",
-    version="0.0.1",
+    version="0.0.2",
     packages=setuptools.find_packages(),
     url="https://github.com/tuokri/rs2wapy",
     author="tuokri",
