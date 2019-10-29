@@ -1,8 +1,10 @@
 import setuptools
 
+from rs2wapy import __version__
+
 setuptools.setup(
     name="rs2wapy",
-    version="0.0.2",
+    version=__version__,
     packages=setuptools.find_packages(),
     url="https://github.com/tuokri/rs2wapy",
     author="tuokri",
