@@ -295,19 +295,22 @@ class RS2WebAdmin(object):
         """
         Return True if authentication has timed out, else False.
         """
-        timeout = auth_data.timeout
-        start_time = auth_data.timeout_start
+        if not auth_data:
+            return False
+        else:
+            timeout = auth_data.timeout
+            start_time = auth_data.timeout_start
 
         if timeout < 0:
             logbook.error(
                 "auth_timed_out(): cannot calculate authentication timeout for timeout: {t}",
                 t=timeout)
-            return False
+        else:
+            time_now = time.time()
+            if (start_time + timeout) < time_now:
+                logbook.debug(
+                    "auth_timed_out(): authentication timed out for start_time={s}, "
+                    "timeout={t}, time_now={tn}", s=start_time, t=timeout, tn=time_now)
+                return True
 
-        time_now = time.time()
-        if (start_time + timeout) < time_now:
-            logbook.debug(
-                "auth_timed_out(): authentication timed out for start_time={s}, "
-                "timeout={t}, time_now={tn}", s=start_time, t=timeout, tn=time_now)
-            return True
         return False
