@@ -17,12 +17,10 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        "beautifulsoup4",
-        "bs4",
-        "Logbook",
-        "pycurl",
-        "rs2wapy",
-        "soupsieve",
-
+        "beautifulsoup4>=4.8.1",
+        "bs4>=0.0.1",
+        "Logbook>=1.5.3",
+        "pycurl>=7.43.0.3",
+        "soupsieve>=1.9.5",
     ]
 )

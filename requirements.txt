@@ -2,5 +2,4 @@ beautifulsoup4==4.8.1
 bs4==0.0.1
 Logbook==1.5.3
 pycurl==7.43.0.3
-rs2wapy==0.1.6
 soupsieve==1.9.5
