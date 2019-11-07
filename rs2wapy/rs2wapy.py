@@ -6,7 +6,7 @@ import time
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, List
 from urllib.error import HTTPError
 from urllib.parse import urlparse, urlunparse
 
@@ -15,12 +15,15 @@ from bs4 import BeautifulSoup
 from logbook import Logger, StreamHandler
 
 HEADERS_MAX_LEN = 50
+CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
+POLICIES = ["ACCEPT", "DENY"]
 
 WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
-WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("/current/")
-WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("/chat")
+WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
+WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
+WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 
-StreamHandler(sys.stdout, level=logging.WARN).push_application()
+StreamHandler(sys.stdout, level=logging.WARNING).push_application()
 logger = Logger(__name__)
 
 
@@ -105,7 +108,7 @@ class RS2WebAdmin(object):
                      "query={query}, fragment={fragment}", url=self._url, scheme=scheme, netloc=netloc,
                      path=path, params=params, query=query, fragment=fragment)
 
-        if not path:
+        if (not path) or (path == "/"):
             path = WEB_ADMIN_BASE_PATH.as_posix()
 
         self._url = urlunparse(
@@ -114,6 +117,8 @@ class RS2WebAdmin(object):
             (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(), params, query, fragment))
         self._current_game_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_CURRENT_GAME_PATH.as_posix(), params, query, fragment))
+        self._access_policy_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(), params, query, fragment))
 
         self._authenticate(
             login_url=self._url, username=self._username, password=self._password)
@@ -160,11 +165,136 @@ class RS2WebAdmin(object):
         c = pycurl.Curl()
         resp, _ = self._perform(c, self._current_game_url, header)
 
-        # TODO: modularize?
-        encoding = _read_encoding(self._headers)
-        parsed_html = BeautifulSoup(resp.decode(encoding), features="html.parser")
+        parsed_html = self._parse_html(resp)
         ranked_status = parsed_html.find("span", attrs={"class": "ranked"})
         return ranked_status.text
+
+    def get_access_policy(self) -> List[str]:
+        logger.debug("get_access_policy() called")
+
+        sessionid = self._auth_data.sessionid
+        authcred = self._auth_data.authcred
+        authtimeout = self._auth_data.authtimeout
+
+        header = self.BASE_HEADER.copy()
+        header["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
+        header["Cache-Control"] = "no-cache"
+
+        # Prevent caching with randomized parameter.
+        url = f"{self._access_policy_url}?$(date +%s)"
+
+        c = pycurl.Curl()
+        resp, _ = self._perform(c, url, header)
+        return self._parse_access_policy(resp)
+
+    def add_access_policy(self, ip_mask: str, policy: str) -> bool:
+        """
+        Add IP access policy.
+
+        :param ip_mask:
+            IP mask of the policy to be added.
+        :param policy:
+            "DENY" or "ACCEPT".
+        :return:
+            True if policy added, else False.
+        """
+        if policy.upper() not in POLICIES:
+            raise ValueError(f"invalid policy: {policy}")
+
+        action = "add"
+
+        header = self.BASE_HEADER.copy()
+        header["Referer"] = "http://81.19.210.136:1005/"
+        header["Cookie"] = self._find_sessionid()
+        header["Content-Type"] = "application/x-www-form-urlencoded"
+
+        postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
+        postfieldsize = len(postfields)
+
+        logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
+        logger.debug("postfields: {pf}", pf=postfields)
+
+        c = pycurl.Curl()
+        c.setopt(c.POSTFIELDS, postfields)
+        c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+
+        try:
+            self._perform(c, self._access_policy_url, header=header)
+            return True
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return False
+
+    def delete_access_policy(self, ip_mask: str) -> bool:
+        """
+        Delete IP access policy.
+
+        :param ip_mask:
+            IP mask of the access policy to be deleted.
+        :return:
+            True if deleted, else False.
+        """
+
+        def _in(el, seq) -> bool:
+            for s in seq:
+                if el in s:
+                    return True
+            return False
+
+        action = "modify"
+
+        header = self.BASE_HEADER.copy()
+        header["Referer"] = "http://81.19.210.136:1005/"
+        header["Content-Type"] = "application/x-www-form-urlencoded"
+        header["Accept-Encoding"] = "gzip, deflate"
+
+        policies = self.get_access_policy()
+        if not _in(ip_mask, policies):
+            return False
+
+        max_retries = 10
+        retries = 0
+
+        # WORKAROUND:
+        # There is an issue where the policy is not always deleted
+        # even though the request is seemingly valid, but repeating
+        # the request eventually successfully deletes the policy.
+        while _in(ip_mask, policies) and (retries < max_retries):
+            header["Cookie"] = self._find_sessionid()
+            policies = self.get_access_policy()
+
+            try:
+                argstr = self._policies_to_delete_argstr(policies, ip_mask)
+            except IndexError as ie:
+                logger.error("error finding index of {ipm}: {e}", ipm=ip_mask, e=ie)
+                continue
+
+            postfields = f"action={action}&{argstr}"
+            print(postfields)
+            postfieldsize = len(postfields)
+            header["Content-Length"] = postfieldsize
+
+            logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
+            logger.debug("postfields: {pf}", pf=postfields)
+
+            c = pycurl.Curl()
+            c.setopt(c.POSTFIELDS, postfields)
+            c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+
+            try:
+                self._perform(c, self._access_policy_url, header=header)
+            except Exception as e:
+                logger.error(e, exc_info=True)
+
+            retries += 1
+
+        if retries >= max_retries:
+            logger.error("failed to delete policy {p}, max retries exceeded", p=ip_mask)
+            return False
+        return True
+
+    def update_access_policy(self, ip_mask: str, policy: str) -> bool:
+        pass
 
     def _perform(self, c: pycurl.Curl, url: str, header: dict = None) -> Tuple[bytes, int]:
         logger.debug("_perform() on url={url}, header={header}", url=url, header=header)
@@ -185,7 +315,7 @@ class RS2WebAdmin(object):
         c.setopt(c.BUFFERSIZE, 102400)
         c.setopt(c.URL, url)
         c.setopt(c.HTTPHEADER, header)
-        c.setopt(c.USERAGENT, "curl/7.65.1")
+        c.setopt(c.USERAGENT, CURL_USERAGENT)
         c.setopt(c.MAXREDIRS, 50)
         # c.setopt(c.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_2TLS)
         c.setopt(c.ACCEPT_ENCODING, "")
@@ -288,7 +418,7 @@ class RS2WebAdmin(object):
         return f'sessionid="{r}";'
 
     def _get(self, url: str) -> Tuple[bytes, int]:
-        logger.debug("get called")
+        logger.debug("get() called")
         c = pycurl.Curl()
         return self._perform(c, url)
 
@@ -330,6 +460,7 @@ class RS2WebAdmin(object):
             token = parsed_html.find("input", attrs={"name": "token"}).get("value")
         except AttributeError as ae:
             logger.warn("unable to get token: {e}", e=ae)
+            logger.warn("unable to get token: {e}", e=ae)
 
         logger.debug("token: {token}", token=token)
 
@@ -350,6 +481,32 @@ class RS2WebAdmin(object):
 
         self._auth_data = AuthData(timeout=authtimeout_value, authcred=authcred, sessionid=sessionid,
                                    timeout_start=time.time(), authtimeout=authtimeout)
+
+    def _parse_html(self, resp) -> BeautifulSoup:
+        encoding = _read_encoding(self._headers)
+        return BeautifulSoup(resp.decode(encoding), features="html.parser")
+
+    # TODO: reconsider return type. Namedtuple or class?
+    def _parse_access_policy(self, resp) -> List[str]:
+        parsed_html = self._parse_html(resp)
+        policy_table = parsed_html.find("table", attrs={"id": "policies"})
+        trs = policy_table.find_all("tr")
+        policies = []
+        for tr in trs:
+            ip_mask = tr.find("input", attrs={"name": "ipmask"})
+            policy = tr.find("option", attrs={"selected": "selected"})
+            if ip_mask and policy:
+                policies.append(f"{ip_mask.get('value')}: {policy.text.upper()}")
+        return policies
+
+    @staticmethod
+    def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
+        del_index = [idx for idx, s in enumerate(policies) if to_delete in s][0]
+        policies = [p.split(":") for p in policies]
+        policies = [(f"ipmask={p[0].strip()}&policy={p[1].strip()}"
+                     f"{f'&delete={del_index}' if p[0] == to_delete else ''}")
+                    for p in policies]
+        return "&".join(policies)
 
     @staticmethod
     def _prepare_header(header: dict) -> list:

@@ -1,6 +1,6 @@
 from .rs2wapy import RS2WebAdmin
 
-__version__ = "0.1.4"
+__version__ = "0.1.6"
 
 __all__ = [
     "__version__",
