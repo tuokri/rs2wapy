@@ -16,4 +16,13 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    install_requires=[
+        "beautifulsoup4",
+        "bs4",
+        "Logbook",
+        "pycurl",
+        "rs2wapy",
+        "soupsieve",
+
+    ]
 )
