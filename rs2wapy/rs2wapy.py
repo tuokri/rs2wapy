@@ -27,6 +27,14 @@ StreamHandler(sys.stdout, level=logging.WARNING).push_application()
 logger = Logger(__name__)
 
 
+def _in(el, seq) -> bool:
+    """Check if element is in sequence."""
+    for s in seq:
+        if el in s:
+            return True
+    return False
+
+
 def _read_encoding(headers: dict, index: int = -1) -> str:
     encoding = None
     if "content-type" in headers:
@@ -198,32 +206,53 @@ class RS2WebAdmin(object):
         :return:
             True if policy added, else False.
         """
-        if policy.upper() not in POLICIES:
+        policies = self.get_access_policy()
+        if _in(ip_mask, policies):
+            return False
+
+        policy = policy.upper()
+        if policy not in POLICIES:
             raise ValueError(f"invalid policy: {policy}")
 
         action = "add"
 
         header = self.BASE_HEADER.copy()
         header["Referer"] = "http://81.19.210.136:1005/"
-        header["Cookie"] = self._find_sessionid()
         header["Content-Type"] = "application/x-www-form-urlencoded"
 
-        postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
-        postfieldsize = len(postfields)
+        max_retries = 10
+        retries = 0
 
-        logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
-        logger.debug("postfields: {pf}", pf=postfields)
+        # WORKAROUND:
+        # There is an issue where the policy is not always deleted
+        # even though the request is seemingly valid, but repeating
+        # the request eventually successfully deletes the policy.
+        while not _in(ip_mask, policies) and (retries < max_retries):
+            header["Cookie"] = self._find_sessionid()
+            policies = self.get_access_policy()
 
-        c = pycurl.Curl()
-        c.setopt(c.POSTFIELDS, postfields)
-        c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+            postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
+            postfieldsize = len(postfields)
 
-        try:
-            self._perform(c, self._access_policy_url, header=header)
-            return True
-        except Exception as e:
-            logger.error(e, exc_info=True)
+            logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
+            logger.debug("postfields: {pf}", pf=postfields)
+
+            c = pycurl.Curl()
+            c.setopt(c.POSTFIELDS, postfields)
+            c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+
+            try:
+                self._perform(c, self._access_policy_url, header=header)
+                return True
+            except Exception as e:
+                logger.error(e, exc_info=True)
+
+            retries += 1
+
+        if retries >= max_retries:
+            logger.error("failed to add policy {p}, max retries exceeded", p=ip_mask)
             return False
+        return True
 
     def delete_access_policy(self, ip_mask: str) -> bool:
         """
@@ -234,11 +263,8 @@ class RS2WebAdmin(object):
         :return:
             True if deleted, else False.
         """
-
-        def _in(el, seq) -> bool:
-            for s in seq:
-                if el in s:
-                    return True
+        policies = self.get_access_policy()
+        if not _in(ip_mask, policies):
             return False
 
         action = "modify"
@@ -247,10 +273,6 @@ class RS2WebAdmin(object):
         header["Referer"] = "http://81.19.210.136:1005/"
         header["Content-Type"] = "application/x-www-form-urlencoded"
         header["Accept-Encoding"] = "gzip, deflate"
-
-        policies = self.get_access_policy()
-        if not _in(ip_mask, policies):
-            return False
 
         max_retries = 10
         retries = 0
