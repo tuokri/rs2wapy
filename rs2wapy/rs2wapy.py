@@ -208,6 +208,7 @@ class RS2WebAdmin(object):
         """
         policies = self.get_access_policy()
         if _in(ip_mask, policies):
+            logger.info("{ip} already in policies", ip=ip_mask)
             return False
 
         policy = policy.upper()
@@ -224,12 +225,11 @@ class RS2WebAdmin(object):
         retries = 0
 
         # WORKAROUND:
-        # There is an issue where the policy is not always deleted
+        # There is an issue where the policy is not always added
         # even though the request is seemingly valid, but repeating
         # the request eventually successfully deletes the policy.
         while not _in(ip_mask, policies) and (retries < max_retries):
             header["Cookie"] = self._find_sessionid()
-            policies = self.get_access_policy()
 
             postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
             postfieldsize = len(postfields)
@@ -243,10 +243,10 @@ class RS2WebAdmin(object):
 
             try:
                 self._perform(c, self._access_policy_url, header=header)
-                return True
             except Exception as e:
                 logger.error(e, exc_info=True)
 
+            policies = self.get_access_policy()
             retries += 1
 
         if retries >= max_retries:
@@ -265,6 +265,7 @@ class RS2WebAdmin(object):
         """
         policies = self.get_access_policy()
         if not _in(ip_mask, policies):
+            logger.info("{ip} not in policies, no need to delete", ip=ip_mask)
             return False
 
         action = "modify"
@@ -283,7 +284,6 @@ class RS2WebAdmin(object):
         # the request eventually successfully deletes the policy.
         while _in(ip_mask, policies) and (retries < max_retries):
             header["Cookie"] = self._find_sessionid()
-            policies = self.get_access_policy()
 
             try:
                 argstr = self._policies_to_delete_argstr(policies, ip_mask)
@@ -292,7 +292,6 @@ class RS2WebAdmin(object):
                 continue
 
             postfields = f"action={action}&{argstr}"
-            print(postfields)
             postfieldsize = len(postfields)
             header["Content-Length"] = postfieldsize
 
@@ -308,6 +307,7 @@ class RS2WebAdmin(object):
             except Exception as e:
                 logger.error(e, exc_info=True)
 
+            policies = self.get_access_policy()
             retries += 1
 
         if retries >= max_retries:
