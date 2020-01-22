@@ -100,6 +100,7 @@ class RS2WebAdmin(object):
         "DNT": 1,
         "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": 1,
+        "Referer": "",
     }
 
     def __init__(self, username: str, password: str, webadmin_url: str):
@@ -117,6 +118,18 @@ class RS2WebAdmin(object):
 
         if (not path) or (path == "/"):
             path = WEB_ADMIN_BASE_PATH.as_posix()
+
+        referer = ""
+        if not scheme and not netloc:
+            referer = path
+        elif netloc:
+            referer = netloc
+
+        if not referer:
+            logger.warning("unable to set 'Referer' in header")
+        else:
+            self.BASE_HEADER["Referer"] = referer
+            logger.debug("setting 'Referer' to '{r}'", r=referer)
 
         self._url = urlunparse(
             (scheme, netloc, path, params, query, fragment))
@@ -217,7 +230,6 @@ class RS2WebAdmin(object):
         action = "add"
 
         header = self.BASE_HEADER.copy()
-        header["Referer"] = "http://81.19.210.136:1005/"
         header["Content-Type"] = "application/x-www-form-urlencoded"
 
         max_retries = 10
@@ -270,7 +282,6 @@ class RS2WebAdmin(object):
         action = "modify"
 
         header = self.BASE_HEADER.copy()
-        header["Referer"] = "http://81.19.210.136:1005/"
         header["Content-Type"] = "application/x-www-form-urlencoded"
         header["Accept-Encoding"] = "gzip, deflate"
 
@@ -446,7 +457,6 @@ class RS2WebAdmin(object):
         logger.debug("post_login() called")
 
         header = self.BASE_HEADER.copy()
-        header["Referer"] = "http://81.19.210.136:1005/"
         header["Cookie"] = sessionid
         header["Content-Type"] = "application/x-www-form-urlencoded"
 
