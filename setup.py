@@ -1,8 +1,10 @@
 import setuptools
 
+import versioneer
+
 setuptools.setup(
     name="rs2wapy",
-    version="0.1.10",
+    version=versioneer.get_version(),
     packages=setuptools.find_packages(),
     url="https://github.com/tuokri/rs2wapy",
     author="tuokri",
