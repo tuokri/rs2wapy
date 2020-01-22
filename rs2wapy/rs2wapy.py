@@ -1,5 +1,4 @@
 import hashlib
-import logging
 import re
 import sys
 import time
@@ -23,7 +22,7 @@ WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
 WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
 WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 
-StreamHandler(sys.stdout, level=logging.WARNING).push_application()
+StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
 
