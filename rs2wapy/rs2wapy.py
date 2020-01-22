@@ -5,13 +5,17 @@ import time
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, List, Sequence
+from typing import List
+from typing import Sequence
+from typing import Tuple
 from urllib.error import HTTPError
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse
+from urllib.parse import urlunparse
 
 import pycurl
 from bs4 import BeautifulSoup
-from logbook import Logger, StreamHandler
+from logbook import Logger
+from logbook import StreamHandler
 
 HEADERS_MAX_LEN = 50
 CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
