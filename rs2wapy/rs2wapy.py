@@ -227,7 +227,7 @@ class RS2WebAdmin(object):
         # WORKAROUND:
         # There is an issue where the policy is not always added
         # even though the request is seemingly valid, but repeating
-        # the request eventually successfully deletes the policy.
+        # the request eventually successfully adds the policy.
         while not _in(ip_mask, policies) and (retries < max_retries):
             header["Cookie"] = self._find_sessionid()
 
@@ -374,10 +374,8 @@ class RS2WebAdmin(object):
                     logger.debug("Headers 'connection' {t} new length={le}",
                                  t=type(self._headers["connection"]),
                                  le=len(self._headers["connection"]))
-            except KeyError as ke:
-                logger.error("header_function(): error: {e}", e=ke, exc_info=True)
-            except IndexError as ie:
-                logger.error("header_function(): error: {e}", e=ie, exc_info=True)
+            except (KeyError, IndexError) as e:
+                logger.error("header_function(): error: {e}", e=e, exc_info=True)
 
         # HTTP standard specifies that _headers are encoded in iso-8859-1.
         header_line = header_line.decode("iso-8859-1")
@@ -434,7 +432,7 @@ class RS2WebAdmin(object):
             logger.error("find_sessionid(): error: {e}", e=ae)
             return r
         except Exception as e:
-            logger.error("find_sessionid(): error: {}", e=e, exc_info=True)
+            logger.error("find_sessionid(): error: {e}", e=e, exc_info=True)
             return r
 
         return f'sessionid="{r}";'
@@ -481,7 +479,6 @@ class RS2WebAdmin(object):
         try:
             token = parsed_html.find("input", attrs={"name": "token"}).get("value")
         except AttributeError as ae:
-            logger.warn("unable to get token: {e}", e=ae)
             logger.warn("unable to get token: {e}", e=ae)
 
         logger.debug("token: {token}", token=token)
