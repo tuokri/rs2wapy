@@ -6,7 +6,7 @@ import time
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, List
+from typing import Tuple, List, Sequence
 from urllib.error import HTTPError
 from urllib.parse import urlparse, urlunparse
 
@@ -27,7 +27,7 @@ StreamHandler(sys.stdout, level=logging.WARNING).push_application()
 logger = Logger(__name__)
 
 
-def _in(el, seq) -> bool:
+def _in(el: object, seq: Sequence) -> bool:
     """Check if element is in sequence."""
     for s in seq:
         if el in s:
