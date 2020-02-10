@@ -1,1 +1,1 @@
-src/rs2wapy/_version.py export-subst
+rs2wapy/_version.py export-subst

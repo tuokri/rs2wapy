@@ -43,7 +43,7 @@ def get_config():
     cfg.style = "pep440"
     cfg.tag_prefix = ""
     cfg.parentdir_prefix = "rs2wapy-"
-    cfg.versionfile_source = "src/rs2wapy/_version.py"
+    cfg.versionfile_source = "rs2wapy/_version.py"
     cfg.verbose = False
     return cfg
 

@@ -1,6 +1,10 @@
+from .adapter import adapter
+from .models import models
 from .rs2wapy import RS2WebAdmin
 
 __all__ = [
+    "adapter",
+    "models",
     "RS2WebAdmin",
 ]
 

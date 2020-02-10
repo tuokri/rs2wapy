@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import re
 import sys
@@ -8,7 +9,6 @@ from pathlib import Path
 from typing import List
 from typing import Sequence
 from typing import Tuple
-from urllib.error import HTTPError
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
@@ -16,6 +16,12 @@ import pycurl
 from bs4 import BeautifulSoup
 from logbook import Logger
 from logbook import StreamHandler
+from requests import HTTPError
+
+from rs2wapy.models import models
+
+StreamHandler(sys.stdout, level="WARNING").push_application()
+logger = Logger(__name__)
 
 HEADERS_MAX_LEN = 50
 CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
@@ -26,12 +32,9 @@ WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
 WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
 WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 
-StreamHandler(sys.stdout, level="WARNING").push_application()
-logger = Logger(__name__)
 
-
-def _in(el: object, seq: Sequence) -> bool:
-    """Check if element is in sequence."""
+def _in(el: object, seq: Sequence[Sequence]) -> bool:
+    """Check if element is in sequence of sequences."""
     for s in seq:
         if el in s:
             return True
@@ -93,10 +96,7 @@ class AuthData(object):
         return self._authtimeout
 
 
-class RS2WebAdmin(object):
-    """
-
-    """
+class Adapter(object):
     BASE_HEADER = {
         "User-Agent": "Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0)",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -112,7 +112,6 @@ class RS2WebAdmin(object):
         self._username = username
         self._password = password
         self._auth_data = None
-
         self._url = webadmin_url
 
         scheme, netloc, path, params, query, fragment = urlparse(self._url)
@@ -154,6 +153,9 @@ class RS2WebAdmin(object):
     @auth_data.setter
     def auth_data(self, auth_data: AuthData):
         self._auth_data = auth_data
+
+    def get_chat(self) -> models.Chat:
+        pass
 
     def get_chat_messages(self) -> Tuple[bytes, int]:
         logger.debug("get_chat_messages() called")
@@ -332,12 +334,11 @@ class RS2WebAdmin(object):
     def update_access_policy(self, ip_mask: str, policy: str) -> bool:
         pass
 
-    def _perform(self, c: pycurl.Curl, url: str, header: dict = None) -> Tuple[bytes, int]:
-        logger.debug("_perform() on url={url}, header={header}", url=url, header=header)
+    async def _async_perform(self, c: pycurl.Curl, url: str, header: dict = None) -> Tuple[bytes, int]:
+        await self._authenticated()
 
-        if self._auth_timed_out(self._auth_data):
-            self._authenticate(self._url, self._username, self._password)
-
+        logger.debug("_perform() on url={url}, header={header}",
+                     url=url, header=header)
         if not header:
             header = self.BASE_HEADER
         header = self._prepare_header(header)
@@ -369,9 +370,13 @@ class RS2WebAdmin(object):
             logger.error("_perform(): HTTP status error: {s}", s=status)
 
         if not status == HTTPStatus.OK:
-            raise HTTPError(self._url, status, "error connecting to WebAdmin", fp=None, hdrs=None)
+            raise HTTPError(self._url, status, "error connecting to WebAdmin",
+                            fp=None, hdrs=None)
 
         return buffer.getvalue(), status
+
+    def _perform(self, c: pycurl.Curl, url: str, header: dict = None) -> Tuple[bytes, int]:
+        return asyncio.run(self._async_perform(c, url, header))
 
     def _header_function(self, header_line):
 
@@ -425,8 +430,6 @@ class RS2WebAdmin(object):
         """
         Find latest session ID in headers.
         """
-        logger.debug("find_sessionid() called")
-
         # 'sessionid="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
         r = ""
         try:
@@ -452,14 +455,11 @@ class RS2WebAdmin(object):
         return f'sessionid="{r}";'
 
     def _get(self, url: str) -> Tuple[bytes, int]:
-        logger.debug("get() called")
         c = pycurl.Curl()
         return self._perform(c, url)
 
     def _post_login(self, url: str, sessionid: str, token: str, username: str, password: str,
                     remember=2678400) -> Tuple[bytes, int]:
-        logger.debug("post_login() called")
-
         header = self.BASE_HEADER.copy()
         header["Cookie"] = sessionid
         header["Content-Type"] = "application/x-www-form-urlencoded"
@@ -480,19 +480,16 @@ class RS2WebAdmin(object):
         return self._perform(c, url, header)
 
     def _authenticate(self, login_url: str, username: str, password: str):
-        logger.debug("authenticate() called")
-
         resp, _ = self._get(login_url)
         if not resp:
-            logger.warn("no response content from url={url}", url=login_url)
+            logger.error("no response content from url={url}", url=login_url)
 
-        encoding = _read_encoding(self._headers, -1)
-        parsed_html = BeautifulSoup(resp.decode(encoding), features="html.parser")
+        parsed_html = self._parse_html(resp)
         token = ""
         try:
             token = parsed_html.find("input", attrs={"name": "token"}).get("value")
         except AttributeError as ae:
-            logger.warn("unable to get token: {e}", e=ae)
+            logger.error("unable to get token: {e}", e=ae)
 
         logger.debug("token: {token}", token=token)
 
@@ -513,6 +510,10 @@ class RS2WebAdmin(object):
 
         self._auth_data = AuthData(timeout=authtimeout_value, authcred=authcred, sessionid=sessionid,
                                    timeout_start=time.time(), authtimeout=authtimeout)
+
+    async def _authenticated(self):
+        if self._auth_timed_out(self._auth_data):
+            self._authenticate(self._url, self._username, self._password)
 
     def _parse_html(self, resp) -> BeautifulSoup:
         encoding = _read_encoding(self._headers)
@@ -543,7 +544,7 @@ class RS2WebAdmin(object):
     @staticmethod
     def _prepare_header(header: dict) -> list:
         """
-        Convert header dictionary to list for pycurl.
+        Convert header dictionary to list for PycURL.
         """
         return [f"{key}: {value}" for key, value in header.items()]
 

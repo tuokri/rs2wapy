@@ -1,2 +1,2 @@
 include versioneer.py
-include src/rs2wapy/_version.py
+include rs2wapy/_version.py
