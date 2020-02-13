@@ -52,7 +52,7 @@ class Players(collections.MutableSequence):
         else:
             self._players = []
 
-    def insert(self, index: int, player: Player) -> None:
+    def insert(self, index: int, player: Player):
         self._players[index] = player
 
     @overload
@@ -65,34 +65,36 @@ class Players(collections.MutableSequence):
     def __getitem__(self, s: slice) -> MutableSequence[Player]:
         ...
 
-    def __getitem__(self, i: Union[int, slice]) -> Union[Player, MutableSequence[Player]]:
+    def __getitem__(self, i: Union[int, slice]
+                    ) -> Union[Player, MutableSequence[Player]]:
         return self._players[i]
 
     @overload
     @abstractmethod
-    def __setitem__(self, i: int, o: Player) -> None:
+    def __setitem__(self, i: int, o: Player):
         ...
 
     @overload
     @abstractmethod
-    def __setitem__(self, s: slice, o: Iterable[Player]) -> None:
+    def __setitem__(self, s: slice, o: Iterable[Player]):
         ...
 
-    def __setitem__(self, i: int, o: Player) -> None:
-        pass
+    def __setitem__(self, i: Union[int, slice],
+                    o: Union[Player, MutableSequence[Player]]):
+        self._players[i] = o
 
     @overload
     @abstractmethod
-    def __delitem__(self, i: int) -> None:
+    def __delitem__(self, i: int):
         ...
 
     @overload
     @abstractmethod
-    def __delitem__(self, i: slice) -> None:
+    def __delitem__(self, i: slice):
         ...
 
-    def __delitem__(self, i: int) -> None:
-        pass
+    def __delitem__(self, i: Union[int, slice]):
+        del self._players[i]
 
     def __len__(self) -> int:
         return len(self._players)
@@ -116,6 +118,12 @@ class ChatMessages(collections.MutableSequence):
     def insert(self, index: int, message: ChatMessage):
         self._messages[index] = message
 
+    def append(self, message: ChatMessage):
+        self._messages.append(message)
+
+    def extend(self, m: Union[ChatMessage, MutableSequence[ChatMessage]]):
+        self._messages.extend(m)
+
     @overload
     @abstractmethod
     def __getitem__(self, i: int) -> ChatMessage:
@@ -126,7 +134,8 @@ class ChatMessages(collections.MutableSequence):
     def __getitem__(self, s: slice) -> MutableSequence[ChatMessage]:
         ...
 
-    def __getitem__(self, i: Union[int, slice]) -> Union[ChatMessage, MutableSequence[ChatMessage]]:
+    def __getitem__(self, i: Union[int, slice]
+                    ) -> Union[ChatMessage, MutableSequence[ChatMessage]]:
         return self._messages[i]
 
     @overload
@@ -139,8 +148,9 @@ class ChatMessages(collections.MutableSequence):
     def __setitem__(self, s: slice, o: Iterable[ChatMessage]):
         ...
 
-    def __setitem__(self, i: int, o: ChatMessage):
-        pass
+    def __setitem__(self, i: Union[int, slice]
+                    , o: Union[ChatMessage, MutableSequence[ChatMessage]]):
+        self._messages[i] = o
 
     @overload
     @abstractmethod
@@ -152,8 +162,8 @@ class ChatMessages(collections.MutableSequence):
     def __delitem__(self, i: slice):
         ...
 
-    def __delitem__(self, i: int):
-        pass
+    def __delitem__(self, i: Union[int, slice]):
+        del self._messages[i]
 
     def __len__(self) -> int:
         return len(self._messages)
