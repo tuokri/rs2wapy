@@ -34,7 +34,7 @@ WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
-    """Check if element is in sequence of sequences."""
+    """Check if element is in any sequence of sequences."""
     for s in seq:
         if el in s:
             return True
@@ -48,13 +48,13 @@ def _read_encoding(headers: dict, index: int = -1) -> str:
         match = re.search(r"charset=(\S+)", content_type)
         if match:
             encoding = match.group(1)
-            logger.debug("read_encoding(): encoding is {enc}", enc=encoding)
+            logger.debug("encoding is {enc}", enc=encoding)
     if encoding is None:
         # Default encoding for HTML is iso-8859-1.
         # Other content types may have different default encoding,
         # or in case of binary data, may have no encoding at all.
         encoding = "iso-8859-1"
-        logger.debug("read_encoding(): assuming encoding is {enc}", enc=encoding)
+        logger.debug("assuming encoding is {enc}", enc=encoding)
     return encoding
 
 
@@ -115,8 +115,9 @@ class Adapter(object):
         self._url = webadmin_url
 
         scheme, netloc, path, params, query, fragment = urlparse(self._url)
-        logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, path={path}, params={params}, "
-                     "query={query}, fragment={fragment}", url=self._url, scheme=scheme, netloc=netloc,
+        logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
+                     "path={path}, params={params}, query={query}, fragment={fragment}",
+                     url=self._url, scheme=scheme, netloc=netloc,
                      path=path, params=params, query=query, fragment=fragment)
 
         if (not path) or (path == "/"):
@@ -328,16 +329,16 @@ class Adapter(object):
     def update_access_policy(self, ip_mask: str, policy: str) -> bool:
         pass
 
-    async def _async_perform(self, c: pycurl.Curl, url: str, header: dict = None) -> Tuple[bytes, int]:
+    async def _async_perform(self, c: pycurl.Curl, url: str,
+                             header: dict = None) -> Tuple[bytes, int]:
         await self._authenticated()
 
-        logger.debug("_perform() on url={url}, header={header}",
-                     url=url, header=header)
+        logger.debug("url={url}, header={header}", url=url, header=header)
         if not header:
             header = self.BASE_HEADER
         header = self._prepare_header(header)
 
-        logger.debug("_perform(): prepared header={h}", h=header)
+        logger.debug("prepared header={h}", h=header)
 
         buffer = BytesIO()
 
@@ -357,11 +358,11 @@ class Adapter(object):
         c.perform()
 
         status = c.getinfo(pycurl.HTTP_CODE)
-        logger.debug("_perform() HTTP status: {s}", s=status)
+        logger.debug("HTTP status: {s}", s=status)
         c.close()
 
         if not status == HTTPStatus.OK:
-            logger.error("_perform(): HTTP status error: {s}", s=status)
+            logger.error("HTTP status error: {s}", s=status)
 
         if not status == HTTPStatus.OK:
             raise HTTPError(self._url, status, "error connecting to WebAdmin",
@@ -369,7 +370,8 @@ class Adapter(object):
 
         return buffer.getvalue(), status
 
-    def _perform(self, c: pycurl.Curl, url: str, header: dict = None) -> Tuple[bytes, int]:
+    def _perform(self, c: pycurl.Curl, url: str,
+                 header: dict = None) -> Tuple[bytes, int]:
         return asyncio.run(self._async_perform(c, url, header))
 
     def _header_function(self, header_line):
@@ -378,7 +380,7 @@ class Adapter(object):
             try:
                 if len(self._headers["connection"]) > HEADERS_MAX_LEN:
                     logger.debug("Headers 'connection' values max length ({le}) exceeded, "
-                                 "resetting _headers (preserving latest entries)",
+                                 "resetting headers (preserving latest entries)",
                                  le=HEADERS_MAX_LEN)
                     new_headers = {}
                     for k, v in self._headers.items():
@@ -388,14 +390,14 @@ class Adapter(object):
                                  t=type(self._headers["connection"]),
                                  le=len(self._headers["connection"]))
             except (KeyError, IndexError) as e:
-                logger.error("header_function(): error: {e}", e=e, exc_info=True)
+                logger.error("error: {e}", e=e, exc_info=True)
 
-        # HTTP standard specifies that _headers are encoded in iso-8859-1.
+        # HTTP standard specifies that headers are encoded in iso-8859-1.
         header_line = header_line.decode("iso-8859-1")
 
         # Header lines include the first status line (HTTP/1.x ...).
         # We are going to ignore all lines that don't have a colon in them.
-        # This will botch _headers that are split on multiple lines...
+        # This will botch headers that are split on multiple lines...
         if ":" not in header_line:
             return
 
@@ -433,17 +435,17 @@ class Adapter(object):
             elif type(self._headers["set-cookie"]) == list:
                 logger.debug("type(self._headers['set-cookie']) == list")
                 sessionid_match = [i for i in self._headers["set-cookie"] if i.startswith("sessionid=")][-1]
-                logger.debug("find_sessionid(): sessionid_match: {si}", si=sessionid_match)
+                logger.debug("sessionid_match: {si}", si=sessionid_match)
                 r = re.search(r'sessionid="(.*?)"', sessionid_match).group(1)
             else:
                 logger.error("type(_headers['set-cookie']) == {t}", t=type(self._headers["set-cookie"]))
-                logger.error("cant get sessionid from _headers")
+                logger.error("cant get sessionid from headers")
                 return r
         except AttributeError as ae:
-            logger.error("find_sessionid(): error: {e}", e=ae)
+            logger.error("error: {e}", e=ae)
             return r
         except Exception as e:
-            logger.error("find_sessionid(): error: {e}", e=e, exc_info=True)
+            logger.error("error: {e}", e=e, exc_info=True)
             return r
 
         return f'sessionid="{r}";'
@@ -488,7 +490,7 @@ class Adapter(object):
         logger.debug("token: {token}", token=token)
 
         sessionid = self._find_sessionid()
-        logger.debug("authenticate(): got sessionid: {si}, from headers", si=sessionid)
+        logger.debug("got sessionid: {si}, from headers", si=sessionid)
 
         self._post_login(login_url, sessionid=sessionid,
                          token=token, username=username, password=password)
@@ -553,13 +555,13 @@ class Adapter(object):
 
             if timeout < 0:
                 logger.error(
-                    "auth_timed_out(): cannot calculate authentication timeout for timeout: {t}",
+                    "cannot calculate authentication timeout for timeout: {t}",
                     t=timeout)
             else:
                 time_now = time.time()
                 if (start_time + timeout) < time_now:
                     logger.debug(
-                        "auth_timed_out(): authentication timed out for start_time={s}, "
+                        "authentication timed out for start_time={s}, "
                         "timeout={t}, time_now={tn}", s=start_time, t=timeout, tn=time_now)
                     return True
         return False
