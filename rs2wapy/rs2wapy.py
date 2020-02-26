@@ -12,7 +12,8 @@ logger = Logger(__name__)
 
 class RS2WebAdmin(object):
     """
-
+    Provides a high-level API to Rising Storm 2: Vietnam
+    server's WebAdmin tool.
     """
 
     def __init__(self, username: str, password: str, webadmin_url: str):
@@ -28,13 +29,18 @@ class RS2WebAdmin(object):
         return self._adapter.get_current_game()
 
     def current_players(self) -> models.Players:
-        return self.current_game().get_players()
+        return self._adapter.get_players()
 
+    def scoreboard(self) -> None:
+        return self.current_game().get_scoreboard()
+
+    # TODO: Banned players dict-like object, with ban info as value.
     def banned_players(self) -> models.Players:
-        return self.current_game().get_banned_players()
+        return self._adapter.get_banned_players()
 
+    # TODO: Tracked players dict-like object, with tracking info as value.
     def tracked_players(self) -> models.Players:
-        return self.current_game().get_tracked_players()
+        return self._adapter.get_tracked_players()
 
     def access_policy(self) -> models.AccessPolicy:
         return self._adapter.get_access_policy()

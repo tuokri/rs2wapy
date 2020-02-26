@@ -9,6 +9,10 @@ from typing import overload
 
 from steam import SteamID
 
+from rs2wapy.adapter import Adapter
+
+_STEAM_ID_TYPE = Union[SteamID, int, str]
+
 
 class Model(abc.ABC):
     def __init__(self):
@@ -21,9 +25,6 @@ class Model(abc.ABC):
     @timestamp.setter
     def timestamp(self, timestamp: datetime.datetime):
         self._timestamp = timestamp
-
-
-_STEAM_ID_TYPE = Union[SteamID, int, str]
 
 
 class Player(Model):
@@ -171,21 +172,21 @@ class ChatMessages(collections.MutableSequence):
 
 class Chat(Model):
 
-    def __init__(self):
+    def __init__(self, adapter: Adapter):
         super().__init__()
+        self._adapter = adapter
 
     def get_messages(self) -> ChatMessages:
-        # Get messages via adapter.
-        pass
+        return self._adapter.get_chat_messages()
 
-    def post_message(self):
-        # Post message via adapter.
-        pass
+    def post_message(self, message: str):
+        self._adapter.post_chat_message(message)
 
 
 class CurrentGame(Model):
-    def __init__(self):
+    def __init__(self, adapter: Adapter):
         super().__init__()
+        self._adapter = Adapter
 
     def get_players(self) -> Players:
         pass
