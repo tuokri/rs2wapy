@@ -158,8 +158,6 @@ class Adapter(object):
         pass
 
     def get_chat_messages(self) -> Tuple[bytes, int]:
-        logger.debug("get_chat_messages() called")
-
         sessionid = self._auth_data.sessionid
         authcred = self._auth_data.authcred
         authtimeout = self._auth_data.authtimeout
@@ -179,8 +177,6 @@ class Adapter(object):
         return self._perform(c, self._chat_url, header)
 
     def get_ranked_status(self) -> str:
-        logger.debug("get_server_ranked_status() called")
-
         sessionid = self._auth_data.sessionid
         authcred = self._auth_data.authcred
         authtimeout = self._auth_data.authtimeout
@@ -196,8 +192,6 @@ class Adapter(object):
         return ranked_status.text
 
     def get_access_policy(self) -> List[str]:
-        logger.debug("get_access_policy() called")
-
         sessionid = self._auth_data.sessionid
         authcred = self._auth_data.authcred
         authtimeout = self._auth_data.authtimeout
