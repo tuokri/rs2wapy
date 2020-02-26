@@ -3,6 +3,7 @@ import hashlib
 import re
 import sys
 import time
+from dataclasses import dataclass
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
@@ -58,42 +59,37 @@ def _read_encoding(headers: dict, index: int = -1) -> str:
     return encoding
 
 
+def _ue3_pw_hash_digest(username: str, password: str) -> str:
+    """
+    Calculate the hex digest used by Unreal Engine 3 WebAdmin,
+    which is transmitted over the wire.
+    """
+    return hashlib.sha1(bytearray(password, "utf-8")
+                        + bytearray(username, "utf-8")).hexdigest()
+
+
+@dataclass
 class AuthData(object):
-    def __init__(self, timeout: float, authcred: str, sessionid: str,
-                 timeout_start: float, authtimeout: str):
-        self._timeout = float(timeout)
-        self._authcred = authcred
-        self._sessionid = sessionid
-        self._timeout_start = timeout_start
-        self._authtimeout = authtimeout
+    timeout: float
+    timeout_start: float
+    authcred: str
+    sessionid: str
+    authtimeout: str
 
-    @property
-    def timeout(self) -> float:
-        return self._timeout
+    def __post_init__(self):
+        if self.timeout < 0:
+            raise ValueError(
+                f"cannot calculate authentication timeout for timeout: {self.timeout}")
 
-    @property
-    def authcred(self) -> str:
-        return self._authcred
-
-    @property
-    def sessionid(self) -> str:
-        return self._sessionid
-
-    @sessionid.setter
-    def sessionid(self, sessionid: str):
-        self._sessionid = sessionid
-
-    @property
-    def timeout_start(self):
-        return self._timeout_start
-
-    @timeout_start.setter
-    def timeout_start(self, timeout_start: float):
-        self.timeout_start = timeout_start
-
-    @property
-    def authtimeout(self) -> str:
-        return self._authtimeout
+    def _auth_timed_out(self) -> bool:
+        time_now = time.time()
+        if (self.timeout_start + self.timeout) < time_now:
+            logger.debug(
+                "authentication timed out for start_time={s}, "
+                "timeout={t}, time_now={tn}", s=self.timeout_start,
+                t=self.timeout, tn=time_now)
+            return True
+        return False
 
 
 class Adapter(object):
@@ -110,8 +106,7 @@ class Adapter(object):
     def __init__(self, username: str, password: str, webadmin_url: str):
         self._headers = {}
         self._username = username
-        self._password_hash = hashlib.sha1(
-            bytearray(password, "utf-8") + bytearray(username, "utf-8")).hexdigest()
+        self._password_hash = _ue3_pw_hash_digest(username, password)
         self._auth_data = None
         self._webadmin_url = webadmin_url
 
@@ -156,7 +151,7 @@ class Adapter(object):
         self._auth_data = auth_data
 
     def get_chat(self) -> models.Chat:
-        pass
+        return models.Chat(self)
 
     def get_chat_messages(self) -> Tuple[bytes, int]:
         sessionid = self._auth_data.sessionid
@@ -504,8 +499,8 @@ class Adapter(object):
                                    timeout_start=time.time(), authtimeout=authtimeout)
 
     async def _authenticated(self):
-        if self._auth_timed_out(self._auth_data):
-            self._authenticate(self._webadmin_url)
+        if self._auth_data.timed_out():
+            self._authenticate()
 
     def _parse_html(self, resp) -> BeautifulSoup:
         encoding = _read_encoding(self._headers)
@@ -539,25 +534,3 @@ class Adapter(object):
         Convert header dictionary to list for PycURL.
         """
         return [f"{key}: {value}" for key, value in header.items()]
-
-    @staticmethod
-    def _auth_timed_out(auth_data: AuthData) -> bool:
-        """
-        Return True if authentication has timed out, else False.
-        """
-        if auth_data:
-            timeout = auth_data.timeout
-            start_time = auth_data.timeout_start
-
-            if timeout < 0:
-                logger.error(
-                    "cannot calculate authentication timeout for timeout: {t}",
-                    t=timeout)
-            else:
-                time_now = time.time()
-                if (start_time + timeout) < time_now:
-                    logger.debug(
-                        "authentication timed out for start_time={s}, "
-                        "timeout={t}, time_now={tn}", s=start_time, t=timeout, tn=time_now)
-                    return True
-        return False
