@@ -110,14 +110,15 @@ class Adapter(object):
     def __init__(self, username: str, password: str, webadmin_url: str):
         self._headers = {}
         self._username = username
-        self._password = password
+        self._password_hash = hashlib.sha1(
+            bytearray(password, "utf-8") + bytearray(username, "utf-8")).hexdigest()
         self._auth_data = None
-        self._url = webadmin_url
+        self._webadmin_url = webadmin_url
 
-        scheme, netloc, path, params, query, fragment = urlparse(self._url)
+        scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
                      "path={path}, params={params}, query={query}, fragment={fragment}",
-                     url=self._url, scheme=scheme, netloc=netloc,
+                     url=self._webadmin_url, scheme=scheme, netloc=netloc,
                      path=path, params=params, query=query, fragment=fragment)
 
         if (not path) or (path == "/"):
@@ -135,7 +136,7 @@ class Adapter(object):
             self.BASE_HEADER["Referer"] = referer
             logger.debug("setting 'Referer' to '{r}'", r=referer)
 
-        self._url = urlunparse(
+        self._webadmin_url = urlunparse(
             (scheme, netloc, path, params, query, fragment))
         self._chat_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(), params, query, fragment))
@@ -144,8 +145,7 @@ class Adapter(object):
         self._access_policy_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(), params, query, fragment))
 
-        self._authenticate(
-            login_url=self._url, username=self._username, password=self._password)
+        self._authenticate()
 
     @property
     def auth_data(self) -> AuthData:
@@ -175,7 +175,7 @@ class Adapter(object):
         c = pycurl.Curl()
         c.setopt(c.POSTFIELDS, postfields)
         c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
-        return self._perform(c, self._chat_url, header)
+        return self._perform(self._chat_url, curl_obj=c, header=header)
 
     def get_ranked_status(self) -> str:
         sessionid = self._auth_data.sessionid
@@ -186,7 +186,7 @@ class Adapter(object):
         header["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
 
         c = pycurl.Curl()
-        resp, _ = self._perform(c, self._current_game_url, header)
+        resp, _ = self._perform(self._current_game_url, curl_obj=c, header=header)
 
         parsed_html = self._parse_html(resp)
         ranked_status = parsed_html.find("span", attrs={"class": "ranked"})
@@ -205,7 +205,7 @@ class Adapter(object):
         url = f"{self._access_policy_url}?$(date +%s)"
 
         c = pycurl.Curl()
-        resp, _ = self._perform(c, url, header)
+        resp, _ = self._perform(url, curl_obj=c, header=header)
         return self._parse_access_policy(resp)
 
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
@@ -254,7 +254,7 @@ class Adapter(object):
             c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
 
             try:
-                self._perform(c, self._access_policy_url, header=header)
+                self._perform(self._access_policy_url, curl_obj=c, header=header)
             except Exception as e:
                 logger.error(e, exc_info=True)
 
@@ -314,7 +314,7 @@ class Adapter(object):
             c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
 
             try:
-                self._perform(c, self._access_policy_url, header=header)
+                self._perform(self._access_policy_url, curl_obj=c, header=header)
             except Exception as e:
                 logger.error(e, exc_info=True)
 
@@ -329,9 +329,12 @@ class Adapter(object):
     def update_access_policy(self, ip_mask: str, policy: str) -> bool:
         pass
 
-    async def _async_perform(self, c: pycurl.Curl, url: str,
+    async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
                              header: dict = None) -> Tuple[bytes, int]:
         await self._authenticated()
+
+        if not curl_obj:
+            curl_obj = pycurl.Curl()
 
         logger.debug("url={url}, header={header}", url=url, header=header)
         if not header:
@@ -342,37 +345,36 @@ class Adapter(object):
 
         buffer = BytesIO()
 
-        c.setopt(c.WRITEFUNCTION, buffer.write)
-        c.setopt(c.HEADERFUNCTION, self._header_function)
-        c.setopt(c.BUFFERSIZE, 102400)
-        c.setopt(c.URL, url)
-        c.setopt(c.HTTPHEADER, header)
-        c.setopt(c.USERAGENT, CURL_USERAGENT)
-        c.setopt(c.MAXREDIRS, 50)
-        # c.setopt(c.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_2TLS)
-        c.setopt(c.ACCEPT_ENCODING, "")
-        # c.setopt(c.HTTP09_ALLOWED, True)
-        c.setopt(c.TCP_KEEPALIVE, 1)
-        c.setopt(c.FOLLOWLOCATION, True)
+        curl_obj.setopt(curl_obj.WRITEFUNCTION, buffer.write)
+        curl_obj.setopt(curl_obj.HEADERFUNCTION, self._header_function)
+        curl_obj.setopt(curl_obj.BUFFERSIZE, 102400)
+        curl_obj.setopt(curl_obj.URL, url)
+        curl_obj.setopt(curl_obj.HTTPHEADER, header)
+        curl_obj.setopt(curl_obj.USERAGENT, CURL_USERAGENT)
+        curl_obj.setopt(curl_obj.MAXREDIRS, 50)
+        curl_obj.setopt(curl_obj.ACCEPT_ENCODING, "")
+        curl_obj.setopt(curl_obj.TCP_KEEPALIVE, 1)
+        curl_obj.setopt(curl_obj.FOLLOWLOCATION, True)
 
-        c.perform()
+        curl_obj.perform()
 
-        status = c.getinfo(pycurl.HTTP_CODE)
+        status = curl_obj.getinfo(pycurl.HTTP_CODE)
         logger.debug("HTTP status: {s}", s=status)
-        c.close()
+        curl_obj.close()
 
         if not status == HTTPStatus.OK:
             logger.error("HTTP status error: {s}", s=status)
 
         if not status == HTTPStatus.OK:
-            raise HTTPError(self._url, status, "error connecting to WebAdmin",
+            raise HTTPError(self._webadmin_url, status, "error connecting to WebAdmin",
                             fp=None, hdrs=None)
 
         return buffer.getvalue(), status
 
-    def _perform(self, c: pycurl.Curl, url: str,
+    def _perform(self, url: str, curl_obj: pycurl.Curl = None,
                  header: dict = None) -> Tuple[bytes, int]:
-        return asyncio.run(self._async_perform(c, url, header))
+        return asyncio.run(
+            self._async_perform(url=url, curl_obj=curl_obj, header=header))
 
     def _header_function(self, header_line):
 
@@ -451,20 +453,15 @@ class Adapter(object):
         return f'sessionid="{r}";'
 
     def _get(self, url: str) -> Tuple[bytes, int]:
-        c = pycurl.Curl()
-        return self._perform(c, url)
+        return self._perform(url=url)
 
-    def _post_login(self, url: str, sessionid: str, token: str, username: str, password: str,
-                    remember=2678400) -> Tuple[bytes, int]:
+    def _post_login(self, sessionid: str, token: str, remember=2678400) -> Tuple[bytes, int]:
         header = self.BASE_HEADER.copy()
         header["Cookie"] = sessionid
         header["Content-Type"] = "application/x-www-form-urlencoded"
 
-        password_hash = hashlib.sha1(
-            bytearray(password, "utf-8") + bytearray(username, "utf-8")).hexdigest()
-
-        postfields = (f"token={token}&password_hash=%24sha1%24{password_hash}"
-                      + f"&username={username}&password=&remember={remember}")
+        postfields = (f"token={token}&password_hash=%24sha1%24{self._password_hash}"
+                      + f"&username={self._username}&password=&remember={remember}")
         postfieldsize = len(postfields)
 
         logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
@@ -473,12 +470,12 @@ class Adapter(object):
         c = pycurl.Curl()
         c.setopt(c.POSTFIELDS, postfields)
         c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
-        return self._perform(c, url, header)
+        return self._perform(self._webadmin_url, curl_obj=c, header=header)
 
-    def _authenticate(self, login_url: str, username: str, password: str):
-        resp, _ = self._get(login_url)
+    def _authenticate(self):
+        resp, _ = self._get(self._webadmin_url)
         if not resp:
-            logger.error("no response content from url={url}", url=login_url)
+            logger.error("no response content from url={url}", url=self._webadmin_url)
 
         parsed_html = self._parse_html(resp)
         token = ""
@@ -492,8 +489,7 @@ class Adapter(object):
         sessionid = self._find_sessionid()
         logger.debug("got sessionid: {si}, from headers", si=sessionid)
 
-        self._post_login(login_url, sessionid=sessionid,
-                         token=token, username=username, password=password)
+        self._post_login(sessionid=sessionid, token=token)
 
         authcred = [i for i in self._headers["set-cookie"] if i.startswith("authcred=")][-1]
         authtimeout = [i for i in self._headers["set-cookie"] if i.startswith("authtimeout=")][-1]
@@ -509,7 +505,7 @@ class Adapter(object):
 
     async def _authenticated(self):
         if self._auth_timed_out(self._auth_data):
-            self._authenticate(self._url, self._username, self._password)
+            self._authenticate(self._webadmin_url)
 
     def _parse_html(self, resp) -> BeautifulSoup:
         encoding = _read_encoding(self._headers)
