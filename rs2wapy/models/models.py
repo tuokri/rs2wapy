@@ -171,7 +171,6 @@ class ChatMessages(collections.MutableSequence):
 
 
 class Chat(Model):
-
     def __init__(self, adapter: Adapter):
         super().__init__()
         self._adapter = adapter
@@ -186,7 +185,7 @@ class Chat(Model):
 class CurrentGame(Model):
     def __init__(self, adapter: Adapter):
         super().__init__()
-        self._adapter = Adapter
+        self._adapter = adapter
 
     def get_players(self) -> Players:
         pass
