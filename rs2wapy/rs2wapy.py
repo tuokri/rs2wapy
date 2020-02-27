@@ -12,7 +12,7 @@ logger = Logger(__name__)
 
 class RS2WebAdmin(object):
     """
-    Provides a high-level API to Rising Storm 2: Vietnam
+    Provides a high-level interface to Rising Storm 2: Vietnam
     server's WebAdmin tool.
     """
 
