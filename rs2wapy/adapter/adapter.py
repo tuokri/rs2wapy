@@ -27,6 +27,7 @@ logger = Logger(__name__)
 HEADERS_MAX_LEN = 50
 CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
 POLICIES = ["ACCEPT", "DENY"]
+REMEMBER_LOGIN_1M = 2678400
 
 WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
 WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
@@ -66,6 +67,30 @@ def _ue3_pw_hash_digest(username: str, password: str) -> str:
     """
     return hashlib.sha1(bytearray(password, "utf-8")
                         + bytearray(username, "utf-8")).hexdigest()
+
+
+def _set_postfields(curl_obj: pycurl.Curl, postfields):
+    postfieldsize = len(postfields)
+    logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
+    logger.debug("postfields: {pf}", pf=postfields)
+    curl_obj.setopt(curl_obj.POSTFIELDS, postfields)
+    curl_obj.setopt(curl_obj.POSTFIELDSIZE_LARGE, postfieldsize)
+
+
+def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
+    del_index = [idx for idx, s in enumerate(policies) if to_delete in s][0]
+    policies = [p.split(":") for p in policies]
+    policies = [(f"ipmask={p[0].strip()}&policy={p[1].strip()}"
+                 f"{f'&delete={del_index}' if p[0] == to_delete else ''}")
+                for p in policies]
+    return "&".join(policies)
+
+
+def _prepare_header(header: dict) -> list:
+    """
+    Convert header dictionary to list for PycURL.
+    """
+    return [f"{key}: {value}" for key, value in header.items()]
 
 
 @dataclass
@@ -153,7 +178,7 @@ class Adapter(object):
     def get_chat(self) -> models.Chat:
         return models.Chat(self)
 
-    def get_chat_messages(self) -> Tuple[bytes, int]:
+    def get_chat_messages(self) -> bytes:
         sessionid = self._auth_data.sessionid
         authcred = self._auth_data.authcred
         authtimeout = self._auth_data.authtimeout
@@ -164,13 +189,10 @@ class Adapter(object):
         header["Accept"] = "*/*"
 
         postfields = "ajax=1"
-        postfieldsize = len(postfields)
-        logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
 
         c = pycurl.Curl()
-        c.setopt(c.POSTFIELDS, postfields)
-        c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
-        return self._perform(self._chat_url, curl_obj=c, header=header)
+        _set_postfields(c, postfields)
+        resp = self._perform(self._chat_url, curl_obj=c, header=header)
 
     def get_ranked_status(self) -> str:
         sessionid = self._auth_data.sessionid
@@ -239,14 +261,9 @@ class Adapter(object):
             header["Cookie"] = self._find_sessionid()
 
             postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
-            postfieldsize = len(postfields)
-
-            logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
-            logger.debug("postfields: {pf}", pf=postfields)
 
             c = pycurl.Curl()
-            c.setopt(c.POSTFIELDS, postfields)
-            c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+            _set_postfields(c, postfields)
 
             try:
                 self._perform(self._access_policy_url, curl_obj=c, header=header)
@@ -292,21 +309,15 @@ class Adapter(object):
             header["Cookie"] = self._find_sessionid()
 
             try:
-                argstr = self._policies_to_delete_argstr(policies, ip_mask)
+                argstr = _policies_to_delete_argstr(policies, ip_mask)
             except IndexError as ie:
                 logger.error("error finding index of {ipm}: {e}", ipm=ip_mask, e=ie)
                 continue
 
             postfields = f"action={action}&{argstr}"
-            postfieldsize = len(postfields)
-            header["Content-Length"] = postfieldsize
-
-            logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
-            logger.debug("postfields: {pf}", pf=postfields)
 
             c = pycurl.Curl()
-            c.setopt(c.POSTFIELDS, postfields)
-            c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+            _set_postfields(c, postfields)
 
             try:
                 self._perform(self._access_policy_url, curl_obj=c, header=header)
@@ -325,7 +336,7 @@ class Adapter(object):
         pass
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
-                             header: dict = None) -> Tuple[bytes, int]:
+                             header: dict = None) -> bytes:
         await self._authenticated()
 
         if not curl_obj:
@@ -334,7 +345,7 @@ class Adapter(object):
         logger.debug("url={url}, header={header}", url=url, header=header)
         if not header:
             header = self.BASE_HEADER
-        header = self._prepare_header(header)
+        header = _prepare_header(header)
 
         logger.debug("prepared header={h}", h=header)
 
@@ -359,12 +370,10 @@ class Adapter(object):
 
         if not status == HTTPStatus.OK:
             logger.error("HTTP status error: {s}", s=status)
-
-        if not status == HTTPStatus.OK:
             raise HTTPError(self._webadmin_url, status, "error connecting to WebAdmin",
                             fp=None, hdrs=None)
 
-        return buffer.getvalue(), status
+        return buffer.getvalue()
 
     def _perform(self, url: str, curl_obj: pycurl.Curl = None,
                  header: dict = None) -> Tuple[bytes, int]:
@@ -450,21 +459,17 @@ class Adapter(object):
     def _get(self, url: str) -> Tuple[bytes, int]:
         return self._perform(url=url)
 
-    def _post_login(self, sessionid: str, token: str, remember=2678400) -> Tuple[bytes, int]:
+    def _post_login(self, sessionid: str, token: str,
+                    remember=REMEMBER_LOGIN_1M) -> Tuple[bytes, int]:
         header = self.BASE_HEADER.copy()
         header["Cookie"] = sessionid
         header["Content-Type"] = "application/x-www-form-urlencoded"
 
         postfields = (f"token={token}&password_hash=%24sha1%24{self._password_hash}"
                       + f"&username={self._username}&password=&remember={remember}")
-        postfieldsize = len(postfields)
-
-        logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
-        logger.debug("postfields: {pf}", pf=postfields)
 
         c = pycurl.Curl()
-        c.setopt(c.POSTFIELDS, postfields)
-        c.setopt(c.POSTFIELDSIZE_LARGE, postfieldsize)
+        _set_postfields(c, postfields)
         return self._perform(self._webadmin_url, curl_obj=c, header=header)
 
     def _authenticate(self):
@@ -518,19 +523,3 @@ class Adapter(object):
             if ip_mask and policy:
                 policies.append(f"{ip_mask.get('value')}: {policy.text.upper()}")
         return policies
-
-    @staticmethod
-    def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
-        del_index = [idx for idx, s in enumerate(policies) if to_delete in s][0]
-        policies = [p.split(":") for p in policies]
-        policies = [(f"ipmask={p[0].strip()}&policy={p[1].strip()}"
-                     f"{f'&delete={del_index}' if p[0] == to_delete else ''}")
-                    for p in policies]
-        return "&".join(policies)
-
-    @staticmethod
-    def _prepare_header(header: dict) -> list:
-        """
-        Convert header dictionary to list for PycURL.
-        """
-        return [f"{key}: {value}" for key, value in header.items()]
