@@ -9,7 +9,6 @@ from io import BytesIO
 from pathlib import Path
 from typing import List
 from typing import Sequence
-from typing import Tuple
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
@@ -203,7 +202,7 @@ class Adapter(object):
         header["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
 
         c = pycurl.Curl()
-        resp, _ = self._perform(self._current_game_url, curl_obj=c, header=header)
+        resp = self._perform(self._current_game_url, curl_obj=c, header=header)
 
         parsed_html = self._parse_html(resp)
         ranked_status = parsed_html.find("span", attrs={"class": "ranked"})
@@ -222,7 +221,7 @@ class Adapter(object):
         url = f"{self._access_policy_url}?$(date +%s)"
 
         c = pycurl.Curl()
-        resp, _ = self._perform(url, curl_obj=c, header=header)
+        resp = self._perform(url, curl_obj=c, header=header)
         return self._parse_access_policy(resp)
 
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
@@ -288,7 +287,7 @@ class Adapter(object):
             True if deleted, else False.
         """
         policies = self.get_access_policy()
-        if not _in(ip_mask, policies):
+        if ip_mask not in policies:
             logger.info("{ip} not in policies, no need to delete", ip=ip_mask)
             return False
 
@@ -376,7 +375,7 @@ class Adapter(object):
         return buffer.getvalue()
 
     def _perform(self, url: str, curl_obj: pycurl.Curl = None,
-                 header: dict = None) -> Tuple[bytes, int]:
+                 header: dict = None) -> bytes:
         return asyncio.run(
             self._async_perform(url=url, curl_obj=curl_obj, header=header))
 
@@ -456,11 +455,11 @@ class Adapter(object):
 
         return f'sessionid="{r}";'
 
-    def _get(self, url: str) -> Tuple[bytes, int]:
+    def _get(self, url: str) -> bytes:
         return self._perform(url=url)
 
     def _post_login(self, sessionid: str, token: str,
-                    remember=REMEMBER_LOGIN_1M) -> Tuple[bytes, int]:
+                    remember=REMEMBER_LOGIN_1M) -> bytes:
         header = self.BASE_HEADER.copy()
         header["Cookie"] = sessionid
         header["Content-Type"] = "application/x-www-form-urlencoded"
@@ -473,7 +472,7 @@ class Adapter(object):
         return self._perform(self._webadmin_url, curl_obj=c, header=header)
 
     def _authenticate(self):
-        resp, _ = self._get(self._webadmin_url)
+        resp = self._get(self._webadmin_url)
         if not resp:
             logger.error("no response content from url={url}", url=self._webadmin_url)
 
