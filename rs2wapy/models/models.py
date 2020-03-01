@@ -3,13 +3,12 @@ import collections
 import datetime
 from abc import abstractmethod
 from typing import Iterable
+from typing import List
 from typing import MutableSequence
 from typing import Union
 from typing import overload
 
 from steam import SteamID
-
-from rs2wapy.adapter import Adapter
 
 _STEAM_ID_TYPE = Union[SteamID, int, str]
 
@@ -25,6 +24,46 @@ class Model(abc.ABC):
     @timestamp.setter
     def timestamp(self, timestamp: datetime.datetime):
         self._timestamp = timestamp
+
+
+HEX_COLOR_BLUE_TEAM = "#50A0F0"
+HEX_COLOR_RED_TEAM = "#E54927"
+
+
+class Team(abc.ABC):
+    HEX_COLOR = None
+
+    @staticmethod
+    def from_hex_color(hex_color: str):
+        return HEX_COLOR_TO_TEAM[hex_color]
+
+    @classmethod
+    def to_hex_color(cls) -> str:
+        if not cls.HEX_COLOR:
+            raise NotImplementedError("not implemented for abstract base class")
+        return TEAM_TO_HEX_COLOR[cls.HEX_COLOR]
+
+    def __str__(self) -> str:
+        return f"{__class__.__name__}"
+
+
+class BlueTeam(Team):
+    HEX_COLOR = HEX_COLOR_BLUE_TEAM
+
+
+class RedTeam(Team):
+    HEX_COLOR = HEX_COLOR_RED_TEAM
+
+
+HEX_COLOR_TO_TEAM = {
+    HEX_COLOR_BLUE_TEAM: BlueTeam,
+    HEX_COLOR_RED_TEAM: RedTeam,
+}
+
+TEAM_TO_HEX_COLOR = {
+    BlueTeam: HEX_COLOR_BLUE_TEAM,
+    RedTeam: HEX_COLOR_RED_TEAM,
+}
 
 
 class Player(Model):
@@ -101,11 +140,42 @@ class Players(collections.MutableSequence):
         return len(self._players)
 
 
+class ChatChannel(abc.ABC):
+    @staticmethod
+    def from_teamnotice(teamnotice: str):
+        try:
+            teamnotice = teamnotice.upper()
+        except AttributeError:
+            pass
+        return TEAMNOTICE_TO_CHAT_CHANNEL[teamnotice]
+
+
+class ChatChannelAll(ChatChannel):
+    pass
+
+
+class ChatChannelTeam(ChatChannel):
+    pass
+
+
+TEAMNOTICE_TO_CHAT_CHANNEL = {
+    None: ChatChannelAll,
+    "(TEAM)": ChatChannelTeam,
+}
+
+
 class ChatMessage(Model):
-    def __init__(self, sender: Player, text: str):
+    def __init__(self, sender: Union[Player, str], text: str,
+                 team: Team, channel: ChatChannel):
         super().__init__()
         self._sender = sender
         self._text = text
+        self._team = team
+        self._channel = channel
+
+    def __str__(self) -> str:
+        # TODO: teamnotice and color?
+        return f"{self._sender}: {self._text}"
 
 
 class ChatMessages(collections.MutableSequence):
@@ -170,22 +240,14 @@ class ChatMessages(collections.MutableSequence):
         return len(self._messages)
 
 
-class Chat(Model):
-    def __init__(self, adapter: Adapter):
-        super().__init__()
-        self._adapter = adapter
-
-    def get_messages(self) -> ChatMessages:
-        return self._adapter.get_chat_messages()
-
-    def post_message(self, message: str):
-        self._adapter.post_chat_message(message)
+class Scoreboard(List[str]):
+    pass
 
 
 class CurrentGame(Model):
-    def __init__(self, adapter: Adapter):
+    def __init__(self):
         super().__init__()
-        self._adapter = adapter
 
-    def get_players(self) -> Players:
-        pass
+
+class AccessPolicy(Model):
+    pass

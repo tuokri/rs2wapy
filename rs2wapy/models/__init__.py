@@ -1,10 +1,15 @@
 from .models import *
 
 __all__ = [
-    "Chat",
     "ChatMessage",
     "ChatMessages",
+    "ChatChannel",
+    "ChatChannelTeam",
+    "ChatChannelAll",
     "CurrentGame",
     "Player",
     "Players",
+    "Team",
+    "BlueTeam",
+    "RedTeam",
 ]

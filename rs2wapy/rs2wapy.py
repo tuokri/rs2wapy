@@ -19,28 +19,28 @@ class RS2WebAdmin(object):
     def __init__(self, username: str, password: str, webadmin_url: str):
         self._adapter = Adapter(username, password, webadmin_url)
 
-    def chat(self) -> models.Chat:
-        return self._adapter.get_chat()
+    def get_chat_messages(self) -> models.ChatMessages:
+        return self._adapter.get_chat_messages()
 
-    def chat_messages(self) -> models.ChatMessages:
-        return self.chat().get_messages()
-
-    def current_game(self) -> models.CurrentGame:
+    def get_current_game(self) -> models.CurrentGame:
         return self._adapter.get_current_game()
 
-    def current_players(self) -> models.Players:
+    def get_players(self) -> models.Players:
         return self._adapter.get_players()
 
-    def scoreboard(self) -> None:
-        return self.current_game().get_scoreboard()
+    def get_scoreboard(self) -> models.Scoreboard:
+        return self._adapter.get_current_game()
 
     # TODO: Banned players dict-like object, with ban info as value.
-    def banned_players(self) -> models.Players:
+    def get_banned_players(self) -> models.Players:
         return self._adapter.get_banned_players()
 
     # TODO: Tracked players dict-like object, with tracking info as value.
-    def tracked_players(self) -> models.Players:
+    def get_tracked_players(self) -> models.Players:
         return self._adapter.get_tracked_players()
 
-    def access_policy(self) -> models.AccessPolicy:
+    def get_access_policy(self) -> models.AccessPolicy:
         return self._adapter.get_access_policy()
+
+    def add_access_policy(self, ip_mask: str, policy: str):
+        self._adapter.add_access_policy(ip_mask, policy)

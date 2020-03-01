@@ -13,12 +13,12 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 import pycurl
-from bs4 import BeautifulSoup
 from logbook import Logger
 from logbook import StreamHandler
 from requests import HTTPError
 
 from rs2wapy.models import models
+from rs2wapy.parsing import RS2WebAdminResponseParser
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
@@ -105,7 +105,7 @@ class AuthData(object):
             raise ValueError(
                 f"cannot calculate authentication timeout for timeout: {self.timeout}")
 
-    def _auth_timed_out(self) -> bool:
+    def timed_out(self) -> bool:
         time_now = time.time()
         if (self.timeout_start + self.timeout) < time_now:
             logger.debug(
@@ -131,8 +131,11 @@ class Adapter(object):
         self._headers = {}
         self._username = username
         self._password_hash = _ue3_pw_hash_digest(username, password)
-        self._auth_data = None
         self._webadmin_url = webadmin_url
+
+        self._auth_data = None
+        self._rparser = RS2WebAdminResponseParser(
+            encoding=_read_encoding(self._headers))
 
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
@@ -174,10 +177,10 @@ class Adapter(object):
     def auth_data(self, auth_data: AuthData):
         self._auth_data = auth_data
 
-    def get_chat(self) -> models.Chat:
-        return models.Chat(self)
+    def get_current_game(self) -> models.CurrentGame:
+        return None
 
-    def get_chat_messages(self) -> bytes:
+    def get_chat_messages(self) -> models.ChatMessages:
         sessionid = self._auth_data.sessionid
         authcred = self._auth_data.authcred
         authtimeout = self._auth_data.authtimeout
@@ -192,6 +195,7 @@ class Adapter(object):
         c = pycurl.Curl()
         _set_postfields(c, postfields)
         resp = self._perform(self._chat_url, curl_obj=c, header=header)
+        return self._rparser.parse_chat_messages(resp)
 
     def get_ranked_status(self) -> str:
         sessionid = self._auth_data.sessionid
@@ -204,7 +208,7 @@ class Adapter(object):
         c = pycurl.Curl()
         resp = self._perform(self._current_game_url, curl_obj=c, header=header)
 
-        parsed_html = self._parse_html(resp)
+        parsed_html = self._rparser.parse_html(resp)
         ranked_status = parsed_html.find("span", attrs={"class": "ranked"})
         return ranked_status.text
 
@@ -222,7 +226,7 @@ class Adapter(object):
 
         c = pycurl.Curl()
         resp = self._perform(url, curl_obj=c, header=header)
-        return self._parse_access_policy(resp)
+        return self._rparser.parse_access_policy(resp)
 
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
         """
@@ -380,7 +384,6 @@ class Adapter(object):
             self._async_perform(url=url, curl_obj=curl_obj, header=header))
 
     def _header_function(self, header_line):
-
         if "connection" in self._headers:
             try:
                 if len(self._headers["connection"]) > HEADERS_MAX_LEN:
@@ -476,7 +479,7 @@ class Adapter(object):
         if not resp:
             logger.error("no response content from url={url}", url=self._webadmin_url)
 
-        parsed_html = self._parse_html(resp)
+        parsed_html = self._rparser.parse_html(resp)
         token = ""
         try:
             token = parsed_html.find("input", attrs={"name": "token"}).get("value")
@@ -499,26 +502,16 @@ class Adapter(object):
         logger.debug("authtimeout: {ato}", ato=authtimeout)
         logger.debug("authtimeout_value: {ato_value}", ato_value=authtimeout_value)
 
-        self._auth_data = AuthData(timeout=authtimeout_value, authcred=authcred, sessionid=sessionid,
-                                   timeout_start=time.time(), authtimeout=authtimeout)
+        self._auth_data = AuthData(
+            timeout=authtimeout_value,
+            authcred=authcred,
+            sessionid=sessionid,
+            timeout_start=time.time(),
+            authtimeout=authtimeout
+        )
 
     async def _authenticated(self):
+        if not self._auth_data:
+            return
         if self._auth_data.timed_out():
             self._authenticate()
-
-    def _parse_html(self, resp) -> BeautifulSoup:
-        encoding = _read_encoding(self._headers)
-        return BeautifulSoup(resp.decode(encoding), features="html.parser")
-
-    # TODO: reconsider return type. Namedtuple or class?
-    def _parse_access_policy(self, resp) -> List[str]:
-        parsed_html = self._parse_html(resp)
-        policy_table = parsed_html.find("table", attrs={"id": "policies"})
-        trs = policy_table.find_all("tr")
-        policies = []
-        for tr in trs:
-            ip_mask = tr.find("input", attrs={"name": "ipmask"})
-            policy = tr.find("option", attrs={"selected": "selected"})
-            if ip_mask and policy:
-                policies.append(f"{ip_mask.get('value')}: {policy.text.upper()}")
-        return policies
