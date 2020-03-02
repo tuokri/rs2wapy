@@ -34,6 +34,7 @@ WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
 WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
 WEB_ADMIN_CHAT_DATA_PATH = WEB_ADMIN_CHAT_PATH / Path("data/")
 WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
+WEB_ADMIN_CHANGE_MAP_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("change/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -166,16 +167,24 @@ class Adapter(object):
             (scheme, netloc, path, params, query, fragment)
         )
         self._chat_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(), params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(),
+             params, query, fragment)
         )
         self._chat_data_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHAT_DATA_PATH.as_posix(), params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_CHAT_DATA_PATH.as_posix(),
+             params, query, fragment)
         )
         self._current_game_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CURRENT_GAME_PATH.as_posix(), params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_CURRENT_GAME_PATH.as_posix(),
+             params, query, fragment)
         )
         self._access_policy_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(), params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._change_map_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_CHANGE_MAP_PATH.as_posix(),
+             params, query, fragment)
         )
 
         self._authenticate()
@@ -341,7 +350,32 @@ class Adapter(object):
         pass
 
     def change_map(self, new_map: str):
-        pass
+        headers = self._make_auth_headers()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        headers["Accept"] = ("text/html,application/xhtml+xml,"
+                             "application/xml;q=0.9,image/webp,*/*;q=0.8")
+
+        map_prefix = new_map.split("-")[0]
+        game_type = {
+            "VNTE": "ROGameInfo.Territories",
+            "VNSU": "ROGameInfo.Supremacy",
+            "VNSK": "ROGameInfo.Skirmish",
+            "WWTE": "WWGameInfo.Territories",
+            "WWSU": "WWGameInfo.Supremacy",
+            "WWSK": "WWGameInfo.Skirmish",
+        }[map_prefix]
+
+        # TODO: urlextra, mutatorGroupCount
+        postfields = (f'gametype={game_type}'
+                      f'&map={new_map}'
+                      f'&mutatorGroupCount=0'
+                      f'&urlextra="%"3FMaxPlayers"%"3D64'
+                      f'"%"3FEnableWebAdmin"%"3Dtrue"%"3FWebAdminPort"%"3D8080'
+                      f'&action=change')
+
+        c = pycurl.Curl()
+        _set_postfields(c, postfields)
+        self._perform(self._change_map_url, curl_obj=c, headers=headers)
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
                              header: dict = None, skip_auth=False) -> bytes:
