@@ -5,6 +5,7 @@ from abc import abstractmethod
 from typing import Iterable
 from typing import List
 from typing import MutableSequence
+from typing import Sequence
 from typing import Union
 from typing import overload
 
@@ -274,27 +275,68 @@ class ChatMessages(collections.MutableSequence):
         return self._messages.__str__()
 
 
-class Scoreboard(List[str]):
+class Scoreboard(list, abc.ABC):
+    def __init__(self, seq: Sequence = (), header: List[str] = None):
+        super().__init__(seq)
+        if not header:
+            header = []
+        self._header = header
+
+    @property
+    def header(self) -> List[str]:
+        return self._header
+
+    @header.setter
+    def header(self, header: List[str]):
+        self._header = header
+
+
+class PlayerScoreboard(Scoreboard):
     """
-    Scoreboard does not store player IDs because deducing
+    PlayerScoreboard does not store player IDs because deducing
     them from WebAdmin scoreboard is not reliable.
     """
-    pass
+
+    def __init__(self, seq: Sequence = (), header: List[str] = None):
+        super().__init__(seq, header)
+
+
+class TeamScoreboard(Scoreboard):
+    def __init__(self, seq: Sequence = (), header: List[str] = None):
+        super().__init__(seq, header)
 
 
 class CurrentGame(Model):
-    def __init__(self, scoreboard: Scoreboard, ranked: bool):
+    def __init__(self, player_scoreboard: PlayerScoreboard,
+                 team_scoreboard: TeamScoreboard, ranked: bool):
         super().__init__()
-        self._scoreboard = scoreboard
+        self._player_scoreboard = player_scoreboard
+        self._team_scoreboard = team_scoreboard
         self._ranked = ranked
 
     @property
-    def scoreboard(self) -> Scoreboard:
-        return self._scoreboard
+    def player_scoreboard(self) -> PlayerScoreboard:
+        return self._player_scoreboard
 
-    @scoreboard.setter
-    def scoreboard(self, scoreboard: Scoreboard):
-        self._scoreboard = scoreboard
+    @player_scoreboard.setter
+    def player_scoreboard(self, scoreboard: PlayerScoreboard):
+        self._player_scoreboard = scoreboard
+
+    @property
+    def team_scoreboard(self) -> TeamScoreboard:
+        return self._team_scoreboard
+
+    @team_scoreboard.setter
+    def team_scoreboard(self, scoreboard: TeamScoreboard):
+        self._team_scoreboard = scoreboard
+
+    @property
+    def ranked(self) -> bool:
+        return self._ranked
+
+    @ranked.setter
+    def ranked(self, ranked: bool):
+        self._ranked = ranked
 
 
 class AccessPolicy(Model):

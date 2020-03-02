@@ -33,7 +33,7 @@ class RS2WebAdmin(object):
         return self._adapter.get_players()
 
     def get_scoreboard(self) -> models.Scoreboard:
-        return self._adapter.get_current_game().scoreboard
+        return self._adapter.get_current_game().player_scoreboard
 
     # TODO: Banned players dict-like object, with ban info as value.
     def get_banned_players(self) -> models.Players:
