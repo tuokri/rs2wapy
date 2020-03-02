@@ -360,17 +360,17 @@ class Adapter(object):
 
         buffer = BytesIO()
 
-        curl_obj.setopt(curl_obj.WRITEFUNCTION, buffer.write)
-        curl_obj.setopt(curl_obj.HEADERFUNCTION, self._header_function)
-        curl_obj.setopt(curl_obj.BUFFERSIZE, 102400)
-        curl_obj.setopt(curl_obj.URL, url)
-        curl_obj.setopt(curl_obj.HTTPHEADER, header)
-        curl_obj.setopt(curl_obj.USERAGENT, CURL_USERAGENT)
-        curl_obj.setopt(curl_obj.MAXREDIRS, 50)
-        curl_obj.setopt(curl_obj.ACCEPT_ENCODING, "")
-        curl_obj.setopt(curl_obj.TCP_KEEPALIVE, 1)
-        curl_obj.setopt(curl_obj.FOLLOWLOCATION, True)
-        curl_obj.setopt(curl_obj.ENCODING, "gzip, deflate")
+        curl_obj.setopt(pycurl.WRITEFUNCTION, buffer.write)
+        curl_obj.setopt(pycurl.HEADERFUNCTION, self._header_function)
+        curl_obj.setopt(pycurl.BUFFERSIZE, 102400)
+        curl_obj.setopt(pycurl.URL, url)
+        curl_obj.setopt(pycurl.HTTPHEADER, header)
+        curl_obj.setopt(pycurl.USERAGENT, CURL_USERAGENT)
+        curl_obj.setopt(pycurl.MAXREDIRS, 50)
+        curl_obj.setopt(pycurl.ACCEPT_ENCODING, "")
+        curl_obj.setopt(pycurl.TCP_KEEPALIVE, 1)
+        curl_obj.setopt(pycurl.FOLLOWLOCATION, True)
+        curl_obj.setopt(pycurl.ENCODING, "gzip, deflate")
 
         curl_obj.perform()
 
