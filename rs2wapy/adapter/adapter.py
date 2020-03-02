@@ -337,7 +337,10 @@ class Adapter(object):
             return False
         return True
 
-    def update_access_policy(self, ip_mask: str, policy: str) -> bool:
+    def modify_access_policy(self, ip_mask: str, policy: str) -> bool:
+        pass
+
+    def change_map(self, new_map: str):
         pass
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
@@ -367,6 +370,7 @@ class Adapter(object):
         curl_obj.setopt(curl_obj.ACCEPT_ENCODING, "")
         curl_obj.setopt(curl_obj.TCP_KEEPALIVE, 1)
         curl_obj.setopt(curl_obj.FOLLOWLOCATION, True)
+        curl_obj.setopt(curl_obj.ENCODING, "gzip, deflate")
 
         curl_obj.perform()
 

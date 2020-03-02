@@ -84,9 +84,14 @@ class RS2WebAdminResponseParser:
 
     def parse_current_game(self, resp: bytes) -> models.CurrentGame:
         parsed_html = self.parse_html(resp)
+
+        info = {}
+        rules = {}
+
         ranked = parsed_html.find(
             "span", attrs={"class": "ranked"}).text
         ranked = True if ranked.lower() == "ranked: yes" else False
+        info["Ranked"] = ranked
 
         player_scoreboard_table = parsed_html.find(
             "table", attrs={"id": "players"})
@@ -123,10 +128,52 @@ class RS2WebAdminResponseParser:
                 cols.append("")
             team_scoreboard.append(cols)
 
+        info_element = parsed_html.find("dl", attrs={"id": "currentGame"})
+        rules_element = parsed_html.find("dl", attrs={"id": "currentRules"})
+
+        info_dts = info_element.find_all("dt")
+        info_dds = info_element.find_all("dd")
+        rules_dts = rules_element.find_all("dt")
+        rules_dds = rules_element.find_all("dd")
+
+        # Get "Map" and "Game Type", which contain
+        # <code> tag in their text.
+        code_elements = []
+        for idt, idd in zip(info_dts, info_dds):
+            code_el = idd.find("code")
+            if code_el:
+                code_elements.append((idt, idd.find("code").text))
+                idt.extract()
+                idd.extract()
+        for cd in code_elements:
+            info[cd[0].text] = cd[1]
+
+        # Find again after extracting some
+        # elements to avoid duplicating them.
+        info_dts = info_element.find_all("dt")
+        info_dds = info_element.find_all("dd")
+
+        for idt, idd in zip(info_dts, info_dds):
+            info[idt.text] = idd.text
+        for rdt, rdd in zip(rules_dts, rules_dds):
+            rules[rdt.text] = rdd.text
+
+        time_limit = rules["Time Limit"]
+        limit, remaining, remainder = time_limit.split("seconds")
+        limit = f"{limit.strip()} seconds"
+        remaining = f"{remaining.strip()} seconds"
+        rules["Time Limit"] = f"{limit} ({remaining} {remainder.strip()})"
+
+        cmpgn_active = info["MP Campaign Active"]
+        info["MP Campaign Active"] = True if cmpgn_active.startswith("Yes") else False
+
+        info["Server Name"] = info["Server Name"].split("\r")[0]
+
         return models.CurrentGame(
             player_scoreboard=player_scoreboard,
             team_scoreboard=team_scoreboard,
-            ranked=ranked,
+            info=info,
+            rules=rules,
         )
 
     @staticmethod

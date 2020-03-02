@@ -308,11 +308,13 @@ class TeamScoreboard(Scoreboard):
 
 class CurrentGame(Model):
     def __init__(self, player_scoreboard: PlayerScoreboard,
-                 team_scoreboard: TeamScoreboard, ranked: bool):
+                 team_scoreboard: TeamScoreboard,
+                 info: dict, rules: dict):
         super().__init__()
         self._player_scoreboard = player_scoreboard
         self._team_scoreboard = team_scoreboard
-        self._ranked = ranked
+        self._info = info
+        self._rules = rules
 
     @property
     def player_scoreboard(self) -> PlayerScoreboard:
@@ -332,11 +334,27 @@ class CurrentGame(Model):
 
     @property
     def ranked(self) -> bool:
-        return self._ranked
+        return self._info["Ranked"]
 
     @ranked.setter
     def ranked(self, ranked: bool):
-        self._ranked = ranked
+        self._info["Ranked"] = ranked
+
+    @property
+    def info(self) -> dict:
+        return self._info
+
+    @info.setter
+    def info(self, info: dict):
+        self._info = info
+
+    @property
+    def rules(self) -> dict:
+        return self._rules
+
+    @rules.setter
+    def rules(self, rules: dict):
+        self._rules = rules
 
 
 class AccessPolicy(Model):

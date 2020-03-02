@@ -29,6 +29,12 @@ class RS2WebAdmin(object):
     def get_current_game(self) -> models.CurrentGame:
         return self._adapter.get_current_game()
 
+    def change_map(self, new_map: str):
+        self._adapter.change_map(new_map)
+
+    def get_maps(self):
+        return self._adapter.get_maps()
+
     def get_players(self) -> models.Players:
         return self._adapter.get_players()
 
