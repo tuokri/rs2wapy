@@ -29,6 +29,7 @@ class Model(abc.ABC):
 HEX_COLOR_BLUE_TEAM = "#50A0F0"
 HEX_COLOR_RED_TEAM = "#E54927"
 HEX_COLOR_UNKNOWN_TEAM = "transparent"
+HEX_COLOR_ALL_TEAM = ""
 
 
 class Team(abc.ABC):
@@ -57,16 +58,22 @@ class UnknownTeam(Team):
     HEX_COLOR = HEX_COLOR_UNKNOWN_TEAM
 
 
+class AllTeam(Team):
+    HEX_COLOR = HEX_COLOR_ALL_TEAM
+
+
 HEX_COLOR_TO_TEAM = {
     HEX_COLOR_BLUE_TEAM: BlueTeam,
     HEX_COLOR_RED_TEAM: RedTeam,
     HEX_COLOR_UNKNOWN_TEAM: UnknownTeam,
+    HEX_COLOR_ALL_TEAM: AllTeam,
 }
 
 TEAM_TO_HEX_COLOR = {
     BlueTeam: HEX_COLOR_BLUE_TEAM,
     RedTeam: HEX_COLOR_RED_TEAM,
     UnknownTeam: HEX_COLOR_UNKNOWN_TEAM,
+    AllTeam: HEX_COLOR_ALL_TEAM,
 }
 
 
@@ -196,7 +203,7 @@ class ChatMessage(Model):
             channel = f"({self._channel.to_team_str()})"
         else:
             channel = f"({self._team.__name__}) {self._channel.to_team_str()}"
-        return f"{self._sender} {channel}: {self._text}"
+        return f"{self._timestamp.isoformat()} {self._sender} {channel}: {self._text}"
 
     def __repr__(self) -> str:
         return f"{__class__.__name__}({self.__str__()})"
@@ -268,12 +275,26 @@ class ChatMessages(collections.MutableSequence):
 
 
 class Scoreboard(List[str]):
+    """
+    Scoreboard does not store player IDs because deducing
+    them from WebAdmin scoreboard is not reliable.
+    """
     pass
 
 
 class CurrentGame(Model):
-    def __init__(self):
+    def __init__(self, scoreboard: Scoreboard, ranked: bool):
         super().__init__()
+        self._scoreboard = scoreboard
+        self._ranked = ranked
+
+    @property
+    def scoreboard(self) -> Scoreboard:
+        return self._scoreboard
+
+    @scoreboard.setter
+    def scoreboard(self, scoreboard: Scoreboard):
+        self._scoreboard = scoreboard
 
 
 class AccessPolicy(Model):

@@ -1,4 +1,5 @@
 import sys
+from typing import Type
 
 from logbook import Logger
 from logbook import StreamHandler
@@ -22,6 +23,9 @@ class RS2WebAdmin(object):
     def get_chat_messages(self) -> models.ChatMessages:
         return self._adapter.get_chat_messages()
 
+    def post_chat_message(self, message: str, team: Type[models.Team]):
+        self._adapter.post_chat_message(message, team)
+
     def get_current_game(self) -> models.CurrentGame:
         return self._adapter.get_current_game()
 
@@ -29,7 +33,7 @@ class RS2WebAdmin(object):
         return self._adapter.get_players()
 
     def get_scoreboard(self) -> models.Scoreboard:
-        return self._adapter.get_current_game()
+        return self._adapter.get_current_game().scoreboard
 
     # TODO: Banned players dict-like object, with ban info as value.
     def get_banned_players(self) -> models.Players:
