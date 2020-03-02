@@ -28,6 +28,7 @@ class Model(abc.ABC):
 
 HEX_COLOR_BLUE_TEAM = "#50A0F0"
 HEX_COLOR_RED_TEAM = "#E54927"
+HEX_COLOR_UNKNOWN_TEAM = "transparent"
 
 
 class Team(abc.ABC):
@@ -43,9 +44,6 @@ class Team(abc.ABC):
             raise NotImplementedError("not implemented for abstract base class")
         return TEAM_TO_HEX_COLOR[cls.HEX_COLOR]
 
-    def __str__(self) -> str:
-        return f"{__class__.__name__}"
-
 
 class BlueTeam(Team):
     HEX_COLOR = HEX_COLOR_BLUE_TEAM
@@ -55,14 +53,20 @@ class RedTeam(Team):
     HEX_COLOR = HEX_COLOR_RED_TEAM
 
 
+class UnknownTeam(Team):
+    HEX_COLOR = HEX_COLOR_UNKNOWN_TEAM
+
+
 HEX_COLOR_TO_TEAM = {
     HEX_COLOR_BLUE_TEAM: BlueTeam,
     HEX_COLOR_RED_TEAM: RedTeam,
+    HEX_COLOR_UNKNOWN_TEAM: UnknownTeam,
 }
 
 TEAM_TO_HEX_COLOR = {
     BlueTeam: HEX_COLOR_BLUE_TEAM,
     RedTeam: HEX_COLOR_RED_TEAM,
+    UnknownTeam: HEX_COLOR_UNKNOWN_TEAM,
 }
 
 
@@ -140,6 +144,11 @@ class Players(collections.MutableSequence):
         return len(self._players)
 
 
+CHAT_CHANNEL_ALL_STR = "(ALL)"
+CHAT_CHANNEL_TEAM_STR = "(TEAM)"
+TEAMNOTICE_TEAM = CHAT_CHANNEL_TEAM_STR
+
+
 class ChatChannel(abc.ABC):
     @staticmethod
     def from_teamnotice(teamnotice: str):
@@ -148,6 +157,10 @@ class ChatChannel(abc.ABC):
         except AttributeError:
             pass
         return TEAMNOTICE_TO_CHAT_CHANNEL[teamnotice]
+
+    @classmethod
+    def to_team_str(cls) -> str:
+        return CHAT_CHANNEL_TO_STR[cls]
 
 
 class ChatChannelAll(ChatChannel):
@@ -160,7 +173,12 @@ class ChatChannelTeam(ChatChannel):
 
 TEAMNOTICE_TO_CHAT_CHANNEL = {
     None: ChatChannelAll,
-    "(TEAM)": ChatChannelTeam,
+    TEAMNOTICE_TEAM: ChatChannelTeam,
+}
+
+CHAT_CHANNEL_TO_STR = {
+    ChatChannelAll: CHAT_CHANNEL_ALL_STR,
+    ChatChannelTeam: CHAT_CHANNEL_TEAM_STR,
 }
 
 
@@ -174,8 +192,14 @@ class ChatMessage(Model):
         self._channel = channel
 
     def __str__(self) -> str:
-        # TODO: teamnotice and color?
-        return f"{self._sender}: {self._text}"
+        if isinstance(self._team, UnknownTeam):
+            channel = f"({self._channel.to_team_str()})"
+        else:
+            channel = f"({self._team.__name__}) {self._channel.to_team_str()}"
+        return f"{self._sender} {channel}: {self._text}"
+
+    def __repr__(self) -> str:
+        return f"{__class__.__name__}({self.__str__()})"
 
 
 class ChatMessages(collections.MutableSequence):
@@ -238,6 +262,9 @@ class ChatMessages(collections.MutableSequence):
 
     def __len__(self) -> int:
         return len(self._messages)
+
+    def __str__(self) -> str:
+        return self._messages.__str__()
 
 
 class Scoreboard(List[str]):

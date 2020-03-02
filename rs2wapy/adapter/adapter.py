@@ -31,6 +31,7 @@ REMEMBER_LOGIN_1M = 2678400
 WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
 WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
 WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
+WEB_ADMIN_CHAT_DATA_PATH = WEB_ADMIN_CHAT_PATH / Path("data/")
 WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 
 
@@ -145,6 +146,8 @@ class Adapter(object):
 
         if (not path) or (path == "/"):
             path = WEB_ADMIN_BASE_PATH.as_posix()
+            if not path.endswith("/"):
+                path = f"{path}/"
 
         referer = ""
         if not scheme and not netloc:
@@ -159,13 +162,20 @@ class Adapter(object):
             logger.debug("setting 'Referer' to '{r}'", r=referer)
 
         self._webadmin_url = urlunparse(
-            (scheme, netloc, path, params, query, fragment))
+            (scheme, netloc, path, params, query, fragment)
+        )
         self._chat_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(), params, query, fragment))
+            (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(), params, query, fragment)
+        )
+        self._chat_data_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_CHAT_DATA_PATH.as_posix(), params, query, fragment)
+        )
         self._current_game_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CURRENT_GAME_PATH.as_posix(), params, query, fragment))
+            (scheme, netloc, WEB_ADMIN_CURRENT_GAME_PATH.as_posix(), params, query, fragment)
+        )
         self._access_policy_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(), params, query, fragment))
+            (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(), params, query, fragment)
+        )
 
         self._authenticate()
 
@@ -194,7 +204,7 @@ class Adapter(object):
 
         c = pycurl.Curl()
         _set_postfields(c, postfields)
-        resp = self._perform(self._chat_url, curl_obj=c, header=header)
+        resp = self._perform(self._chat_data_url, curl_obj=c, header=header)
         return self._rparser.parse_chat_messages(resp)
 
     def get_ranked_status(self) -> str:
@@ -339,8 +349,9 @@ class Adapter(object):
         pass
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
-                             header: dict = None) -> bytes:
-        await self._authenticated()
+                             header: dict = None, skip_auth=False) -> bytes:
+        if not skip_auth:
+            await self._authenticated()
 
         if not curl_obj:
             curl_obj = pycurl.Curl()
@@ -379,9 +390,10 @@ class Adapter(object):
         return buffer.getvalue()
 
     def _perform(self, url: str, curl_obj: pycurl.Curl = None,
-                 header: dict = None) -> bytes:
+                 header: dict = None, skip_auth=False) -> bytes:
         return asyncio.run(
-            self._async_perform(url=url, curl_obj=curl_obj, header=header))
+            self._async_perform(url=url, curl_obj=curl_obj,
+                                header=header, skip_auth=skip_auth))
 
     def _header_function(self, header_line):
         if "connection" in self._headers:
@@ -458,9 +470,6 @@ class Adapter(object):
 
         return f'sessionid="{r}";'
 
-    def _get(self, url: str) -> bytes:
-        return self._perform(url=url)
-
     def _post_login(self, sessionid: str, token: str,
                     remember=REMEMBER_LOGIN_1M) -> bytes:
         header = self.BASE_HEADER.copy()
@@ -472,10 +481,11 @@ class Adapter(object):
 
         c = pycurl.Curl()
         _set_postfields(c, postfields)
-        return self._perform(self._webadmin_url, curl_obj=c, header=header)
+        return self._perform(self._webadmin_url, curl_obj=c,
+                             header=header, skip_auth=True)
 
     def _authenticate(self):
-        resp = self._get(self._webadmin_url)
+        resp = self._perform(self._webadmin_url, skip_auth=True)
         if not resp:
             logger.error("no response content from url={url}", url=self._webadmin_url)
 
@@ -483,10 +493,9 @@ class Adapter(object):
         token = ""
         try:
             token = parsed_html.find("input", attrs={"name": "token"}).get("value")
+            logger.debug("token: {token}", token=token)
         except AttributeError as ae:
             logger.error("unable to get token: {e}", e=ae)
-
-        logger.debug("token: {token}", token=token)
 
         sessionid = self._find_sessionid()
         logger.debug("got sessionid: {si}, from headers", si=sessionid)
@@ -511,7 +520,5 @@ class Adapter(object):
         )
 
     async def _authenticated(self):
-        if not self._auth_data:
-            return
         if self._auth_data.timed_out():
             self._authenticate()

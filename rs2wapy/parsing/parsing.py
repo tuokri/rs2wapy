@@ -1,8 +1,11 @@
+import re
 from typing import List
 
 from bs4 import BeautifulSoup
 
 import rs2wapy.models as models
+
+TEAMCOLOR_PATTERN = re.compile(r"background: (.*);")
 
 
 class RS2WebAdminResponseParser:
@@ -27,15 +30,22 @@ class RS2WebAdminResponseParser:
 
     @staticmethod
     def parse_chat_message(div: BeautifulSoup) -> models.ChatMessage:
-        # TODO: Parse further.
-        teamcolor = str(div.find("span", attrs={"class": "teamcolor"}))
-        teamnotice = str(div.find("span", attrs={"class": "teamnotice"}))
-        name = str(div.find("span", attrs={"class": "username"}))
-        msg = str(div.find("span", attrs={"class": "message"}))
+        teamcolor = str(div.find("span", attrs={"class": "teamcolor"}).get("style"))
+        teamcolor = re.match(TEAMCOLOR_PATTERN, teamcolor).groups()[0]
+        if not teamcolor:
+            raise ValueError("no teamcolor in chat message div")
+
+        teamnotice = div.find("span", attrs={"class": "teamnotice"})
+        if teamnotice:
+            teamnotice = teamnotice.text
+
+        name = str(div.find("span", attrs={"class": "username"}).text)
+        msg = str(div.find("span", attrs={"class": "message"}).text)
+
         return models.ChatMessage(
             sender=name,
             text=msg,
-            team=models.Team.from_hex_color(teamcolor),
+            team=models.Team.from_hex_color(str(teamcolor)),
             channel=models.ChatChannel.from_teamnotice(teamnotice)
         )
 
