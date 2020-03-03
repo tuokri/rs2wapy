@@ -395,7 +395,7 @@ class Adapter(object):
 
         c_get = pycurl.Curl()
         resp = self._perform(self._change_map_url, curl_obj=c_get, headers=headers)
-        mutator_group_count = self._rparser.parse_change_map(resp)
+        mutator_group_count = self._rparser.parse_mutator_group_count(resp)
 
         map_prefix = new_map.split("-")[0]
         game_type = MAP_PREFIX_TO_GAME_TYPE[map_prefix]
@@ -411,9 +411,11 @@ class Adapter(object):
         _set_postfields(c_post, postfields)
         self._perform(self._change_map_url, curl_obj=c_post, headers=headers)
 
-    def get_maps(self):
-        # 1. Get game info strings.
-        # 2. For each game info string, get maps.
+    def get_maps(self) -> dict:
+        headers = self._make_auth_headers()
+        c = pycurl.Curl()
+        resp = self._perform(self._change_map_url, curl_obj=c, headers=headers)
+        game_type_options = self._rparser.parse_game_type_options(resp)
 
         headers = self._make_auth_headers()
         headers["Accept"] = ("text/html,application/xhtml+xml,"
@@ -421,11 +423,16 @@ class Adapter(object):
         headers["Cache-Control"] = "max-age=0"
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
-        postfields = ""
+        maps = {}
 
-        c = pycurl.Curl()
-        _set_postfields(c, postfields)
-        self._perform(self._change_map_url, curl_obj=c, headers=headers)
+        for gto in game_type_options:
+            postfields = f"ajax=1&gametype={gto}"
+            c = pycurl.Curl()
+            _set_postfields(c, postfields)
+            resp = self._perform(self._change_map_data_url, curl_obj=c, headers=headers)
+            maps[gto] = self._rparser.parse_map_options(resp)
+
+        return maps
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
                              header: dict = None, skip_auth=False) -> bytes:

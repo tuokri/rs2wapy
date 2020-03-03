@@ -34,7 +34,7 @@ class RS2WebAdmin(object):
             url_extra = {}
         self._adapter.change_map(new_map, url_extra)
 
-    def get_maps(self):
+    def get_maps(self) -> dict:
         return self._adapter.get_maps()
 
     def get_players(self) -> models.Players:

@@ -2,7 +2,6 @@ import re
 import sys
 from typing import List
 from typing import Sequence
-from typing import Tuple
 
 from bs4 import BeautifulSoup
 from logbook import Logger
@@ -208,11 +207,21 @@ class RS2WebAdminResponseParser:
             rules=rules,
         )
 
-    def parse_change_map(self, resp: bytes) -> int:
+    def parse_mutator_group_count(self, resp: bytes) -> int:
         parsed_html = self.parse_html(resp)
         mutator_group_count = int(parsed_html.find(
             "input", attrs={"name": "mutatorGroupCount"}).get("value"))
         return mutator_group_count
+
+    def parse_game_type_options(self, resp: bytes) -> List[str]:
+        parsed_html = self.parse_html(resp)
+        options = parsed_html.find("select", attrs={"id": "gametype"}).find_all("option")
+        return [o.get("value").strip() for o in options]
+
+    def parse_map_options(self, resp: bytes) -> List[str]:
+        parsed_html = self.parse_html(resp)
+        options = parsed_html.find("select", attrs={"id": "map"}).find_all("option")
+        return [o.get("value").strip() for o in options]
 
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:
