@@ -215,6 +215,7 @@ class Adapter(object):
 
     def post_chat_message(self, message: str, team: Type[models.Team]):
         headers = self._make_chat_headers()
+        # noinspection PyTypeChecker
         team_code = {
             models.AllTeam: "-1",
             models.RedTeam: "0",
