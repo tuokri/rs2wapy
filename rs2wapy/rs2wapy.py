@@ -1,4 +1,5 @@
 import sys
+from typing import Sequence
 from typing import Type
 
 from logbook import Logger
@@ -20,7 +21,7 @@ class RS2WebAdmin(object):
     def __init__(self, username: str, password: str, webadmin_url: str):
         self._adapter = Adapter(username, password, webadmin_url)
 
-    def get_chat_messages(self) -> models.ChatMessages:
+    def get_chat_messages(self) -> Sequence[models.ChatMessage]:
         return self._adapter.get_chat_messages()
 
     def post_chat_message(self, message: str, team: Type[models.Team]):
@@ -37,18 +38,18 @@ class RS2WebAdmin(object):
     def get_maps(self) -> dict:
         return self._adapter.get_maps()
 
-    def get_players(self) -> models.Players:
+    def get_players(self) -> dict:
         return self._adapter.get_players()
 
     def get_scoreboard(self) -> models.Scoreboard:
         return self._adapter.get_current_game().player_scoreboard
 
     # TODO: Banned players dict-like object, with ban info as value.
-    def get_banned_players(self) -> models.Players:
+    def get_banned_players(self):
         return self._adapter.get_banned_players()
 
     # TODO: Tracked players dict-like object, with tracking info as value.
-    def get_tracked_players(self) -> models.Players:
+    def get_tracked_players(self):
         return self._adapter.get_tracked_players()
 
     def get_access_policy(self) -> models.AccessPolicy:

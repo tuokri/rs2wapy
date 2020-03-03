@@ -26,12 +26,12 @@ class RS2WebAdminResponseParser:
         return BeautifulSoup(resp.decode(encoding), features="html.parser")
 
     def parse_chat_messages(self, resp: bytes,
-                            encoding: str = None) -> models.ChatMessages:
+                            encoding: str = None) -> Sequence[models.ChatMessage]:
         parsed_html = self.parse_html(resp, encoding)
         chat_message_divs = parsed_html.find_all(
             "div", attrs={"class": "chatmessage"})
         # parsed_html.find_all("div", attrs={"class": "chatnotice"})
-        cm = models.ChatMessages()
+        cm = []
         for div in chat_message_divs:
             cm.append(self.parse_chat_message(div))
         return cm
@@ -196,7 +196,8 @@ class RS2WebAdminResponseParser:
         rules["Time Limit"] = f"{limit} ({remaining} {remainder.strip()})"
 
         cmpgn_active = info["MP Campaign Active"]
-        info["MP Campaign Active"] = True if cmpgn_active.startswith("Yes") else False
+        info["MP Campaign Active"] = (
+            True if cmpgn_active.startswith("Yes") else False)
 
         info["Server Name"] = info["Server Name"].split("\r")[0]
 
@@ -215,13 +216,40 @@ class RS2WebAdminResponseParser:
 
     def parse_game_type_options(self, resp: bytes) -> List[str]:
         parsed_html = self.parse_html(resp)
-        options = parsed_html.find("select", attrs={"id": "gametype"}).find_all("option")
+        options = parsed_html.find(
+            "select", attrs={"id": "gametype"}).find_all("option")
         return [o.get("value").strip() for o in options]
 
     def parse_map_options(self, resp: bytes) -> List[str]:
         parsed_html = self.parse_html(resp)
-        options = parsed_html.find("select", attrs={"id": "map"}).find_all("option")
+        options = parsed_html.find(
+            "select", attrs={"id": "map"}).find_all("option")
         return [o.get("value").strip() for o in options]
+
+    def parse_players(self, resp: bytes) -> dict:
+        parsed_html = self.parse_html(resp)
+
+        player_table = parsed_html.find("tbody")
+        player_table = player_table.find_all("tr")
+        player_table = self._parse_table(player_table)
+
+        player_headers = parsed_html.find("thead")
+        player_headers = [
+            ph.text for ph in player_headers.find_all(
+                "th", attrs={"class": "header"}
+            )
+        ]
+
+        players = {}
+        for element in player_table:
+            print(element)
+            p = models.Player(
+                rs2_name=element[1],
+                steam_id=element[4],
+            )
+            players[p] = element
+
+        return players
 
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:

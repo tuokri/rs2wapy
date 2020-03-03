@@ -54,6 +54,7 @@ WEB_ADMIN_CHAT_DATA_PATH = WEB_ADMIN_CHAT_PATH / Path("data/")
 WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 WEB_ADMIN_CHANGE_MAP_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("change/")
 WEB_ADMIN_CHANGE_MAP_DATA_PATH = WEB_ADMIN_CHANGE_MAP_PATH / Path("data/")
+WEB_ADMIN_PLAYERS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("players/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -208,6 +209,10 @@ class Adapter(object):
             (scheme, netloc, WEB_ADMIN_CHANGE_MAP_DATA_PATH.as_posix(),
              params, query, fragment)
         )
+        self._players_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_PLAYERS_PATH.as_posix(),
+             params, query, fragment)
+        )
 
         # TODO: Check if 'hashAlg' is set in index page.
         self._password_hash = _ue3_pw_hash_digest(username, password)
@@ -228,7 +233,7 @@ class Adapter(object):
         resp = self._perform(self._current_game_url, curl_obj=c, headers=headers)
         return self._rparser.parse_current_game(resp)
 
-    def get_chat_messages(self) -> models.ChatMessages:
+    def get_chat_messages(self) -> Sequence[models.ChatMessage]:
         headers = self._make_chat_headers()
         postfields = "ajax=1"
         c = pycurl.Curl()
@@ -379,7 +384,8 @@ class Adapter(object):
         pass
 
     def change_map(self, new_map: str, url_extra: dict = None):
-        # TODO: Check that map is valid?
+        if new_map.lower() not in [m.lower() for m in self.get_maps()]:
+            logger.warning("{nm} not in server map list", nm=new_map)
 
         if url_extra is None:
             url_extra = {}
@@ -429,10 +435,18 @@ class Adapter(object):
             postfields = f"ajax=1&gametype={gto}"
             c = pycurl.Curl()
             _set_postfields(c, postfields)
-            resp = self._perform(self._change_map_data_url, curl_obj=c, headers=headers)
+            resp = self._perform(
+                self._change_map_data_url, curl_obj=c, headers=headers)
             maps[gto] = self._rparser.parse_map_options(resp)
 
         return maps
+
+    def get_players(self) -> dict:
+        headers = self._make_auth_headers()
+        c = pycurl.Curl()
+        resp = self._perform(self._players_url, curl_obj=c, headers=headers)
+        players = self._rparser.parse_players(resp)
+        return players
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
                              header: dict = None, skip_auth=False) -> bytes:
