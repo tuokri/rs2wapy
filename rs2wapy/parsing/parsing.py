@@ -2,6 +2,7 @@ import re
 import sys
 from typing import List
 from typing import Sequence
+from typing import Tuple
 
 from bs4 import BeautifulSoup
 from logbook import Logger
@@ -88,14 +89,15 @@ class RS2WebAdminResponseParser:
         info = {}
         rules = {}
 
+        logger.info("parsing Ranked status")
         ranked = parsed_html.find(
             "span", attrs={"class": "ranked"}).text
         ranked = True if ranked.lower() == "ranked: yes" else False
         info["Ranked"] = ranked
 
+        logger.info("parsing player scoreboard")
         player_scoreboard_table = parsed_html.find(
             "table", attrs={"id": "players"})
-
         player_scoreboard = models.PlayerScoreboard()
         player_scoreboard_thead = player_scoreboard_table.find("thead")
         headers = player_scoreboard_thead.find_all(
@@ -111,9 +113,9 @@ class RS2WebAdminResponseParser:
             cols[0] = "North" if cols[0] == "0" else "South"
             player_scoreboard.append(cols)
 
+        logger.info("parsing team scoreboard")
         team_scoreboard_table = parsed_html.find(
             "table", attrs={"id": "teams"})
-
         team_scoreboard = models.TeamScoreboard()
         team_scoreboard_thead = team_scoreboard_table.find("thead")
         headers = team_scoreboard_thead.find_all("th")
@@ -128,6 +130,7 @@ class RS2WebAdminResponseParser:
                 cols.append("")
             team_scoreboard.append(cols)
 
+        logger.info("parsing currentGame and currentRules")
         info_element = parsed_html.find("dl", attrs={"id": "currentGame"})
         rules_element = parsed_html.find("dl", attrs={"id": "currentRules"})
 
@@ -136,6 +139,35 @@ class RS2WebAdminResponseParser:
         rules_dts = rules_element.find_all("dt")
         rules_dds = rules_element.find_all("dd")
 
+        len_info_dts = len(info_dts)
+        len_info_dds = len(info_dds)
+        len_rules_dts = len(rules_dts)
+        len_rules_dds = len(rules_dds)
+
+        logger.debug(
+            "found {lidts} info_dts, {lidds} info_dds, "
+            "{lrtss} rules_dts, {lrdds} rules_dds",
+            lidts=len_info_dts,
+            lidds=len_info_dds,
+            lrtss=len_rules_dts,
+            lrdds=len_rules_dds,
+        )
+
+        if len_info_dts != len_info_dds:
+            logger.warning(
+                "possible missing info data: len_info_dts({lidts}) "
+                "!= len_info_dds({lidds})",
+                lidts=len_info_dts, lidds=len_info_dds,
+            )
+
+        if len_info_dts != len_info_dds:
+            logger.warning(
+                "possible missing rules data: len_rules_dts({lrdts}) "
+                "!= len_rules_dds({lrdds})",
+                lrdts=len_rules_dts, lrdds=len_rules_dds,
+            )
+
+        logger.info("parsing Map and Game Type")
         # Get "Map" and "Game Type", which contain
         # <code> tag in their text.
         code_elements = []
@@ -175,6 +207,12 @@ class RS2WebAdminResponseParser:
             info=info,
             rules=rules,
         )
+
+    def parse_change_map(self, resp: bytes) -> int:
+        parsed_html = self.parse_html(resp)
+        mutator_group_count = int(parsed_html.find(
+            "input", attrs={"name": "mutatorGroupCount"}).get("value"))
+        return mutator_group_count
 
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:

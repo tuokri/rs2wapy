@@ -18,16 +18,34 @@ from logbook import Logger
 from logbook import StreamHandler
 from requests import HTTPError
 
+from rs2wapy._version import get_versions
 from rs2wapy.models import models
 from rs2wapy.parsing import RS2WebAdminResponseParser
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
-HEADERS_MAX_LEN = 50
+_version = get_versions()["version"]
+USER_AGENT = f"rs2wapy/{_version}"
+del get_versions
+
 CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
+
+HEADERS_MAX_LEN = 50
 POLICIES = ["ACCEPT", "DENY"]
 REMEMBER_LOGIN_1M = 2678400
+
+MAP_PREFIX_TO_GAME_TYPE = {
+    "VNTE": "ROGame.ROGameInfoTerritories",
+    "VNSU": "ROGame.ROGameInfoSupremacy",
+    "VNSK": "ROGame.ROGameInfoSkirmish",
+    "WWTE": "WWGame.WWGameInfoTerritories",
+    "WWSU": "WWGame.WWGameInfoSupremacy",
+    "WWSK": "WWGame.WWGameInfoSkirmish",
+    "GMTE": "GreenMenMod.GMGameInfoTerritories",
+    "GMSU": "GreenMenMod.GMGameInfoSupremacy",
+    "GMSK": "GreenMenMod.GMGameInfoSkirmish",
+}
 
 WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
 WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
@@ -35,6 +53,7 @@ WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
 WEB_ADMIN_CHAT_DATA_PATH = WEB_ADMIN_CHAT_PATH / Path("data/")
 WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 WEB_ADMIN_CHANGE_MAP_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("change/")
+WEB_ADMIN_CHANGE_MAP_DATA_PATH = WEB_ADMIN_CHANGE_MAP_PATH / Path("data/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -121,7 +140,7 @@ class AuthData(object):
 
 class Adapter(object):
     BASE_HEADERS = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 6.1; rv:60.0) Gecko/20100101 Firefox/60.0)",
+        "User-Agent": USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.7,fi;q=0.3",
         "DNT": 1,
@@ -133,9 +152,6 @@ class Adapter(object):
     def __init__(self, username: str, password: str, webadmin_url: str):
         self._headers = {}
         self._username = username
-        # TODO: Check if 'hashAlg' is set in index page.
-        self._password_hash = _ue3_pw_hash_digest(username, password)
-        print(self._password_hash)
         self._webadmin_url = webadmin_url
 
         self._auth_data = None
@@ -188,6 +204,13 @@ class Adapter(object):
             (scheme, netloc, WEB_ADMIN_CHANGE_MAP_PATH.as_posix(),
              params, query, fragment)
         )
+        self._change_map_data_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_CHANGE_MAP_DATA_PATH.as_posix(),
+             params, query, fragment)
+        )
+
+        # TODO: Check if 'hashAlg' is set in index page.
+        self._password_hash = _ue3_pw_hash_digest(username, password)
 
         self._authenticate()
 
@@ -209,10 +232,13 @@ class Adapter(object):
         headers = self._make_chat_headers()
         postfields = "ajax=1"
         c = pycurl.Curl()
+        c.setopt(pycurl.NOPROGRESS, 1)
         _set_postfields(c, postfields)
         resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
         return self._rparser.parse_chat_messages(resp)
 
+    # TODO: Posted chat message is not visible in get_chat_messages
+    #   return value, but is visible in WebAdmin.
     def post_chat_message(self, message: str, team: Type[models.Team]):
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
@@ -352,32 +378,50 @@ class Adapter(object):
     def modify_access_policy(self, ip_mask: str, policy: str) -> bool:
         pass
 
-    def change_map(self, new_map: str):
+    def change_map(self, new_map: str, url_extra: dict = None):
+        # TODO: Check that map is valid?
+
+        if url_extra is None:
+            url_extra = {}
+
+        url_extra_str = ""
+        for key, value in url_extra.items():
+            url_extra_str += f'"%"3F{key}"%"3D{value}'
+
         headers = self._make_auth_headers()
-        headers["Content-Type"] = "application/x-www-form-urlencoded"
         headers["Accept"] = ("text/html,application/xhtml+xml,"
                              "application/xml;q=0.9,image/webp,*/*;q=0.8")
+        headers["Cache-Control"] = "max-age=0"
+
+        c_get = pycurl.Curl()
+        resp = self._perform(self._change_map_url, curl_obj=c_get, headers=headers)
+        mutator_group_count = self._rparser.parse_change_map(resp)
 
         map_prefix = new_map.split("-")[0]
-        game_type = {
-            "VNTE": "ROGameInfo.Territories",
-            "VNSU": "ROGameInfo.Supremacy",
-            "VNSK": "ROGameInfo.Skirmish",
-            "WWTE": "WWGameInfo.Territories",
-            "WWSU": "WWGameInfo.Supremacy",
-            "WWSK": "WWGameInfo.Skirmish",
-            "GMTE": "GreenMenMod.GMGameInfoTerritories",
-            "GMSU": "GreenMenMod.GMGameInfoSupremacy",
-            "GMSK": "GreenMenMod.GMGameInfoSkirmish",
-        }[map_prefix]
+        game_type = MAP_PREFIX_TO_GAME_TYPE[map_prefix]
 
-        # TODO: urlextra, mutatorGroupCount
         postfields = (f'gametype={game_type}'
                       f'&map={new_map}'
-                      f'&mutatorGroupCount=0'
-                      f'&urlextra="%"3FMaxPlayers"%"3D64'
-                      f'"%"3FEnableWebAdmin"%"3Dtrue"%"3FWebAdminPort"%"3D8080'
+                      f'&mutatorGroupCount={mutator_group_count}'
+                      f'&urlextra={url_extra_str}'
                       f'&action=change')
+
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        c_post = pycurl.Curl()
+        _set_postfields(c_post, postfields)
+        self._perform(self._change_map_url, curl_obj=c_post, headers=headers)
+
+    def get_maps(self):
+        # 1. Get game info strings.
+        # 2. For each game info string, get maps.
+
+        headers = self._make_auth_headers()
+        headers["Accept"] = ("text/html,application/xhtml+xml,"
+                             "application/xml;q=0.9,image/webp,*/*;q=0.8")
+        headers["Cache-Control"] = "max-age=0"
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+
+        postfields = ""
 
         c = pycurl.Curl()
         _set_postfields(c, postfields)

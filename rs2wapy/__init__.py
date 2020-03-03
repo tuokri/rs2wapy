@@ -1,7 +1,11 @@
+from ._version import get_versions
 from .adapter import adapter
 from .models import models
 from .parsing import parsing
 from .rs2wapy import RS2WebAdmin
+
+__version__ = get_versions()["version"]
+del get_versions
 
 __all__ = [
     "adapter",
@@ -9,7 +13,3 @@ __all__ = [
     "parsing",
     "RS2WebAdmin",
 ]
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
