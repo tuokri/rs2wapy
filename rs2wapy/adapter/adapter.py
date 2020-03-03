@@ -363,6 +363,9 @@ class Adapter(object):
             "WWTE": "WWGameInfo.Territories",
             "WWSU": "WWGameInfo.Supremacy",
             "WWSK": "WWGameInfo.Skirmish",
+            "GMTE": "GMGameInfo.Territories",
+            "GMSU": "GMGameInfo.Supremacy",
+            "GMSK": "GMGameInfo.Skirmish",
         }[map_prefix]
 
         # TODO: urlextra, mutatorGroupCount
