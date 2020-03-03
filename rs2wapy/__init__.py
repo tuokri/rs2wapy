@@ -1,5 +1,5 @@
 from ._version import get_versions
-from .adapter import adapter
+from .adapters import adapter
 from .models import models
 from .parsing import parsing
 from .rs2wapy import RS2WebAdmin

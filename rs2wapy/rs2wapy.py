@@ -5,7 +5,7 @@ from typing import Type
 from logbook import Logger
 from logbook import StreamHandler
 
-from .adapter import Adapter
+from .adapters import Adapter
 from .models import models
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
@@ -57,3 +57,12 @@ class RS2WebAdmin(object):
 
     def add_access_policy(self, ip_mask: str, policy: str):
         self._adapter.add_access_policy(ip_mask, policy)
+
+    def ban_player(self, player: models.Player, reason, duration):
+        pass
+
+    def kick_player(self, player: models.Player, reason, duration):
+        pass
+
+    def session_ban_player(self, player: models.Player, reason):
+        pass

@@ -242,7 +242,6 @@ class RS2WebAdminResponseParser:
 
         players = {}
         for element in player_table:
-            print(element)
             p = models.Player(
                 rs2_name=element[1],
                 steam_id=element[4],

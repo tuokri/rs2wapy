@@ -7,6 +7,9 @@ from typing import Union
 from steam import SteamID
 
 
+# import rs2wapy.adapters
+
+
 class Model(abc.ABC):
     def __init__(self):
         self._timestamp = datetime.datetime.now()
@@ -76,6 +79,7 @@ _STEAM_ID_TYPE = Union[SteamID, int, str]
 class Player(Model):
     def __init__(self, steam_id: _STEAM_ID_TYPE, rs2_name: str):
         super().__init__()
+
         if isinstance(steam_id, SteamID):
             self._steam_id = steam_id
         elif isinstance(steam_id, int):
@@ -96,6 +100,12 @@ class Player(Model):
 
     def __repr__(self) -> str:
         return f"Player({self.__str__()})"
+
+    def ban(self, adapter):
+        print(adapter)
+
+    def whisper(self):
+        pass
 
 
 CHAT_CHANNEL_ALL_STR = "(ALL)"
