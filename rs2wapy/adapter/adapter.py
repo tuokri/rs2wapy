@@ -133,7 +133,9 @@ class Adapter(object):
     def __init__(self, username: str, password: str, webadmin_url: str):
         self._headers = {}
         self._username = username
+        # TODO: Check if 'hashAlg' is set in index page.
         self._password_hash = _ue3_pw_hash_digest(username, password)
+        print(self._password_hash)
         self._webadmin_url = webadmin_url
 
         self._auth_data = None
@@ -148,8 +150,8 @@ class Adapter(object):
 
         if (not path) or (path == "/"):
             path = WEB_ADMIN_BASE_PATH.as_posix()
-            if not path.endswith("/"):
-                path = f"{path}/"
+        if not path.endswith("/"):
+            path = f"{path}/"
 
         referer = ""
         if not scheme and not netloc:
@@ -542,8 +544,14 @@ class Adapter(object):
 
         self._post_login(sessionid=sessionid, token=token)
 
-        authcred = [i for i in self._headers["set-cookie"] if i.startswith("authcred=")][-1]
-        authtimeout = [i for i in self._headers["set-cookie"] if i.startswith("authtimeout=")][-1]
+        authcred = [
+            i for i in self._headers["set-cookie"]
+            if i.startswith("authcred=")
+        ][-1]
+        authtimeout = [
+            i for i in self._headers["set-cookie"]
+            if i.startswith("authtimeout=")
+        ][-1]
 
         authtimeout_value = int(re.search(r'authtimeout="(.*?)"', authtimeout).group(1))
 
