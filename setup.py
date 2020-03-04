@@ -10,8 +10,10 @@ setuptools.setup(
     author="tuokri",
     author_email="tuokri@tuta.io",
     description="Rising Storm 2: Vietnam WebAdmin Python Interface",
+    keywords="automation webadmin ue3",
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
