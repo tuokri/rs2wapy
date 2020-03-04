@@ -1,12 +1,20 @@
 import sys
 from typing import Sequence
 from typing import Type
+from typing import Union
 
 from logbook import Logger
 from logbook import StreamHandler
 
-from .adapters import Adapter
-from .models import models
+from rs2wapy.adapters import Adapter
+from rs2wapy.adapters import PlayerAdapter
+from rs2wapy.models import AccessPolicy
+from rs2wapy.models import ChatMessage
+from rs2wapy.models import CurrentGame
+from rs2wapy.models import Player
+from rs2wapy.models import PlayerScoreboard
+from rs2wapy.models import Team
+from rs2wapy.models import TeamScoreboard
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
@@ -25,18 +33,19 @@ class RS2WebAdmin:
         """
         self._adapter = Adapter(username, password, webadmin_url)
 
-    def get_chat_messages(self) -> Sequence[models.ChatMessage]:
+    def get_chat_messages(self) -> Sequence[ChatMessage]:
         """Return new chat messages since last time this method was called.
         TODO: Clarify this doc.
+        See issue #4.
         """
         return self._adapter.get_chat_messages()
 
-    def post_chat_message(self, message: str, team: Type[models.Team]):
+    def post_chat_message(self, message: str, team: Type[Team]):
         """Post new chat message, visible to specific team(s).
         """
         self._adapter.post_chat_message(message, team)
 
-    def get_current_game(self) -> models.CurrentGame:
+    def get_current_game(self) -> CurrentGame:
         """Return object representing current game information.
         """
         return self._adapter.get_current_game()
@@ -56,12 +65,12 @@ class RS2WebAdmin:
         """
         return self._adapter.get_players()
 
-    def get_player_scoreboard(self) -> models.PlayerScoreboard:
+    def get_player_scoreboard(self) -> PlayerScoreboard:
         """Return current player scoreboard.
         """
         return self._adapter.get_current_game().player_scoreboard
 
-    def get_team_scoreboard(self) -> models.TeamScoreboard:
+    def get_team_scoreboard(self) -> TeamScoreboard:
         """Return current team scoreboard.
         """
         return self._adapter.get_current_game().team_scoreboard
@@ -74,7 +83,7 @@ class RS2WebAdmin:
         raise NotImplementedError
         # return self._adapter.get_tracked_players()
 
-    def get_access_policy(self) -> models.AccessPolicy:
+    def get_access_policy(self) -> AccessPolicy:
         raise NotImplementedError
         # return self._adapter.get_access_policy()
 
@@ -82,11 +91,12 @@ class RS2WebAdmin:
         raise NotImplementedError
         # self._adapter.add_access_policy(ip_mask, policy)
 
-    def ban_player(self, player: models.Player, reason, duration):
+    def ban_player(self, player: Player, reason, duration):
         raise NotImplementedError
 
-    def kick_player(self, player: models.Player, reason, duration):
+    def kick_player(self, player: Union[Player, PlayerAdapter],
+                    reason, duration):
         raise NotImplementedError
 
-    def session_ban_player(self, player: models.Player, reason):
+    def session_ban_player(self, player: Player, reason):
         raise NotImplementedError

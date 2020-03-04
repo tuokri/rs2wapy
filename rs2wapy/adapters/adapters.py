@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import hashlib
 import re
 import sys
@@ -82,15 +83,6 @@ def _read_encoding(headers: dict, index: int = -1) -> str:
     return encoding
 
 
-def _ue3_pw_hash_digest(username: str, password: str) -> str:
-    """
-    Calculate the hex digest used by Unreal Engine 3 WebAdmin,
-    which is transmitted over the wire.
-    """
-    return hashlib.sha1(bytearray(password, "utf-8")
-                        + bytearray(username, "utf-8")).hexdigest()
-
-
 def _set_postfields(curl_obj: pycurl.Curl, postfields):
     postfieldsize = len(postfields)
     logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
@@ -116,7 +108,7 @@ def _prepare_headers(headers: dict) -> list:
 
 
 @dataclass
-class AuthData(object):
+class AuthData:
     timeout: float
     timeout_start: float
     authcred: str
@@ -139,7 +131,7 @@ class AuthData(object):
         return False
 
 
-class Adapter(object):
+class Adapter:
     BASE_HEADERS = {
         "User-Agent": USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -155,6 +147,7 @@ class Adapter(object):
         self._username = username
         self._webadmin_url = webadmin_url
         self._password_hash = ""
+        self._hash_alg = ""
         self._auth_data = None
         self._rparser = RS2WebAdminResponseParser(
             encoding=_read_encoding(self._headers))
@@ -224,6 +217,14 @@ class Adapter(object):
     @auth_data.setter
     def auth_data(self, auth_data: AuthData):
         self._auth_data = auth_data
+
+    @property
+    def _pw_hash(self) -> str:
+        return base64.decodebytes(self._password_hash).decode("utf-8")
+
+    @_pw_hash.setter
+    def _pw_hash(self, pw_hash: str):
+        self._password_hash = base64.encodebytes(pw_hash.encode("utf-8"))
 
     def get_current_game(self) -> models.CurrentGame:
         headers = self._make_auth_headers()
@@ -443,6 +444,10 @@ class Adapter(object):
         c = pycurl.Curl()
         resp = self._perform(self._players_url, curl_obj=c, headers=headers)
         players = self._rparser.parse_players(resp)
+        players = {
+            PlayerAdapter(player=player, adapter=self): p_info
+            for player, p_info in players.items()
+        }
         return players
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
@@ -583,7 +588,7 @@ class Adapter(object):
         headers["Cookie"] = sessionid
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
-        postfields = (f"token={token}&password_hash=%24sha1%24{self._password_hash}"
+        postfields = (f"token={token}&password_hash=%24sha1%24{self._pw_hash}"
                       + f"&username={self._username}&password=&remember={remember}")
 
         c = pycurl.Curl()
@@ -656,9 +661,45 @@ class Adapter(object):
     def _set_password_hash(self, username: str, password: str):
         c = pycurl.Curl()
         resp = self._perform(self._webadmin_url, curl_obj=c, skip_auth=True)
-        if self._rparser.parse_hash_alg(resp):
-            self._password_hash = _ue3_pw_hash_digest(username, password)
+        self._hash_alg = self._rparser.parse_hash_alg(resp)
+        logger.debug("using hash algorithm: '{a}'", a=self._hash_alg)
+        if self._hash_alg:
+            # Set hash directly.
+            self._pw_hash = self._ue3_pw_hash_digest(username, password)
         else:
             # Hash algorithm was not set.
-            # Store password encoded in memory?
-            self._password_hash = password
+            self._pw_hash = password
+
+    def _ue3_pw_hash_digest(self, username: str, password: str) -> str:
+        """
+        Calculate the hex digest used by Unreal Engine 3 WebAdmin,
+        which is transmitted over the wire.
+        """
+        hash_alg = getattr(hashlib, self._hash_alg)
+        return hash_alg(bytearray(password, "utf-8")
+                        + bytearray(username, "utf-8")).hexdigest()
+
+
+class PlayerAdapter:
+    def __init__(self, player: models.Player, adapter: Adapter):
+        self._player = player
+        self._adapter = adapter
+
+    def __str__(self) -> str:
+        return self._player.__str__()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.__str__()})"
+
+    @property
+    def player(self) -> models.Player:
+        return self._player
+
+    def ban(self):
+        self._adapter.ban_player(self.player)
+
+    def kick(self):
+        self._adapter.kick_player(self.player)
+
+    def session_ban(self):
+        self._adapter.session_ban(self.player)
