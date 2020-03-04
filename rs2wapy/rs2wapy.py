@@ -9,6 +9,7 @@ from logbook import StreamHandler
 from rs2wapy.adapters import WebAdminAdapter
 from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.models import AccessPolicy
+from rs2wapy.models import AllTeam
 from rs2wapy.models import ChatMessage
 from rs2wapy.models import CurrentGame
 from rs2wapy.models import Player
@@ -40,7 +41,7 @@ class RS2WebAdmin:
         """
         return self._adapter.get_chat_messages()
 
-    def post_chat_message(self, message: str, team: Type[Team]):
+    def post_chat_message(self, message: str, team: Type[Team] = AllTeam):
         """Post new chat message, visible to specific team(s).
         """
         self._adapter.post_chat_message(message, team)
