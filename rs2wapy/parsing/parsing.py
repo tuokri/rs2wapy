@@ -18,6 +18,7 @@ StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
 TEAMCOLOR_PATTERN = re.compile(r"background: (.*);")
+NO_PLAYERS = ["There are no players"]
 
 
 class RS2WebAdminResponseParser:
@@ -245,6 +246,9 @@ class RS2WebAdminResponseParser:
                 "th", attrs={"class": "header"}
             )
         ]
+
+        if len(player_table) == 1 and player_table[0] == NO_PLAYERS:
+            return {}
 
         players = {}
         for element in player_table:
