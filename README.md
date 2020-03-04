@@ -9,7 +9,13 @@ tasks programmatically.
 Follow development at https://discord.gg/6tgWHpM
 
 
-### Examples
+### Brief Usage Examples
+
+##### Installation
+```bash
+# Requires Python=>3.7
+pip install rs2wapy
+```
 
 ##### Quickstart
 ```python
