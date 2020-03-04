@@ -235,7 +235,6 @@ class Adapter(object):
         headers = self._make_chat_headers()
         postfields = "ajax=1"
         c = pycurl.Curl()
-        c.setopt(pycurl.NOPROGRESS, 1)
         _set_postfields(c, postfields)
         resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
         return self._rparser.parse_chat_messages(resp)
@@ -559,11 +558,14 @@ class Adapter(object):
                 r = re.search(r'sessionid="(.*?)"', self._headers["set-cookie"]).group(1)
             elif type(self._headers["set-cookie"]) == list:
                 logger.debug("type(self._headers['set-cookie']) == list")
-                sessionid_match = [i for i in self._headers["set-cookie"] if i.startswith("sessionid=")][-1]
+                sessionid_match = [
+                    i for i in self._headers["set-cookie"]
+                    if i.startswith("sessionid=")][-1]
                 logger.debug("sessionid_match: {si}", si=sessionid_match)
                 r = re.search(r'sessionid="(.*?)"', sessionid_match).group(1)
             else:
-                logger.error("type(_headers['set-cookie']) == {t}", t=type(self._headers["set-cookie"]))
+                logger.error(
+                    "type(_headers['set-cookie']) == {t}", t=type(self._headers["set-cookie"]))
                 logger.error("cant get sessionid from headers")
                 return r
         except AttributeError as ae:
