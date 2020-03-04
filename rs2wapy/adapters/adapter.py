@@ -154,7 +154,7 @@ class Adapter(object):
         self._headers = {}
         self._username = username
         self._webadmin_url = webadmin_url
-
+        self._password_hash = ""
         self._auth_data = None
         self._rparser = RS2WebAdminResponseParser(
             encoding=_read_encoding(self._headers))
@@ -214,9 +214,7 @@ class Adapter(object):
              params, query, fragment)
         )
 
-        # TODO: Check if 'hashAlg' is set in index page.
-        self._password_hash = _ue3_pw_hash_digest(username, password)
-
+        self._set_password_hash(username, password)
         self._authenticate()
 
     @property
@@ -610,14 +608,16 @@ class Adapter(object):
 
         self._post_login(sessionid=sessionid, token=token)
 
-        authcred = [
-            i for i in self._headers["set-cookie"]
-            if i.startswith("authcred=")
-        ][-1]
-        authtimeout = [
-            i for i in self._headers["set-cookie"]
-            if i.startswith("authtimeout=")
-        ][-1]
+        try:
+            authcred = [
+                i for i in self._headers["set-cookie"]
+                if i.startswith("authcred=")][-1]
+            authtimeout = [
+                i for i in self._headers["set-cookie"]
+                if i.startswith("authtimeout=")][-1]
+        except IndexError as ie:
+            logger.error("unable to get auth data from headers: {e}", e=ie)
+            raise
 
         authtimeout_value = int(re.search(r'authtimeout="(.*?)"', authtimeout).group(1))
 
@@ -650,3 +650,13 @@ class Adapter(object):
         headers["X-Requested-With"] = "XMLHttpRequest"
         headers["Accept"] = "*/*"
         return headers
+
+    def _set_password_hash(self, username: str, password: str):
+        c = pycurl.Curl()
+        resp = self._perform(self._webadmin_url, curl_obj=c, skip_auth=True)
+        if self._rparser.parse_hash_alg(resp):
+            self._password_hash = _ue3_pw_hash_digest(username, password)
+        else:
+            # Hash algorithm was not set.
+            # Store password encoded in memory?
+            self._password_hash = password

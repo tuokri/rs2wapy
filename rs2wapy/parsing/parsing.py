@@ -250,6 +250,17 @@ class RS2WebAdminResponseParser:
 
         return players
 
+    def parse_hash_alg(self, resp: bytes) -> str:
+        parsed_html = self.parse_html(resp)
+        login_script = parsed_html.find("script", text=re.compile(r".*hashAlg.*"))
+        alg = ""
+        try:
+            alg = re.search(r'.*var\shashAlg\s=\s"(.*)";.*', str(login_script))
+            alg = alg.group(1)
+        except AttributeError as ae:
+            logger.error("unable to parse hash alg: {e}", e=ae)
+        return alg
+
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:
         all_cols = []
