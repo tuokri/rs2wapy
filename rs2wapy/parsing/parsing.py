@@ -227,6 +227,7 @@ class RS2WebAdminResponseParser:
         return [o.get("value").strip() for o in options]
 
     def parse_players(self, resp: bytes) -> dict:
+        # TODO
         parsed_html = self.parse_html(resp)
 
         player_table = parsed_html.find("tbody")
