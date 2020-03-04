@@ -454,6 +454,11 @@ class WebAdminAdapter:
         raise NotImplementedError
 
     def ban_player(self, player: models.Player, reason: str, duration: str):
+        # --data 'action=banid&playerid=256&playerkey=256_0x0110000103A3105D_107.1604&__Submitter=
+        # &__UniqueId=&__PlayerName=&__Reason=testban&__NotifyPlayers=1&__PickList_Length=4
+        # &__PickList_0=Disturbing+the+server&__PickList_1=Inappropriate+language
+        # &__PickList_2=Insulting+other+player%28s%29&__PickList_3=Insulting+the+admin
+        # &__IdType=0&__ExpNumber=1&__ExpUnit=Hour'
         raise NotImplementedError
 
     def session_ban_player(self, player: models.Player, reason: str):
