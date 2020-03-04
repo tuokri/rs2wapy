@@ -1,3 +1,8 @@
+"""
+Provides utilities for parsing responses from
+Rising Storm 2: Vietnam WebAdmin.
+"""
+
 import re
 import sys
 from typing import List

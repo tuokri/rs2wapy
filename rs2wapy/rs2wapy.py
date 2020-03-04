@@ -6,8 +6,8 @@ from typing import Union
 from logbook import Logger
 from logbook import StreamHandler
 
-from rs2wapy.adapters import Adapter
-from rs2wapy.adapters import PlayerAdapter
+from rs2wapy.adapters import WebAdminAdapter
+from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.models import AccessPolicy
 from rs2wapy.models import ChatMessage
 from rs2wapy.models import CurrentGame
@@ -31,7 +31,7 @@ class RS2WebAdmin:
         :param password: RS2 WebAdmin password.
         :param webadmin_url: RS2 WebAdmin url.
         """
-        self._adapter = Adapter(username, password, webadmin_url)
+        self._adapter = WebAdminAdapter(username, password, webadmin_url)
 
     def get_chat_messages(self) -> Sequence[ChatMessage]:
         """Return new chat messages since last time this method was called.
@@ -91,12 +91,14 @@ class RS2WebAdmin:
         raise NotImplementedError
         # self._adapter.add_access_policy(ip_mask, policy)
 
-    def ban_player(self, player: Player, reason, duration):
-        raise NotImplementedError
+    def ban_player(self, player: Union[Player, PlayerWrapper],
+                   reason: str, duration: str):
+        self._adapter.ban_player(player, reason, duration)
 
-    def kick_player(self, player: Union[Player, PlayerAdapter],
-                    reason, duration):
-        raise NotImplementedError
+    def kick_player(self, player: Union[Player, PlayerWrapper],
+                    reason: str, duration: str):
+        self._adapter.kick_player(player, reason, duration)
 
-    def session_ban_player(self, player: Player, reason):
-        raise NotImplementedError
+    def session_ban_player(self, player: Union[Player, PlayerWrapper],
+                           reason: str):
+        self._adapter.session_ban_player(player, reason)

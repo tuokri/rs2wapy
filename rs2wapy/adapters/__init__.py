@@ -1,7 +1,7 @@
-from .adapters import Adapter
-from .adapters import PlayerAdapter
+from .adapters import WebAdminAdapter
+from .adapters import PlayerWrapper
 
 __all__ = [
-    "Adapter",
-    "PlayerAdapter",
+    "WebAdminAdapter",
+    "PlayerWrapper",
 ]

@@ -131,7 +131,7 @@ class AuthData:
         return False
 
 
-class Adapter:
+class WebAdminAdapter:
     BASE_HEADERS = {
         "User-Agent": USER_AGENT,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -445,10 +445,19 @@ class Adapter:
         resp = self._perform(self._players_url, curl_obj=c, headers=headers)
         players = self._rparser.parse_players(resp)
         players = {
-            PlayerAdapter(player=player, adapter=self): p_info
+            PlayerWrapper(player=player, adapter=self): p_info
             for player, p_info in players.items()
         }
         return players
+
+    def kick_player(self, player: models.Player, reason: str, duration: str):
+        raise NotImplementedError
+
+    def ban_player(self, player: models.Player, reason: str, duration: str):
+        raise NotImplementedError
+
+    def session_ban_player(self, player: models.Player, reason: str):
+        raise NotImplementedError
 
     async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
                              header: dict = None, skip_auth=False) -> bytes:
@@ -664,7 +673,6 @@ class Adapter:
         self._hash_alg = self._rparser.parse_hash_alg(resp)
         logger.debug("using hash algorithm: '{a}'", a=self._hash_alg)
         if self._hash_alg:
-            # Set hash directly.
             self._pw_hash = self._ue3_pw_hash_digest(username, password)
         else:
             # Hash algorithm was not set.
@@ -680,8 +688,12 @@ class Adapter:
                         + bytearray(username, "utf-8")).hexdigest()
 
 
-class PlayerAdapter:
-    def __init__(self, player: models.Player, adapter: Adapter):
+class PlayerWrapper:
+    """Wrapper around models.Player, providing functionality
+    via WebAdminAdapter.
+    """
+
+    def __init__(self, player: models.Player, adapter: WebAdminAdapter):
         self._player = player
         self._adapter = adapter
 
@@ -695,11 +707,23 @@ class PlayerAdapter:
     def player(self) -> models.Player:
         return self._player
 
-    def ban(self):
-        self._adapter.ban_player(self.player)
+    def ban(self, reason: str, duration: str):
+        self._adapter.ban_player(self.player, reason, duration)
 
-    def kick(self):
-        self._adapter.kick_player(self.player)
+    def kick(self, reason: str, duration: str):
+        self._adapter.kick_player(self.player, reason, duration)
 
-    def session_ban(self):
-        self._adapter.session_ban_player(self.player)
+    def session_ban(self, reason: str):
+        self._adapter.session_ban_player(self.player, reason)
+
+    def revoke_ban(self):
+        raise NotImplementedError
+
+    def revoke_session_ban(self):
+        raise NotImplementedError
+
+    def track(self):
+        raise NotImplementedError
+
+    def untrack(self):
+        raise NotImplementedError
