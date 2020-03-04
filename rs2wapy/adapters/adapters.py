@@ -702,4 +702,4 @@ class PlayerAdapter:
         self._adapter.kick_player(self.player)
 
     def session_ban(self):
-        self._adapter.session_ban(self.player)
+        self._adapter.session_ban_player(self.player)
