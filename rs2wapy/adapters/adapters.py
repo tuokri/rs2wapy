@@ -242,6 +242,8 @@ class WebAdminAdapter:
 
     # TODO: Posted chat message is not visible in get_chat_messages
     #   return value, but is visible in WebAdmin.
+    #   The fix is to read the chat messages
+    #   from the post_chat_message response!
     def post_chat_message(self, message: str, team: Type[models.Team]):
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
