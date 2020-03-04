@@ -13,8 +13,7 @@ logger = Logger(__name__)
 
 
 class RS2WebAdmin:
-    """
-    Provides a high-level interface to Rising Storm 2: Vietnam
+    """Provides a high-level interface to Rising Storm 2: Vietnam
     server's WebAdmin tool.
     """
 
@@ -27,21 +26,18 @@ class RS2WebAdmin:
         self._adapter = Adapter(username, password, webadmin_url)
 
     def get_chat_messages(self) -> Sequence[models.ChatMessage]:
-        """
-        Return new chat messages since last time this method was called.
+        """Return new chat messages since last time this method was called.
         TODO: Clarify this doc.
         """
         return self._adapter.get_chat_messages()
 
     def post_chat_message(self, message: str, team: Type[models.Team]):
-        """
-        Post new chat message, visible to specific team(s).
+        """Post new chat message, visible to specific team(s).
         """
         self._adapter.post_chat_message(message, team)
 
     def get_current_game(self) -> models.CurrentGame:
-        """
-        Return object representing current game information.
+        """Return object representing current game information.
         """
         return self._adapter.get_current_game()
 
@@ -51,26 +47,22 @@ class RS2WebAdmin:
         self._adapter.change_map(new_map, url_extra)
 
     def get_maps(self) -> dict:
-        """
-        Return maps currently installed on the server.
+        """Return maps currently installed on the server.
         """
         return self._adapter.get_maps()
 
     def get_players(self) -> dict:
-        """
-        Return players currently online on the server.
+        """Return players currently online on the server.
         """
         return self._adapter.get_players()
 
     def get_player_scoreboard(self) -> models.PlayerScoreboard:
-        """
-        Return current player scoreboard.
+        """Return current player scoreboard.
         """
         return self._adapter.get_current_game().player_scoreboard
 
     def get_team_scoreboard(self) -> models.TeamScoreboard:
-        """
-        Return current team scoreboard.
+        """Return current team scoreboard.
         """
         return self._adapter.get_current_game().team_scoreboard
 
