@@ -5,7 +5,7 @@ import versioneer
 setuptools.setup(
     name="rs2wapy",
     version=versioneer.get_version(),
-    packages=["rs2wapy"],
+    packages=setuptools.find_packages(),
     url="https://github.com/tuokri/rs2wapy",
     author="tuokri",
     author_email="tuokri@tuta.io",
