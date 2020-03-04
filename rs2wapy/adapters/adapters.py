@@ -83,7 +83,7 @@ def _read_encoding(headers: dict, index: int = -1) -> str:
     return encoding
 
 
-def _set_postfields(curl_obj: pycurl.Curl, postfields):
+def _set_postfields(curl_obj: pycurl.Curl, postfields: str):
     postfieldsize = len(postfields)
     logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
     logger.debug("postfields: {pf}", pf=postfields)
