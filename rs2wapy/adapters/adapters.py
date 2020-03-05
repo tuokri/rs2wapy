@@ -490,7 +490,7 @@ class WebAdminAdapter:
         while True and not self._stop_event.is_set():
             self._chat_message_deque.extend(
                 self._get_chat_messages_from_server())
-            self._stop_event.wait(timeout=2)
+            self._stop_event.wait(timeout=2 - time.time() % 2)
 
     def _get_chat_messages_from_server(self) -> Sequence[models.ChatMessage]:
         headers = self._make_chat_headers()
