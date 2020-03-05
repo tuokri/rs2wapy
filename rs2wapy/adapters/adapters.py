@@ -243,6 +243,11 @@ class WebAdminAdapter:
         return self._rparser.parse_current_game(resp)
 
     def get_chat_messages(self) -> Sequence[models.ChatMessage]:
+        """When the Adapter instance is created, it begins polling the
+        RS2 WebAdmin server for chat messages, appending them to an internal
+        queue. Calling this method pops and returns the messages from
+        the internal queue.
+        """
         chat_msgs = []
         while True:
             try:
@@ -252,6 +257,8 @@ class WebAdminAdapter:
         return chat_msgs
 
     def post_chat_message(self, message: str, team: Type[models.Team]):
+        """Post chat message to RS2 WebAdmin server.
+        """
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
         team_code = {

@@ -6,8 +6,8 @@ from typing import Union
 from logbook import Logger
 from logbook import StreamHandler
 
-from rs2wapy.adapters import WebAdminAdapter
 from rs2wapy.adapters import PlayerWrapper
+from rs2wapy.adapters import WebAdminAdapter
 from rs2wapy.models import AccessPolicy
 from rs2wapy.models import AllTeam
 from rs2wapy.models import ChatMessage
@@ -30,14 +30,13 @@ class RS2WebAdmin:
         """
         :param username: RS2 WebAdmin username.
         :param password: RS2 WebAdmin password.
-        :param webadmin_url: RS2 WebAdmin url.
+        :param webadmin_url: RS2 WebAdmin URL.
         """
         self._adapter = WebAdminAdapter(username, password, webadmin_url)
 
     def get_chat_messages(self) -> Sequence[ChatMessage]:
-        """Return new chat messages since last time this method was called.
-        TODO: Clarify this doc.
-        See issue #4.
+        """Return new chat messages since last time this method
+        was called and after the creation of this RS2WebAdmin instance.
         """
         return self._adapter.get_chat_messages()
 
