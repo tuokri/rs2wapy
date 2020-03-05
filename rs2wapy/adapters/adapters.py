@@ -1,9 +1,10 @@
-import asyncio
 import base64
 import hashlib
 import re
 import sys
+import threading
 import time
+from collections import deque
 from dataclasses import dataclass
 from http import HTTPStatus
 from io import BytesIO
@@ -149,6 +150,7 @@ class WebAdminAdapter:
         self._password_hash = ""
         self._hash_alg = ""
         self._auth_data = None
+        self._chat_message_deque = deque(maxlen=512)
         self._rparser = RS2WebAdminResponseParser(
             encoding=_read_encoding(self._headers))
 
@@ -210,6 +212,14 @@ class WebAdminAdapter:
         self._set_password_hash(username, password)
         self._authenticate()
 
+        self._stop_event = threading.Event()
+        self._chat_message_thread = threading.Thread(
+            target=self._enqueue_chat_messages, daemon=True)
+        self._chat_message_thread.start()
+
+    def __del__(self):
+        self._stop_event.set()
+
     @property
     def auth_data(self) -> AuthData:
         return self._auth_data
@@ -233,12 +243,13 @@ class WebAdminAdapter:
         return self._rparser.parse_current_game(resp)
 
     def get_chat_messages(self) -> Sequence[models.ChatMessage]:
-        headers = self._make_chat_headers()
-        postfields = "ajax=1"
-        c = pycurl.Curl()
-        _set_postfields(c, postfields)
-        resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
-        return self._rparser.parse_chat_messages(resp)
+        chat_msgs = []
+        while True:
+            try:
+                chat_msgs.append(self._chat_message_deque.popleft())
+            except IndexError:
+                break
+        return chat_msgs
 
     # TODO: Posted chat message is not visible in get_chat_messages
     #   return value, but is visible in WebAdmin.
@@ -252,10 +263,16 @@ class WebAdminAdapter:
             models.RedTeam: "0",
             models.BlueTeam: "1",
         }[team]
+
         postfields = f"ajax=1&message={message}&teamsay={team_code}"
         c = pycurl.Curl()
         _set_postfields(c, postfields)
-        self._perform(self._chat_data_url, curl_obj=c, headers=headers)
+
+        resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
+
+        chat_msgs = self._rparser.parse_chat_messages(resp)
+        logger.debug("got {clen} chat messages", clen=len(chat_msgs))
+        self._chat_message_deque.extend(chat_msgs)
 
     def get_access_policy(self) -> List[str]:
         sessionid = self._auth_data.sessionid
@@ -295,8 +312,8 @@ class WebAdminAdapter:
 
         action = "add"
 
-        header = self.BASE_HEADERS.copy()
-        header["Content-Type"] = "application/x-www-form-urlencoded"
+        headers = self.BASE_HEADERS.copy()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
 
         max_retries = 10
         retries = 0
@@ -306,7 +323,7 @@ class WebAdminAdapter:
         # even though the request is seemingly valid, but repeating
         # the request eventually successfully adds the policy.
         while not _in(ip_mask, policies) and (retries < max_retries):
-            header["Cookie"] = self._find_sessionid()
+            headers["Cookie"] = self._find_sessionid()
 
             postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
 
@@ -314,7 +331,7 @@ class WebAdminAdapter:
             _set_postfields(c, postfields)
 
             try:
-                self._perform(self._access_policy_url, curl_obj=c, headers=header)
+                self._perform(self._access_policy_url, curl_obj=c, headers=headers)
             except Exception as e:
                 logger.error(e, exc_info=True)
 
@@ -342,9 +359,9 @@ class WebAdminAdapter:
 
         action = "modify"
 
-        header = self.BASE_HEADERS.copy()
-        header["Content-Type"] = "application/x-www-form-urlencoded"
-        header["Accept-Encoding"] = "gzip, deflate"
+        headers = self.BASE_HEADERS.copy()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        headers["Accept-Encoding"] = "gzip, deflate"
 
         max_retries = 10
         retries = 0
@@ -354,7 +371,7 @@ class WebAdminAdapter:
         # even though the request is seemingly valid, but repeating
         # the request eventually successfully deletes the policy.
         while _in(ip_mask, policies) and (retries < max_retries):
-            header["Cookie"] = self._find_sessionid()
+            headers["Cookie"] = self._find_sessionid()
 
             try:
                 argstr = _policies_to_delete_argstr(policies, ip_mask)
@@ -368,7 +385,7 @@ class WebAdminAdapter:
             _set_postfields(c, postfields)
 
             try:
-                self._perform(self._access_policy_url, curl_obj=c, headers=header)
+                self._perform(self._access_policy_url, curl_obj=c, headers=headers)
             except Exception as e:
                 logger.error(e, exc_info=True)
 
@@ -466,20 +483,36 @@ class WebAdminAdapter:
     def session_ban_player(self, player: models.Player, reason: str):
         raise NotImplementedError
 
-    async def _async_perform(self, url: str, curl_obj: pycurl.Curl = None,
-                             header: dict = None, skip_auth=False) -> bytes:
+    def _enqueue_chat_messages(self):
+        while True and not self._stop_event.is_set():
+            self._chat_message_deque.extend(
+                self._get_chat_messages_from_server())
+            self._stop_event.wait(timeout=2)
+
+    def _get_chat_messages_from_server(self) -> Sequence[models.ChatMessage]:
+        headers = self._make_chat_headers()
+        postfields = "ajax=1"
+        c = pycurl.Curl()
+        _set_postfields(c, postfields)
+        resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
+        chat_msgs = self._rparser.parse_chat_messages(resp)
+        logger.debug("got {clen} chat messages", clen=len(chat_msgs))
+        return chat_msgs
+
+    def _perform(self, url: str, curl_obj: pycurl.Curl = None,
+                 headers: dict = None, skip_auth=False) -> bytes:
         if not skip_auth:
-            await self._authenticated()
+            self._wait_authenticated()
 
         if not curl_obj:
             curl_obj = pycurl.Curl()
 
-        logger.debug("url={url}, header={header}", url=url, header=header)
-        if not header:
-            header = self.BASE_HEADERS
-        header = _prepare_headers(header)
+        logger.debug("url={url}, headers={headers}", url=url, headers=headers)
+        if not headers:
+            headers = self.BASE_HEADERS
+        headers = _prepare_headers(headers)
 
-        logger.debug("prepared header={h}", h=header)
+        logger.debug("prepared headers={h}", h=headers)
 
         buffer = BytesIO()
 
@@ -487,7 +520,7 @@ class WebAdminAdapter:
         curl_obj.setopt(pycurl.HEADERFUNCTION, self._header_function)
         curl_obj.setopt(pycurl.BUFFERSIZE, 102400)
         curl_obj.setopt(pycurl.URL, url)
-        curl_obj.setopt(pycurl.HTTPHEADER, header)
+        curl_obj.setopt(pycurl.HTTPHEADER, headers)
         curl_obj.setopt(pycurl.USERAGENT, CURL_USERAGENT)
         curl_obj.setopt(pycurl.MAXREDIRS, 50)
         curl_obj.setopt(pycurl.ACCEPT_ENCODING, "")
@@ -513,12 +546,6 @@ class WebAdminAdapter:
             logger.error("error on url={u}, error={e}", u=url, e=e)
 
         return value
-
-    def _perform(self, url: str, curl_obj: pycurl.Curl = None,
-                 headers: dict = None, skip_auth=False) -> bytes:
-        return asyncio.run(
-            self._async_perform(url=url, curl_obj=curl_obj,
-                                header=headers, skip_auth=skip_auth))
 
     def _header_function(self, header_line):
         if "connection" in self._headers:
@@ -656,7 +683,7 @@ class WebAdminAdapter:
             authtimeout=authtimeout
         )
 
-    async def _authenticated(self):
+    def _wait_authenticated(self):
         if self._auth_data.timed_out():
             self._authenticate()
 
