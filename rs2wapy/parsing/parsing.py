@@ -313,6 +313,31 @@ class RS2WebAdminResponseParser:
             logger.error("unable to parse hash alg: {e}", e=ae)
         return alg
 
+    def parse_map_list_indices(self, resp) -> List[int]:
+        parsed_html = self.parse_html(resp)
+        map_list_idxs = parsed_html.find(
+            "select", attrs={"id": "maplistidx"})
+        map_list_idxs = map_list_idxs.find_all("option")
+
+        valid_idxs = []
+        for mli in map_list_idxs:
+            try:
+                idx = int(mli.get("value"))
+                if idx >= 0:
+                    valid_idxs.append(idx)
+            except ValueError:
+                pass
+        return valid_idxs
+
+    def parse_map_cycle(self, resp) -> List[str]:
+        parsed_html = self.parse_html(resp)
+        map_cycle = parsed_html.find(
+            "old", attrs={"id": "jsmapcycle"})
+        map_cycle = map_cycle.find_all(
+            "span", attrs={"class": "entry"})
+        map_cycle = [mc.text for mc in map_cycle]
+        return map_cycle
+
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:
         all_cols = []

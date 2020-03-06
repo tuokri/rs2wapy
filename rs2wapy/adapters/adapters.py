@@ -59,6 +59,8 @@ WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 WEB_ADMIN_CHANGE_MAP_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("change/")
 WEB_ADMIN_CHANGE_MAP_DATA_PATH = WEB_ADMIN_CHANGE_MAP_PATH / Path("data/")
 WEB_ADMIN_PLAYERS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("players/")
+WEB_ADMIN_SETTINGS_PATH = WEB_ADMIN_BASE_PATH / Path("settings/")
+WEB_ADMIN_MAP_LIST_PATH = WEB_ADMIN_SETTINGS_PATH / Path("maplist/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -208,6 +210,10 @@ class WebAdminAdapter:
         )
         self._players_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_PLAYERS_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._map_list_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_MAP_LIST_PATH.as_posix(),
              params, query, fragment)
         )
 
@@ -483,6 +489,33 @@ class WebAdminAdapter:
         raise NotImplementedError
 
     def session_ban_player(self, player: models.Player, reason: str):
+        raise NotImplementedError
+
+    def get_map_cycles(self) -> dict:
+        headers = self._make_auth_headers()
+        resp = self._perform(self._map_list_url, headers=headers)
+        map_list_indices = self._rparser.parse_map_list_indices(resp)
+        map_cycles = {}
+
+        for mli in map_list_indices:
+            c = pycurl.Curl()
+            postfields = f"maplistidx={mli}"
+            _set_postfields(c, postfields)
+            resp = self._perform(
+                self._map_list_url, curl_obj=c, headers=headers)
+            # TODO: parse to dict!
+            maps = self._rparser.parse_map_cycle(resp)
+            map_cycles[mli] = {
+                "active": False,
+                "maps": maps,
+            }
+
+        return map_cycles
+
+    def set_map_cycles(self, map_cycles: List[dict]):
+        active_count = [mc["active"] for mc in map_cycles].count(True)
+        if active_count > 1:
+            raise ValueError("only 1 map cycle may be active at a time")
         raise NotImplementedError
 
     def _enqueue_chat_messages(self):

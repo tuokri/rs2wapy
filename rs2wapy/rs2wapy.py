@@ -138,3 +138,9 @@ class RS2WebAdmin:
     def session_ban_player(self, player: Union[Player, PlayerWrapper],
                            reason: str):
         self._adapter.session_ban_player(player, reason)
+
+    def get_map_cycles(self) -> List[dict]:
+        return self._adapter.get_map_cycles()
+
+    def set_map_cycles(self, map_cycles: List[dict]):
+        self._adapter.set_map_cycles(map_cycles)
