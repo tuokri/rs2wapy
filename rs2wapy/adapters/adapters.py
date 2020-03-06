@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import hashlib
 import re
@@ -218,7 +220,8 @@ class WebAdminAdapter:
         self._chat_message_thread.start()
 
     def __del__(self):
-        self._stop_event.set()
+        if self._stop_event:
+            self._stop_event.set()
 
     @property
     def auth_data(self) -> AuthData:
@@ -461,15 +464,11 @@ class WebAdminAdapter:
 
         return maps
 
-    def get_players(self) -> dict:
+    def get_players(self) -> List[PlayerWrapper]:
         headers = self._make_auth_headers()
         c = pycurl.Curl()
         resp = self._perform(self._players_url, curl_obj=c, headers=headers)
-        players = self._rparser.parse_players(resp)
-        players = {
-            PlayerWrapper(player=player, adapter=self): p_info
-            for player, p_info in players.items()
-        }
+        players = self._rparser.parse_players(resp, adapter=self)
         return players
 
     def kick_player(self, player: models.Player, reason: str, duration: str):

@@ -1,4 +1,6 @@
+import itertools
 import sys
+from typing import List
 from typing import Sequence
 from typing import Type
 from typing import Union
@@ -51,22 +53,56 @@ class RS2WebAdmin:
         return self._adapter.get_current_game()
 
     def change_map(self, new_map: str, url_extra: dict = None):
+        """Change map. New map name is provided as a string.
+        The url_extra parameter is a dictionary, with extra
+        URL variables as keys and URL variable values as values.
+
+        Example call:
+        change_map("VNTE-Resort", url_extra={
+          "MaxPlayers": 64,
+          "mutator": "ExampleMutator",
+        })
+
+        The url_extra parameter corresponds to the WebAdmin
+        'Additional URL variables' input option.
+        """
         if url_extra is None:
             url_extra = {}
         self._adapter.change_map(new_map, url_extra)
 
     def get_maps(self) -> dict:
         """Return maps currently installed on the server.
+        Return value is a dictionary with game mode names
+        as keys and map name lists as values:
+
+        Example return value:
+        {
+          'ROGame.ROGameInfoTerritories': ['VNTE-Resort', 'VNTE-CuChi'],
+          'ROGame.ROGameInfoSupremacy': ['VNSU-Resort'],
+        }
         """
         return self._adapter.get_maps()
 
-    def get_players(self) -> dict:
+    def get_maps_list(self) -> List[str]:
+        """Return list of all maps of all game modes
+        currently installed on the server.
+        """
+        return list(
+            itertools.chain(*self._adapter.get_maps().values())
+        )
+
+    def get_players(self) -> List[PlayerWrapper]:
         """Return players currently online on the server.
+        Return value is a list of adapters.PlayerWrapper objects
+        representing the players on the server at the time of
+        the invocation of this method.
         """
         return self._adapter.get_players()
 
     def get_player_scoreboard(self) -> PlayerScoreboard:
-        """Return current player scoreboard.
+        """Return current player scoreboard. Player scoreboard
+        does not store player IDs, because deducing them
+        from WebAdmin is unreliable.
         """
         return self._adapter.get_current_game().player_scoreboard
 

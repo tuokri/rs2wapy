@@ -2,6 +2,7 @@
 Provides utilities for parsing responses from
 Rising Storm 2: Vietnam WebAdmin.
 """
+from __future__ import annotations
 
 import re
 import sys
@@ -13,12 +14,15 @@ from logbook import Logger
 from logbook import StreamHandler
 
 import rs2wapy.models as models
+from rs2wapy.adapters import adapters
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
 TEAMCOLOR_PATTERN = re.compile(r"background: (.*);")
 NO_PLAYERS = ["There are no players"]
+UNIQUE_ID_KEY = "Unique ID"
+TEAM_INDEX_KEY = "\xa0"
 
 
 class RS2WebAdminResponseParser:
@@ -232,31 +236,69 @@ class RS2WebAdminResponseParser:
             "select", attrs={"id": "map"}).find_all("option")
         return [o.get("value").strip() for o in options]
 
-    def parse_players(self, resp: bytes) -> dict:
-        # TODO
+    def parse_players(self, resp: bytes, adapter: adapters.WebAdminAdapter
+                      ) -> List[adapters.PlayerWrapper]:
         parsed_html = self.parse_html(resp)
+        if not parsed_html:
+            logger.error(
+                "unable to parse players; no response"
+                " data to parse")
+            return []
 
-        player_table = parsed_html.find("tbody")
+        player_table = parsed_html.find("table", attrs={"id": "players"})
+
+        player_headers = player_table.find("thead")
+        player_headers = player_headers.find_all("th")
+
+        player_table = player_table.find("tbody")
         player_table = player_table.find_all("tr")
         player_table = self._parse_table(player_table)
 
-        player_headers = parsed_html.find("thead")
-        player_headers = [
-            ph.text for ph in player_headers.find_all(
-                "th", attrs={"class": "header"}
-            )
-        ]
+        # Not expecting this header to ever change order.
+        # We could probably hard-code this...
+        player_headers = [ph.text for ph in player_headers]
+        player_headers[
+            player_headers.index(TEAM_INDEX_KEY)] = "Team Index"
 
-        if len(player_table) == 1 and player_table[0] == NO_PLAYERS:
-            return {}
+        if (len(player_table) == 1) and player_table[0] == NO_PLAYERS:
+            logger.debug("no players")
+            return []
 
-        players = {}
-        for element in player_table:
-            p = models.Player(
-                rs2_name=element[1],
-                steam_id=element[4],
+        if not all(len(p) for p in player_table):
+            logger.error(
+                "player rows in player table differ in length")
+            return []
+
+        if not len(player_table[0]) == len(player_headers):
+            logger.error("player table and player headers differ in length")
+            return []
+
+        # We use 'Unique ID' column here instead of 'Steam ID'
+        # column because 'Steam ID' column is sometimes not filled.
+        # 'Unique ID' is just a hex-string of the user's SteamID64
+        # anyway.
+        id_index = player_headers.index(UNIQUE_ID_KEY)
+        del player_headers[id_index]
+
+        players = []
+        for player_row in player_table:
+            steam_id = player_row.pop(id_index)
+
+            stats = {
+                key: value for key, value in zip(
+                    player_headers, player_row
+                )
+            }
+
+            player = models.Player(
+                steam_id=steam_id,
+                stats=stats,
             )
-            players[p] = element
+
+            players.append(adapters.PlayerWrapper(
+                player=player,
+                adapter=adapter,
+            ))
 
         return players
 

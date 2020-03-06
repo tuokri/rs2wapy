@@ -74,8 +74,12 @@ _STEAM_ID_TYPE = Union[SteamID, int, str]
 
 
 class Player(Model):
-    def __init__(self, steam_id: _STEAM_ID_TYPE, rs2_name: str):
+    def __init__(self, steam_id: _STEAM_ID_TYPE, stats: dict = None):
         super().__init__()
+
+        if not stats:
+            stats = {}
+        self._stats = stats
 
         if isinstance(steam_id, SteamID):
             self._steam_id = steam_id
@@ -87,7 +91,10 @@ class Player(Model):
             raise ValueError(
                 f"invalid steam_id type: {type(steam_id)}, expected "
                 f"{_STEAM_ID_TYPE}")
-        self._rs2_name = rs2_name
+
+    @property
+    def stats(self) -> dict:
+        return self._stats
 
     def __str__(self) -> str:
         steam_id = (self._steam_id.as_64

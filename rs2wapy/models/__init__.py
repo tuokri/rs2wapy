@@ -1,6 +1,7 @@
 from .models import *
 
 __all__ = [
+    "AllTeam",
     "AccessPolicy",
     "ChatMessage",
     "ChatChannel",
