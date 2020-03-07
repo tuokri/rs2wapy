@@ -497,16 +497,15 @@ class WebAdminAdapter:
         map_list_indices = self._rparser.parse_map_list_indices(resp)
         map_cycles = {}
 
-        for mli in map_list_indices:
+        for mli, is_active in map_list_indices.items():
             c = pycurl.Curl()
             postfields = f"maplistidx={mli}"
             _set_postfields(c, postfields)
             resp = self._perform(
                 self._map_list_url, curl_obj=c, headers=headers)
-            # TODO: parse to dict!
             maps = self._rparser.parse_map_cycle(resp)
             map_cycles[mli] = {
-                "active": False,
+                "active": is_active,
                 "maps": maps,
             }
 

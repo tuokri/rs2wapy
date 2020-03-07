@@ -139,7 +139,7 @@ class RS2WebAdmin:
                            reason: str):
         self._adapter.session_ban_player(player, reason)
 
-    def get_map_cycles(self) -> List[dict]:
+    def get_map_cycles(self) -> dict:
         return self._adapter.get_map_cycles()
 
     def set_map_cycles(self, map_cycles: List[dict]):
