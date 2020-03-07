@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import List
 from typing import Sequence
 from typing import Type
+from urllib.parse import urlencode
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
@@ -226,8 +227,10 @@ class WebAdminAdapter:
         self._chat_message_thread.start()
 
     def __del__(self):
-        if self._stop_event:
+        try:
             self._stop_event.set()
+        except AttributeError:
+            pass
 
     @property
     def auth_data(self) -> AuthData:
@@ -243,6 +246,8 @@ class WebAdminAdapter:
 
     @_pw_hash.setter
     def _pw_hash(self, pw_hash: str):
+        # Avoid storing plaintext password in memory in case
+        # WebAdmin did not set 'hashAlg'.
         self._password_hash = base64.encodebytes(pw_hash.encode("utf-8"))
 
     def get_current_game(self) -> models.CurrentGame:
@@ -511,11 +516,27 @@ class WebAdminAdapter:
 
         return map_cycles
 
-    def set_map_cycles(self, map_cycles: List[dict]):
-        active_count = [mc["active"] for mc in map_cycles].count(True)
-        if active_count > 1:
-            raise ValueError("only 1 map cycle may be active at a time")
-        raise NotImplementedError
+    def set_map_cycles(self, map_cycles: dict):
+        headers = self._make_auth_headers()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        active_count = 0
+
+        for idx, map_cycle in map_cycles.items():
+            if map_cycles["active"]:
+                active_count += 1
+            if active_count != 1:
+                raise ValueError("exactly 1 map cycle must be active")
+
+            postfields = urlencode({
+                "maplistidx": idx,
+                "mapcycle": map_cycle,
+                "action": "save",
+            })
+
+            c = pycurl.Curl()
+            _set_postfields(c, postfields)
+            self._perform(
+                self._map_list_url, curl_obj=c, headers=headers)
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():
@@ -665,8 +686,21 @@ class WebAdminAdapter:
         headers["Cookie"] = sessionid
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
-        postfields = (f"token={token}&password_hash=%24sha1%24{self._pw_hash}"
-                      + f"&username={self._username}&password=&remember={remember}")
+        pw_hash = ""
+        pw = ""
+
+        if self._hash_alg:
+            pw_hash = f"${self._hash_alg}${self._pw_hash}"
+        else:
+            pw = self._pw_hash
+
+        postfields = urlencode({
+            "token": token,
+            "password_hash": pw_hash,
+            "username": self._username,
+            "password": pw,
+            "remember": remember,
+        })
 
         c = pycurl.Curl()
         _set_postfields(c, postfields)
@@ -676,13 +710,15 @@ class WebAdminAdapter:
     def _authenticate(self):
         resp = self._perform(self._webadmin_url, skip_auth=True)
         if not resp:
-            logger.error("no response content from url={url}", url=self._webadmin_url)
+            logger.error("no response content from url={url}",
+                         url=self._webadmin_url)
             return
 
         parsed_html = self._rparser.parse_html(resp)
         token = ""
         try:
-            token = parsed_html.find("input", attrs={"name": "token"}).get("value")
+            token = parsed_html.find(
+                "input", attrs={"name": "token"}).get("value")
             logger.debug("token: {token}", token=token)
         except AttributeError as ae:
             logger.error("unable to get token: {e}", e=ae)
@@ -701,13 +737,15 @@ class WebAdminAdapter:
                 if i.startswith("authtimeout=")][-1]
         except IndexError as ie:
             logger.error("unable to get auth data from headers: {e}", e=ie)
-            raise
+            raise ValueError("unable to authenticate")
 
-        authtimeout_value = int(re.search(r'authtimeout="(.*?)"', authtimeout).group(1))
+        authtimeout_value = int(re.search(r'authtimeout="(.*?)"',
+                                          authtimeout).group(1))
 
         logger.debug("authcred: {ac}", ac=authcred)
         logger.debug("authtimeout: {ato}", ato=authtimeout)
-        logger.debug("authtimeout_value: {ato_value}", ato_value=authtimeout_value)
+        logger.debug("authtimeout_value: {ato_value}",
+                     ato_value=authtimeout_value)
 
         self._auth_data = AuthData(
             timeout=authtimeout_value,

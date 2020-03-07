@@ -142,5 +142,5 @@ class RS2WebAdmin:
     def get_map_cycles(self) -> dict:
         return self._adapter.get_map_cycles()
 
-    def set_map_cycles(self, map_cycles: List[dict]):
+    def set_map_cycles(self, map_cycles: dict):
         self._adapter.set_map_cycles(map_cycles)
