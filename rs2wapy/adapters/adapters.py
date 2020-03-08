@@ -72,23 +72,6 @@ def _in(el: object, seq: Sequence[Sequence]) -> bool:
     return False
 
 
-def _read_encoding(headers: dict, index: int = -1) -> str:
-    encoding = None
-    if "content-type" in headers:
-        content_type = headers["content-type"][index].lower()
-        match = re.search(r"charset=(\S+)", content_type)
-        if match:
-            encoding = match.group(1)
-            logger.debug("encoding is {enc}", enc=encoding)
-    if encoding is None:
-        # Default encoding for HTML is iso-8859-1.
-        # Other content types may have different default encoding,
-        # or in case of binary data, may have no encoding at all.
-        encoding = "iso-8859-1"
-        logger.debug("assuming encoding is {enc}", enc=encoding)
-    return encoding
-
-
 def _set_postfields(curl_obj: pycurl.Curl, postfields: str):
     postfieldsize = len(postfields)
     logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
@@ -104,13 +87,6 @@ def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
                  f"{f'&delete={del_index}' if p[0] == to_delete else ''}")
                 for p in policies]
     return "&".join(policies)
-
-
-def _prepare_headers(headers: dict) -> list:
-    """
-    Convert headers dictionary to list for PycURL.
-    """
-    return [f"{key}: {value}" for key, value in headers.items()]
 
 
 @dataclass
@@ -157,7 +133,7 @@ class WebAdminAdapter:
         self._auth_data = None
         self._chat_message_deque = deque(maxlen=512)
         self._rparser = RS2WebAdminResponseParser(
-            encoding=_read_encoding(self._headers))
+            encoding=self._read_encoding())
 
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
@@ -252,8 +228,7 @@ class WebAdminAdapter:
 
     def get_current_game(self) -> models.CurrentGame:
         headers = self._make_auth_headers()
-        c = pycurl.Curl()
-        resp = self._perform(self._current_game_url, curl_obj=c, headers=headers)
+        resp = self._perform(self._current_game_url, headers=headers)
         return self._rparser.parse_current_game(resp)
 
     def get_chat_messages(self) -> Sequence[models.ChatMessage]:
@@ -565,7 +540,7 @@ class WebAdminAdapter:
         logger.debug("url={url}, headers={headers}", url=url, headers=headers)
         if not headers:
             headers = self.BASE_HEADERS
-        headers = _prepare_headers(headers)
+        headers = self._headers_to_list()
 
         logger.debug("prepared headers={h}", h=headers)
 
@@ -583,7 +558,10 @@ class WebAdminAdapter:
         curl_obj.setopt(pycurl.FOLLOWLOCATION, True)
         curl_obj.setopt(pycurl.ENCODING, "gzip, deflate")
 
-        curl_obj.perform()
+        try:
+            curl_obj.perform()
+        except pycurl.error as e:
+            logger.exception(e)
 
         status = curl_obj.getinfo(pycurl.HTTP_CODE)
         logger.debug("HTTP status: {s}", s=status)
@@ -592,20 +570,14 @@ class WebAdminAdapter:
         if status != HTTPStatus.OK:
             hdrs = None
             try:
-                hdrs = self._headers[-1]
-            except IndexError:
+                hdrs = {k: v[-1] for k, v in self._headers.items()}
+            except (IndexError, KeyError):
                 pass
             logger.error("HTTP status error: {s}", s=status)
             raise HTTPError(url=url, msg="error performing request", code=status,
                             hdrs=hdrs, fp=None)
 
-        value = b""
-        try:
-            value = buffer.getvalue()
-        except pycurl.error as e:
-            logger.error("error on url={u}, error={e}", u=url, e=e)
-
-        return value
+        return buffer.getvalue()
 
     def _header_function(self, header_line):
         if "connection" in self._headers:
@@ -622,7 +594,7 @@ class WebAdminAdapter:
                                  t=type(self._headers["connection"]),
                                  le=len(self._headers["connection"]))
             except (KeyError, IndexError) as e:
-                logger.error("error: {e}", e=e, exc_info=True)
+                logger.exception(e)
 
         # HTTP standard specifies that headers are encoded in iso-8859-1.
         header_line = header_line.decode("iso-8859-1")
@@ -677,10 +649,10 @@ class WebAdminAdapter:
                 logger.error("cant get sessionid from headers")
                 return r
         except AttributeError as ae:
-            logger.error("error: {e}", e=ae)
+            logger.exception(ae)
             return r
         except Exception as e:
-            logger.error("error: {e}", e=e, exc_info=True)
+            logger.exception(e)
             return r
 
         return f'sessionid="{r}";'
@@ -789,6 +761,22 @@ class WebAdminAdapter:
             # Hash algorithm was not set.
             self._pw_hash = password
 
+    def _read_encoding(self, index: int = -1) -> str:
+        encoding = None
+        if "content-type" in self._headers:
+            content_type = self._headers["content-type"][index].lower()
+            match = re.search(r"charset=(\S+)", content_type)
+            if match:
+                encoding = match.group(1)
+                logger.debug("encoding is {enc}", enc=encoding)
+        if encoding is None:
+            # Default encoding for HTML is iso-8859-1.
+            # Other content types may have different default encoding,
+            # or in case of binary data, may have no encoding at all.
+            encoding = "iso-8859-1"
+            logger.debug("assuming encoding is {enc}", enc=encoding)
+        return encoding
+
     def _ue3_pw_hash_digest(self, username: str, password: str) -> str:
         """
         Calculate the hex digest used by Unreal Engine 3 WebAdmin,
@@ -797,6 +785,12 @@ class WebAdminAdapter:
         hash_alg = getattr(hashlib, self._hash_alg)
         return hash_alg(bytearray(password, "utf-8")
                         + bytearray(username, "utf-8")).hexdigest()
+
+    def _headers_to_list(self) -> list:
+        """
+        Convert headers dictionary to list for PycURL.
+        """
+        return [f"{key}: {value}" for key, value in self._headers.items()]
 
 
 class PlayerWrapper:
