@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import datetime
 from typing import List
@@ -5,6 +7,8 @@ from typing import Sequence
 from typing import Union
 
 from steam import SteamID
+
+from rs2wapy.adapters import adapters
 
 
 class Model(abc.ABC):
@@ -145,7 +149,9 @@ CHAT_CHANNEL_TO_STR = {
 
 
 class ChatMessage(Model):
-    def __init__(self, sender: Union[Player, str], text: str,
+    def __init__(self,
+                 sender: Union[Player, adapters.PlayerWrapper, str],
+                 text: str,
                  team: Team, channel: ChatChannel):
         super().__init__()
         self._sender = sender
@@ -162,6 +168,22 @@ class ChatMessage(Model):
 
     def __repr__(self) -> str:
         return f"{__class__.__name__}({self.__str__()})"
+
+    @property
+    def sender(self) -> Union[Player, adapters.PlayerWrapper, str]:
+        return self._sender
+
+    @property
+    def text(self) -> str:
+        return self._text
+
+    @property
+    def team(self) -> Team:
+        return self._team
+
+    @property
+    def channel(self) -> ChatChannel:
+        return self._channel
 
 
 class Scoreboard(list, abc.ABC):

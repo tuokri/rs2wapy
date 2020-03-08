@@ -589,7 +589,7 @@ class WebAdminAdapter:
         logger.debug("HTTP status: {s}", s=status)
         curl_obj.close()
 
-        if not status == HTTPStatus.OK:
+        if status != HTTPStatus.OK:
             logger.error("HTTP status error: {s}", s=status)
             raise HTTPError(self._webadmin_url, status, "error connecting to WebAdmin",
                             fp=None, hdrs=None)
