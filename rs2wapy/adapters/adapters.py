@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import List
 from typing import Sequence
 from typing import Type
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.parse import urlparse
 from urllib.parse import urlunparse
@@ -21,7 +22,6 @@ from urllib.parse import urlunparse
 import pycurl
 from logbook import Logger
 from logbook import StreamHandler
-from requests import HTTPError
 
 from rs2wapy._version import get_versions
 from rs2wapy.models import models
@@ -590,9 +590,14 @@ class WebAdminAdapter:
         curl_obj.close()
 
         if status != HTTPStatus.OK:
+            hdrs = None
+            try:
+                hdrs = self._headers[-1]
+            except IndexError:
+                pass
             logger.error("HTTP status error: {s}", s=status)
-            raise HTTPError(self._webadmin_url, status, "error connecting to WebAdmin",
-                            fp=None, hdrs=None)
+            raise HTTPError(url=url, msg="error performing request", code=status,
+                            hdrs=hdrs, fp=None)
 
         value = b""
         try:
