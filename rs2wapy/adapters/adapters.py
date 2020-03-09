@@ -478,11 +478,11 @@ class WebAdminAdapter:
     def session_ban_player(self, player: models.Player, reason: str):
         raise NotImplementedError
 
-    def get_map_cycles(self) -> dict:
+    def get_map_cycles(self) -> List[dict]:
         headers = self._make_auth_headers()
         resp = self._perform(self._map_list_url, headers=headers)
         map_list_indices = self._rparser.parse_map_list_indices(resp)
-        map_cycles = {}
+        map_cycles = []
 
         for mli, is_active in map_list_indices.items():
             c = pycurl.Curl()
@@ -491,27 +491,27 @@ class WebAdminAdapter:
             resp = self._perform(
                 self._map_list_url, curl_obj=c, headers=headers)
             maps = self._rparser.parse_map_cycle(resp)
-            map_cycles[mli] = {
+            map_cycles.append({
                 "active": is_active,
                 "maps": maps,
-            }
+            })
 
         return map_cycles
 
-    def set_map_cycles(self, map_cycles: dict):
+    def set_map_cycles(self, map_cycles: List[dict]):
         headers = self._make_auth_headers()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         active_count = 0
 
-        for idx, map_cycle in map_cycles.items():
-            if map_cycles["active"]:
+        for idx, m_cycle in enumerate(map_cycles):
+            if m_cycle["active"]:
                 active_count += 1
             if active_count != 1:
                 raise ValueError("exactly 1 map cycle must be active")
 
             postfields = urlencode({
                 "maplistidx": idx,
-                "mapcycle": map_cycle,
+                "mapcycle": m_cycle,
                 "action": "save",
             })
 
@@ -701,6 +701,7 @@ class WebAdminAdapter:
 
         parsed_html = self._rparser.parse_html(resp)
         token = ""
+        # TODO: Move to parsing.py.
         try:
             token = parsed_html.find(
                 "input", attrs={"name": "token"}).get("value")

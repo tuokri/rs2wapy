@@ -8,6 +8,7 @@ import re
 import sys
 from typing import List
 from typing import Sequence
+from typing import Tuple
 
 from bs4 import BeautifulSoup
 from logbook import Logger
@@ -20,6 +21,8 @@ StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
 TEAMCOLOR_PATTERN = re.compile(r"background: (.*);")
+ROUND_LIMIT_SUB_PATTERN = re.compile(r"\?RoundLimit=([0-9]*)")
+ROUND_LIMIT_MATCH_PATTERN = re.compile(r".*\?RoundLimit=([0-9]*).*")
 NO_PLAYERS = ["There are no players"]
 UNIQUE_ID_KEY = "Unique ID"
 TEAM_INDEX_KEY = "\xa0"
@@ -325,19 +328,32 @@ class RS2WebAdminResponseParser:
                 idx = int(mli.get("value"))
                 if idx >= 0:
                     is_active = "active" in mli.text.lower()
-                    # Map lists start from #1 in the WebAdmin UI.
-                    valid_idxs[idx + 1] = is_active
+                    valid_idxs[idx] = is_active
             except ValueError:
                 pass
 
         return valid_idxs
 
-    def parse_map_cycle(self, resp) -> List[str]:
+    def parse_map_cycle(self, resp) -> List[Tuple[str, int]]:
         parsed_html = self.parse_html(resp)
         maps = parsed_html.find(
             "textarea", attrs={"id": "mapcycle"}
         ).text
         maps = maps.split("\n")
+
+        round_limits = []
+        for m in maps:
+            rl = re.match(ROUND_LIMIT_MATCH_PATTERN, m)
+            if rl:
+                round_limits.append(int(rl.group(1)))
+            else:
+                round_limits.append(0)
+
+        if len(round_limits) != len(maps):
+            logger.error("round limit list and map list length mismatch")
+
+        maps = [(re.sub(ROUND_LIMIT_SUB_PATTERN, "", m), rl)
+                for m, rl in zip(maps, round_limits)]
         return maps
 
     @staticmethod
