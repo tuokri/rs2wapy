@@ -478,7 +478,7 @@ class WebAdminAdapter:
     def session_ban_player(self, player: models.Player, reason: str):
         raise NotImplementedError
 
-    def get_map_cycles(self) -> List[dict]:
+    def get_map_cycles(self) -> List[models.MapCycle]:
         headers = self._make_auth_headers()
         resp = self._perform(self._map_list_url, headers=headers)
         map_list_indices = self._rparser.parse_map_list_indices(resp)
@@ -491,20 +491,20 @@ class WebAdminAdapter:
             resp = self._perform(
                 self._map_list_url, curl_obj=c, headers=headers)
             maps = self._rparser.parse_map_cycle(resp)
-            map_cycles.append({
-                "active": is_active,
-                "maps": maps,
-            })
+            map_cycles.append(models.MapCycle(
+                active=is_active,
+                maps=maps,
+            ))
 
         return map_cycles
 
-    def set_map_cycles(self, map_cycles: List[dict]):
+    def set_map_cycles(self, map_cycles: List[models.MapCycle]):
         headers = self._make_auth_headers()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         active_count = 0
 
         for idx, m_cycle in enumerate(map_cycles):
-            if m_cycle["active"]:
+            if m_cycle.active:
                 active_count += 1
             if active_count != 1:
                 raise ValueError("exactly 1 map cycle must be active")
@@ -569,6 +569,7 @@ class WebAdminAdapter:
             curl_obj.perform()
         except pycurl.error as e:
             logger.exception(e)
+            raise
 
         status = curl_obj.getinfo(pycurl.HTTP_CODE)
         logger.debug("HTTP status: {s}", s=status)
@@ -580,8 +581,12 @@ class WebAdminAdapter:
                 hdrs = {k: v[-1] for k, v in self._headers.items()}
             except (IndexError, KeyError):
                 pass
-            logger.error("HTTP status error: {s}", s=status)
-            phrase = http.client.responses[status]
+            phrase = "error"
+            try:
+                phrase = http.client.responses[status]
+                logger.error("HTTP status error: {s}", s=status)
+            except KeyError:
+                pass
             raise HTTPError(url=url, msg=phrase,
                             code=status, hdrs=hdrs, fp=None)
 

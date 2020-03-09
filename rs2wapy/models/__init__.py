@@ -14,4 +14,5 @@ __all__ = [
     "TeamScoreboard",
     "BlueTeam",
     "RedTeam",
+    "MapCycle",
 ]

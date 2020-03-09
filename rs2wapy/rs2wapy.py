@@ -14,6 +14,7 @@ from rs2wapy.models import AccessPolicy
 from rs2wapy.models import AllTeam
 from rs2wapy.models import ChatMessage
 from rs2wapy.models import CurrentGame
+from rs2wapy.models import MapCycle
 from rs2wapy.models import Player
 from rs2wapy.models import PlayerScoreboard
 from rs2wapy.models import Team
@@ -139,8 +140,8 @@ class RS2WebAdmin:
                            reason: str):
         self._adapter.session_ban_player(player, reason)
 
-    def get_map_cycles(self) -> dict:
+    def get_map_cycles(self) -> List[MapCycle]:
         return self._adapter.get_map_cycles()
 
-    def set_map_cycles(self, map_cycles: dict):
+    def set_map_cycles(self, map_cycles: List[MapCycle]):
         self._adapter.set_map_cycles(map_cycles)

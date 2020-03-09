@@ -335,6 +335,9 @@ class RS2WebAdminResponseParser:
         return valid_idxs
 
     def parse_map_cycle(self, resp) -> List[Tuple[str, int]]:
+        """
+        Return list of tuples (map name, round limit).
+        """
         parsed_html = self.parse_html(resp)
         maps = parsed_html.find(
             "textarea", attrs={"id": "mapcycle"}

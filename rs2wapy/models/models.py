@@ -4,6 +4,7 @@ import abc
 import datetime
 from typing import List
 from typing import Sequence
+from typing import Tuple
 from typing import Union
 
 from steam import SteamID
@@ -269,4 +270,36 @@ class CurrentGame(Model):
 
 
 class AccessPolicy(Model):
-    pass
+    def __init__(self, ip_mask: str, policy):
+        super().__init__()
+        self._ip_mask = ip_mask
+        self._policy = policy
+
+
+class MapCycle(Model):
+    def __init__(self, maps: List[Tuple[str, int]], active: bool):
+        super().__init__()
+        self._maps = maps
+        self._active = active
+
+    @property
+    def active(self) -> bool:
+        return self._active
+
+    @active.setter
+    def active(self, active: bool):
+        self._active = active
+
+    @property
+    def maps(self) -> List[Tuple[str, int]]:
+        return self._maps
+
+    @maps.setter
+    def maps(self, maps: List[Tuple[str, int]]):
+        self._maps = maps
+
+    def __str__(self) -> str:
+        return f"{self._maps}"
+
+    def __repr__(self) -> str:
+        return f"{__class__.__name__}({self.__str__()})"
