@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import http.client
 import re
 import sys
 import threading
@@ -116,12 +117,16 @@ class AuthData:
 class WebAdminAdapter:
     BASE_HEADERS = {
         "User-Agent": USER_AGENT,
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept": ("text/html,application/xhtml+xml,application/xml;"
+                   "q=0.9,image/webp,image/apng,*/*;q=0.8,"
+                   "application/signed-exchange;v=b3;q=0.9"),
         "Accept-Language": "en-US,en;q=0.7,fi;q=0.3",
+        "Accept-Encoding": "gzip, deflate",
         "DNT": 1,
         "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": 1,
         "Referer": "",
+        "Cache-Control": "max-age=0",
     }
 
     def __init__(self, username: str, password: str, webadmin_url: str):
@@ -132,8 +137,6 @@ class WebAdminAdapter:
         self._hash_alg = ""
         self._auth_data = None
         self._chat_message_deque = deque(maxlen=512)
-        self._rparser = RS2WebAdminResponseParser(
-            encoding=self._read_encoding())
 
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
@@ -193,6 +196,11 @@ class WebAdminAdapter:
             (scheme, netloc, WEB_ADMIN_MAP_LIST_PATH.as_posix(),
              params, query, fragment)
         )
+
+        # Perform a dummy request to populate self._headers.
+        self._perform(self._webadmin_url, skip_auth=True)
+        self._rparser = RS2WebAdminResponseParser(
+            encoding=self._read_encoding())
 
         self._set_password_hash(username, password)
         self._authenticate()
@@ -353,7 +361,6 @@ class WebAdminAdapter:
 
         headers = self.BASE_HEADERS.copy()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-        headers["Accept-Encoding"] = "gzip, deflate"
 
         max_retries = 10
         retries = 0
@@ -539,8 +546,8 @@ class WebAdminAdapter:
 
         logger.debug("url={url}, headers={headers}", url=url, headers=headers)
         if not headers:
-            headers = self.BASE_HEADERS
-        headers = self._headers_to_list()
+            headers = self.BASE_HEADERS.copy()
+        headers = self._headers_to_list(headers)
 
         logger.debug("prepared headers={h}", h=headers)
 
@@ -574,8 +581,9 @@ class WebAdminAdapter:
             except (IndexError, KeyError):
                 pass
             logger.error("HTTP status error: {s}", s=status)
-            raise HTTPError(url=url, msg="error performing request", code=status,
-                            hdrs=hdrs, fp=None)
+            phrase = http.client.responses[status]
+            raise HTTPError(url=url, msg=phrase,
+                            code=status, hdrs=hdrs, fp=None)
 
         return buffer.getvalue()
 
@@ -733,8 +741,11 @@ class WebAdminAdapter:
         )
 
     def _wait_authenticated(self):
-        if self._auth_data.timed_out():
-            self._authenticate()
+        try:
+            if self._auth_data.timed_out():
+                self._authenticate()
+        except AttributeError as ae:
+            logger.exception(ae)
 
     def _make_auth_headers(self) -> dict:
         sessionid = self._auth_data.sessionid
@@ -786,11 +797,12 @@ class WebAdminAdapter:
         return hash_alg(bytearray(password, "utf-8")
                         + bytearray(username, "utf-8")).hexdigest()
 
-    def _headers_to_list(self) -> list:
+    @staticmethod
+    def _headers_to_list(headers: dict) -> list:
         """
         Convert headers dictionary to list for PycURL.
         """
-        return [f"{key}: {value}" for key, value in self._headers.items()]
+        return [f"{key}: {value}" for key, value in headers.items()]
 
 
 class PlayerWrapper:
