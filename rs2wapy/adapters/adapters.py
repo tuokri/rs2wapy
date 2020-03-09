@@ -259,16 +259,19 @@ class WebAdminAdapter:
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
         team_code = {
-            models.AllTeam: "-1",
-            models.RedTeam: "0",
-            models.BlueTeam: "1",
+            models.AllTeam: -1,
+            models.RedTeam: 0,
+            models.BlueTeam: 1,
         }[team]
 
-        postfields = f"ajax=1&message={message}&teamsay={team_code}"
-        c = pycurl.Curl()
-        _set_postfields(c, postfields)
+        postfields = {
+            "ajax": 1,
+            "message": message,
+            "teamsay": team_code,
+        }
 
-        resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
+        resp = self._perform(self._chat_data_url,
+                             postfields=postfields, headers=headers)
 
         chat_msgs = self._rparser.parse_chat_messages(resp)
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
@@ -286,10 +289,10 @@ class WebAdminAdapter:
         # Prevent caching with randomized parameter.
         url = f"{self._access_policy_url}?$(date +%s)"
 
-        c = pycurl.Curl()
-        resp = self._perform(url, curl_obj=c, headers=headers)
+        resp = self._perform(url, headers=headers)
         return self._rparser.parse_access_policy(resp)
 
+    # TODO: Refactor.
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
         """
         Add IP access policy.
@@ -325,13 +328,15 @@ class WebAdminAdapter:
         while not _in(ip_mask, policies) and (retries < max_retries):
             headers["Cookie"] = self._find_sessionid()
 
-            postfields = f"action={action}&ipmask={ip_mask}&policy={policy}"
-
-            c = pycurl.Curl()
-            _set_postfields(c, postfields)
+            postfields = {
+                "action": action,
+                "ipmask": ip_mask,
+                "policy": policy,
+            }
 
             try:
-                self._perform(self._access_policy_url, curl_obj=c, headers=headers)
+                self._perform(self._access_policy_url, headers=headers,
+                              postfields=postfields)
             except Exception as e:
                 logger.error(e, exc_info=True)
 
@@ -343,6 +348,7 @@ class WebAdminAdapter:
             return False
         return True
 
+    # TODO: Refactor.
     def delete_access_policy(self, ip_mask: str) -> bool:
         """
         Delete IP access policy.
@@ -406,6 +412,7 @@ class WebAdminAdapter:
         if url_extra is None:
             url_extra = {}
 
+        # TODO: Use urlencode here?
         url_extra_str = ""
         for key, value in url_extra.items():
             url_extra_str += f'"%"3F{key}"%"3D{value}'
@@ -415,28 +422,27 @@ class WebAdminAdapter:
                              "application/xml;q=0.9,image/webp,*/*;q=0.8")
         headers["Cache-Control"] = "max-age=0"
 
-        c_get = pycurl.Curl()
-        resp = self._perform(self._change_map_url, curl_obj=c_get, headers=headers)
+        resp = self._perform(self._change_map_url, headers=headers)
         mutator_group_count = self._rparser.parse_mutator_group_count(resp)
 
         map_prefix = new_map.split("-")[0]
         game_type = MAP_PREFIX_TO_GAME_TYPE[map_prefix]
 
-        postfields = (f'gametype={game_type}'
-                      f'&map={new_map}'
-                      f'&mutatorGroupCount={mutator_group_count}'
-                      f'&urlextra={url_extra_str}'
-                      f'&action=change')
+        postfields = {
+            "gametype": game_type,
+            "map": new_map,
+            "mutatorGroupCount": mutator_group_count,
+            "urlextra": url_extra_str,
+            "action": "change",
+        }
 
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-        c_post = pycurl.Curl()
-        _set_postfields(c_post, postfields)
-        self._perform(self._change_map_url, curl_obj=c_post, headers=headers)
+        self._perform(self._change_map_url, headers=headers,
+                      postfields=postfields)
 
     def get_maps(self) -> dict:
         headers = self._make_auth_headers()
-        c = pycurl.Curl()
-        resp = self._perform(self._change_map_url, curl_obj=c, headers=headers)
+        resp = self._perform(self._change_map_url, headers=headers)
         game_type_options = self._rparser.parse_game_type_options(resp)
 
         headers = self._make_auth_headers()
@@ -446,21 +452,21 @@ class WebAdminAdapter:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
         maps = {}
-
         for gto in game_type_options:
-            postfields = f"ajax=1&gametype={gto}"
-            c = pycurl.Curl()
-            _set_postfields(c, postfields)
+            postfields = {
+                "ajax": 1,
+                "gametype": gto,
+            }
             resp = self._perform(
-                self._change_map_data_url, curl_obj=c, headers=headers)
+                self._change_map_data_url, headers=headers,
+                postfields=postfields)
             maps[gto] = self._rparser.parse_map_options(resp)
 
         return maps
 
     def get_players(self) -> List[PlayerWrapper]:
         headers = self._make_auth_headers()
-        c = pycurl.Curl()
-        resp = self._perform(self._players_url, curl_obj=c, headers=headers)
+        resp = self._perform(self._players_url, headers=headers)
         players = self._rparser.parse_players(resp, adapter=self)
         return players
 
@@ -485,11 +491,12 @@ class WebAdminAdapter:
         map_cycles = []
 
         for mli, is_active in map_list_indices.items():
-            c = pycurl.Curl()
-            postfields = f"maplistidx={mli}"
-            _set_postfields(c, postfields)
+            postfields = {
+                "maplistidx": mli,
+            }
             resp = self._perform(
-                self._map_list_url, curl_obj=c, headers=headers)
+                self._map_list_url, headers=headers,
+                postfields=postfields)
             maps = self._rparser.parse_map_cycle(resp)
             map_cycles.append(models.MapCycle(
                 active=is_active,
@@ -509,16 +516,14 @@ class WebAdminAdapter:
             if active_count != 1:
                 raise ValueError("exactly 1 map cycle must be active")
 
-            postfields = urlencode({
+            postfields = {
                 "maplistidx": idx,
                 "mapcycle": m_cycle,
                 "action": "save",
-            })
+            }
 
-            c = pycurl.Curl()
-            _set_postfields(c, postfields)
             self._perform(
-                self._map_list_url, curl_obj=c, headers=headers)
+                self._map_list_url, headers=headers, postfields=postfields)
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():
@@ -528,21 +533,25 @@ class WebAdminAdapter:
 
     def _get_chat_messages_from_server(self) -> Sequence[models.ChatMessage]:
         headers = self._make_chat_headers()
-        postfields = "ajax=1"
-        c = pycurl.Curl()
-        _set_postfields(c, postfields)
-        resp = self._perform(self._chat_data_url, curl_obj=c, headers=headers)
+        postfields = {"ajax": 1}
+        resp = self._perform(self._chat_data_url, headers=headers,
+                             postfields=postfields)
         chat_msgs = self._rparser.parse_chat_messages(resp)
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
         return chat_msgs
 
     def _perform(self, url: str, curl_obj: pycurl.Curl = None,
-                 headers: dict = None, skip_auth=False) -> bytes:
+                 headers: dict = None, postfields: dict = None,
+                 skip_auth=False) -> bytes:
         if not skip_auth:
             self._wait_authenticated()
 
         if not curl_obj:
             curl_obj = pycurl.Curl()
+
+        if postfields:
+            postfields = urlencode(postfields)
+            _set_postfields(curl_obj, postfields)
 
         logger.debug("url={url}, headers={headers}", url=url, headers=headers)
         if not headers:
@@ -684,18 +693,18 @@ class WebAdminAdapter:
         else:
             pw = self._pw_hash
 
-        postfields = urlencode({
+        postfields = {
             "token": token,
             "password_hash": pw_hash,
             "username": self._username,
             "password": pw,
             "remember": remember,
-        })
+        }
 
-        c = pycurl.Curl()
-        _set_postfields(c, postfields)
-        return self._perform(self._webadmin_url, curl_obj=c,
-                             headers=headers, skip_auth=True)
+        return self._perform(
+            self._webadmin_url, postfields=postfields,
+            headers=headers, skip_auth=True,
+        )
 
     def _authenticate(self):
         resp = self._perform(self._webadmin_url, skip_auth=True)
@@ -768,8 +777,7 @@ class WebAdminAdapter:
         return headers
 
     def _set_password_hash(self, username: str, password: str):
-        c = pycurl.Curl()
-        resp = self._perform(self._webadmin_url, curl_obj=c, skip_auth=True)
+        resp = self._perform(self._webadmin_url, skip_auth=True)
         self._hash_alg = self._rparser.parse_hash_alg(resp)
         logger.debug("using hash algorithm: '{a}'", a=self._hash_alg)
         if self._hash_alg:
