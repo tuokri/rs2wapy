@@ -41,6 +41,16 @@ HEADERS_MAX_LEN = 50
 POLICIES = ["ACCEPT", "DENY"]
 REMEMBER_LOGIN_1M = 2678400
 
+BAN_EXP_UNITS = frozenset((
+    "Never",
+    "Hour",
+    "Day",
+    "Month",
+    "Year"
+))
+BAN_EXP_NUMBERS = range(13)
+BAN_EXP_PATTERN = re.compile(r"([0-9]*)\s?(.*)")
+
 MAP_PREFIX_TO_GAME_TYPE = {
     "VNTE": "ROGame.ROGameInfoTerritories",
     "VNSU": "ROGame.ROGameInfoSupremacy",
@@ -479,6 +489,19 @@ class WebAdminAdapter:
         # &__PickList_0=Disturbing+the+server&__PickList_1=Inappropriate+language
         # &__PickList_2=Insulting+other+player%28s%29&__PickList_3=Insulting+the+admin
         # &__IdType=0&__ExpNumber=1&__ExpUnit=Hour'
+        postfields = {
+            "action": "banid",
+            "playerid": "",
+            "playerkey": "",
+            "__Submitter": "",
+            "__UniqueId": "",
+            "__PlayerName": "",
+            "__Reason": "",
+            "__NotifyPlayers": 0,
+            "__IdType": 0,
+            "__ExpNumber": 1,
+            "__ExpUnit": "",
+        }
         raise NotImplementedError
 
     def session_ban_player(self, player: models.Player, reason: str):
