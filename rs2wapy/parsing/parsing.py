@@ -260,8 +260,7 @@ class RS2WebAdminResponseParser:
         # Not expecting this header to ever change order.
         # We could probably hard-code this...
         player_headers = [ph.text for ph in player_headers]
-        player_headers[
-            player_headers.index(TEAM_INDEX_KEY)] = "Team Index"
+        player_headers[player_headers.index(TEAM_INDEX_KEY)] = "Team Index"
 
         if (len(player_table) == 1) and player_table[0] == NO_PLAYERS:
             logger.debug("no players")
@@ -281,16 +280,22 @@ class RS2WebAdminResponseParser:
         # 'Unique ID' is just a hex-string of the user's SteamID64
         # anyway.
         id_index = player_headers.index(UNIQUE_ID_KEY)
-        del player_headers[id_index]
 
         players = []
         for player_row in player_table:
-            steam_id = player_row.pop(id_index)
+            steam_id = player_row[id_index]
+
+            try:
+                steam_id = int(steam_id, 16)
+            except ValueError as ve:
+                logger.error("unable to convert Unique ID to SteamID64")
+                logger.exception(ve)
+                steam_id = 0
 
             stats = {
                 key: value for key, value in zip(
-                    player_headers, player_row
-                )
+                    player_headers, player_row)
+                if key.lower() != "actions"
             }
 
             player = models.Player(
@@ -329,8 +334,9 @@ class RS2WebAdminResponseParser:
                 if idx >= 0:
                     is_active = "active" in mli.text.lower()
                     valid_idxs[idx] = is_active
-            except ValueError:
-                pass
+            except ValueError as ve:
+                logger.warning("{ve} during map list index conversion to int",
+                               ve=ve)
 
         return valid_idxs
 
@@ -367,6 +373,5 @@ class RS2WebAdminResponseParser:
             cols = [ele.text.strip() for ele in cols]
             if not cols:
                 continue
-            cols = [ele for ele in cols if ele]
             all_cols.append(cols)
         return all_cols

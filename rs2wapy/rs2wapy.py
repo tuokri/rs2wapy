@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import itertools
 import sys
 from typing import List
@@ -112,6 +114,9 @@ class RS2WebAdmin:
         """
         return self._adapter.get_current_game().team_scoreboard
 
+    def get_squads(self):
+        raise NotImplementedError
+
     def get_banned_players(self) -> dict:
         raise NotImplementedError
         # return self._adapter.get_banned_players()
@@ -120,9 +125,9 @@ class RS2WebAdmin:
         raise NotImplementedError
         # return self._adapter.get_tracked_players()
 
-    def get_access_policy(self) -> AccessPolicy:
+    def get_access_policies(self) -> List[AccessPolicy]:
         raise NotImplementedError
-        # return self._adapter.get_access_policy()
+        # return self._adapter.get_access_policies()
 
     def add_access_policy(self, ip_mask: str, policy: str):
         raise NotImplementedError
@@ -145,3 +150,15 @@ class RS2WebAdmin:
 
     def set_map_cycles(self, map_cycles: List[MapCycle]):
         self._adapter.set_map_cycles(map_cycles)
+
+    def get_advertisement_messages(self) -> List[str]:
+        raise NotImplementedError
+
+    def set_advertisement_messages(self, ad_msgs: List[str]):
+        raise NotImplementedError
+
+    def get_advertisement_interval(self) -> int:
+        raise NotImplementedError
+
+    def set_advertisement_interval(self, ad_interval: int):
+        raise NotImplementedError

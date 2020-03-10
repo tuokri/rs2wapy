@@ -24,6 +24,10 @@ class Model(abc.ABC):
     def timestamp(self, timestamp: datetime.datetime):
         self._timestamp = timestamp
 
+    def refresh(self):
+        """Update timestamp value."""
+        self.timestamp = datetime.datetime.now()
+
 
 HEX_COLOR_BLUE_TEAM = "#50A0F0"
 HEX_COLOR_RED_TEAM = "#E54927"
@@ -75,11 +79,11 @@ TEAM_TO_HEX_COLOR = {
     AllTeam: HEX_COLOR_ALL_TEAM,
 }
 
-_STEAM_ID_TYPE = Union[SteamID, int, str]
+STEAM_ID_TYPE = Union[SteamID, int, str]
 
 
 class Player(Model):
-    def __init__(self, steam_id: _STEAM_ID_TYPE, stats: dict = None):
+    def __init__(self, steam_id: STEAM_ID_TYPE, stats: dict = None):
         super().__init__()
 
         if not stats:
@@ -95,11 +99,15 @@ class Player(Model):
         else:
             raise ValueError(
                 f"invalid steam_id type: {type(steam_id)}, expected "
-                f"{_STEAM_ID_TYPE}")
+                f"{STEAM_ID_TYPE}")
 
     @property
     def stats(self) -> dict:
         return self._stats
+
+    @property
+    def steam_id(self) -> STEAM_ID_TYPE:
+        return self._steam_id
 
     def __str__(self) -> str:
         steam_id = (self._steam_id.as_64

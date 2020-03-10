@@ -838,6 +838,14 @@ class PlayerWrapper:
     def player(self) -> models.Player:
         return self._player
 
+    @property
+    def stats(self) -> dict:
+        return self._player.stats
+
+    @property
+    def steam_id(self) -> models.STEAM_ID_TYPE:
+        return self._player.steam_id
+
     def ban(self, reason: str, duration: str):
         self._adapter.ban_player(self.player, reason, duration)
 
@@ -857,4 +865,28 @@ class PlayerWrapper:
         raise NotImplementedError
 
     def untrack(self):
+        raise NotImplementedError
+
+    def role_kick(self):
+        raise NotImplementedError
+
+    def mute_voice(self):
+        raise NotImplementedError
+
+    def unmute_voice(self):
+        raise NotImplementedError
+
+    def attach_alias(self):
+        raise NotImplementedError
+
+    def attach_note(self):
+        raise NotImplementedError
+
+    def whisper(self):
+        raise NotImplementedError
+
+    def swap_team(self):
+        raise NotImplementedError
+
+    def make_member(self):
         raise NotImplementedError
