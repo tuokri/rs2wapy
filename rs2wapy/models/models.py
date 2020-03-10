@@ -105,7 +105,7 @@ class Player(Model):
         return self._stats
 
     @property
-    def steam_id(self) -> STEAM_ID_TYPE:
+    def steam_id(self) -> SteamID:
         return self._steam_id
 
     def __str__(self) -> str:

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import List
 from typing import Sequence
 from typing import Type
+from typing import Union
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.parse import urlparse
@@ -42,7 +43,6 @@ POLICIES = ["ACCEPT", "DENY"]
 REMEMBER_LOGIN_1M = 2678400
 
 BAN_EXP_UNITS = frozenset((
-    "Never",
     "Hour",
     "Day",
     "Month",
@@ -50,6 +50,7 @@ BAN_EXP_UNITS = frozenset((
 ))
 BAN_EXP_NUMBERS = range(13)
 BAN_EXP_PATTERN = re.compile(r"([0-9]*)\s?(.*)")
+BAN_ID_TYPE_STEAM_ID_64 = 1
 
 MAP_PREFIX_TO_GAME_TYPE = {
     "VNTE": "ROGame.ROGameInfoTerritories",
@@ -67,12 +68,13 @@ WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
 WEB_ADMIN_CURRENT_GAME_PATH = WEB_ADMIN_BASE_PATH / Path("current/")
 WEB_ADMIN_CHAT_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("chat/")
 WEB_ADMIN_CHAT_DATA_PATH = WEB_ADMIN_CHAT_PATH / Path("data/")
-WEB_ADMIN_ACCESS_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
+WEB_ADMIN_POLICY_PATH = WEB_ADMIN_BASE_PATH / Path("policy/")
 WEB_ADMIN_CHANGE_MAP_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("change/")
 WEB_ADMIN_CHANGE_MAP_DATA_PATH = WEB_ADMIN_CHANGE_MAP_PATH / Path("data/")
 WEB_ADMIN_PLAYERS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("players/")
 WEB_ADMIN_SETTINGS_PATH = WEB_ADMIN_BASE_PATH / Path("settings/")
 WEB_ADMIN_MAP_LIST_PATH = WEB_ADMIN_SETTINGS_PATH / Path("maplist/")
+WEB_ADMIN_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("bans/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -187,7 +189,7 @@ class WebAdminAdapter:
              params, query, fragment)
         )
         self._access_policy_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_ACCESS_POLICY_PATH.as_posix(),
+            (scheme, netloc, WEB_ADMIN_POLICY_PATH.as_posix(),
              params, query, fragment)
         )
         self._change_map_url = urlunparse(
@@ -204,6 +206,10 @@ class WebAdminAdapter:
         )
         self._map_list_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_MAP_LIST_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._bans_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_BANS_PATH.as_posix(),
              params, query, fragment)
         )
 
@@ -413,7 +419,7 @@ class WebAdminAdapter:
         return True
 
     def modify_access_policy(self, ip_mask: str, policy: str) -> bool:
-        pass
+        raise NotImplementedError
 
     def change_map(self, new_map: str, url_extra: dict = None):
         if new_map.lower() not in [m.lower() for m in self.get_maps()]:
@@ -430,7 +436,6 @@ class WebAdminAdapter:
         headers = self._make_auth_headers()
         headers["Accept"] = ("text/html,application/xhtml+xml,"
                              "application/xml;q=0.9,image/webp,*/*;q=0.8")
-        headers["Cache-Control"] = "max-age=0"
 
         resp = self._perform(self._change_map_url, headers=headers)
         mutator_group_count = self._rparser.parse_mutator_group_count(resp)
@@ -458,7 +463,6 @@ class WebAdminAdapter:
         headers = self._make_auth_headers()
         headers["Accept"] = ("text/html,application/xhtml+xml,"
                              "application/xml;q=0.9,image/webp,*/*;q=0.8")
-        headers["Cache-Control"] = "max-age=0"
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
         maps = {}
@@ -478,33 +482,66 @@ class WebAdminAdapter:
         headers = self._make_auth_headers()
         resp = self._perform(self._players_url, headers=headers)
         players = self._rparser.parse_players(resp, adapter=self)
+        logger.info("got {lp} players from server", lp=len(players))
         return players
 
-    def kick_player(self, player: models.Player, reason: str, duration: str):
+    def kick_player(self, player: Union[models.Player, PlayerWrapper],
+                    reason: str, notify_players: bool = False):
         raise NotImplementedError
 
-    def ban_player(self, player: models.Player, reason: str, duration: str):
-        # --data 'action=banid&playerid=256&playerkey=256_0x0110000103A3105D_107.1604&__Submitter=
-        # &__UniqueId=&__PlayerName=&__Reason=testban&__NotifyPlayers=1&__PickList_Length=4
-        # &__PickList_0=Disturbing+the+server&__PickList_1=Inappropriate+language
-        # &__PickList_2=Insulting+other+player%28s%29&__PickList_3=Insulting+the+admin
-        # &__IdType=0&__ExpNumber=1&__ExpUnit=Hour'
+    def ban_player(self, player: Union[models.Player, PlayerWrapper],
+                   reason: str, duration: str, notify_players: bool = False):
+        # ISteamUser.GetPlayerSummaries(steamids="")["response"]["players"][0]["personaname"]
+
+        steam_id = player.steam_id.as_64
+
+        name = ""
+        try:
+            # TODO: Use Steam WebAPI.
+            raise Exception("TODO")
+        except Exception as e:
+            logger.info("unable to resolve player name via Steam API, "
+                        "falling back to name stored in WebAdmin "
+                        "('{e}' occurred)", e=e)
+            logger.debug("{e}", e=e, exc_info=True)
+            try:
+                name = player.stats["Player name"]
+            except KeyError:
+                logger.warn("unable to get player name")
+
+        exp_number = ""
+        exp_unit = "Never"
+
+        if duration:
+            # noinspection PyBroadException
+            try:
+                exp_number, exp_unit = self._parse_ban_duration(duration)
+            except Exception:
+                logger.warning("invalid ban duration")
+
         postfields = {
-            "action": "banid",
-            "playerid": "",
-            "playerkey": "",
+            "action": "add",
             "__Submitter": "",
-            "__UniqueId": "",
-            "__PlayerName": "",
-            "__Reason": "",
-            "__NotifyPlayers": 0,
-            "__IdType": 0,
-            "__ExpNumber": 1,
-            "__ExpUnit": "",
+            "__UniqueId": steam_id,
+            "__PlayerName": name,
+            "__Reason": reason,
+            "__NotifyPlayers": int(notify_players),
+            "__IdType": BAN_ID_TYPE_STEAM_ID_64,
+            "__ExpNumber": exp_number,
+            "__ExpUnit": exp_unit,
         }
+
+        headers = self._make_auth_headers()
+        headers["Content-Type"] = "application/x-www-form-urlencoded"
+        self._perform(
+            self._bans_url, headers=headers, postfields=postfields)
+
+    def session_ban_player(self, player: Union[models.Player, PlayerWrapper],
+                           reason: str, notify_players: bool = False):
         raise NotImplementedError
 
-    def session_ban_player(self, player: models.Player, reason: str):
+    def revoke_player_ban(self, player: Union[models.Player, PlayerWrapper]):
+        # action=revoke&uniqueid=0x01100001013F76D0&playername=&__Submitter=
         raise NotImplementedError
 
     def get_map_cycles(self) -> List[models.MapCycle]:
@@ -839,6 +876,24 @@ class WebAdminAdapter:
         """
         return [f"{key}: {value}" for key, value in headers.items()]
 
+    @staticmethod
+    def _parse_ban_duration(duration: str):
+        try:
+            duration = duration.lower().strip()
+            m = re.match(BAN_EXP_PATTERN, duration)
+            ban_duration = int(m.group(1))
+            duration_unit = m.group(2)
+            logger.debug("duration_unit: {du}", du=duration_unit)
+            if duration_unit not in [b.lower() for b in BAN_EXP_UNITS]:
+                raise ValueError("invalid duration unit")
+            duration_unit = duration_unit[0].upper() + duration_unit[1:]
+            return ban_duration, duration_unit
+        except Exception as e:
+            logger.debug("error parsing ban duration string: {e}",
+                         e=e, exc_info=True)
+            opt_info = f"{e}" if isinstance(e, ValueError) else ""
+            raise ValueError(f"error parsing ban duration string{opt_info}")
+
 
 class PlayerWrapper:
     """Wrapper around models.Player, providing functionality
@@ -864,17 +919,32 @@ class PlayerWrapper:
         return self._player.stats
 
     @property
-    def steam_id(self) -> models.STEAM_ID_TYPE:
+    def name(self) -> str:
+        """Player's name as stored in RS2 WebAdmin."""
+        return self._player.stats["Player name"]
+
+    @property
+    def persona_name(self) -> str:
+        """Player's Steam persona (profile) name."""
+        # TODO: Use Steam WebAPI.
+        raise NotImplementedError
+
+    @property
+    def steam_id(self) -> models.SteamID:
         return self._player.steam_id
 
-    def ban(self, reason: str, duration: str):
-        self._adapter.ban_player(self.player, reason, duration)
+    def ban(self, reason: str, duration: str = None,
+            notify_players: bool = False):
+        self._adapter.ban_player(self.player, reason, duration,
+                                 notify_players)
 
-    def kick(self, reason: str, duration: str):
-        self._adapter.kick_player(self.player, reason, duration)
+    def kick(self, reason: str, notify_players: bool = False):
+        self._adapter.kick_player(self.player, reason,
+                                  notify_players)
 
-    def session_ban(self, reason: str):
-        self._adapter.session_ban_player(self.player, reason)
+    def session_ban(self, reason: str, notify_players: bool = False):
+        self._adapter.session_ban_player(self.player, reason,
+                                         notify_players)
 
     def revoke_ban(self):
         raise NotImplementedError

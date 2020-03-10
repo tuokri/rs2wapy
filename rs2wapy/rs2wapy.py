@@ -134,16 +134,65 @@ class RS2WebAdmin:
         # self._adapter.add_access_policy(ip_mask, policy)
 
     def ban_player(self, player: Union[Player, PlayerWrapper],
-                   reason: str, duration: str):
-        self._adapter.ban_player(player, reason, duration)
+                   reason: str, duration: str = None,
+                   notify_players: bool = False):
+        # TODO: Use correct notation when referring to
+        #  "external" variables in the docstring.
+        """Ban player from the server.
+
+        :param player:
+            The player to ban.
+        :param reason:
+            Ban reason.
+        :param duration:
+            Duration string. Ban is permanent if no
+            duration string is supplied.
+
+            If the string is ill-formed,
+            the ban will be interpreted as permanent.
+
+            The expected format is '{length}{ws}{unit}',
+            where {length} is a positive integer, {ws}
+            is an optional whitespace and {unit} is one of
+            `rs2wapy.adapters.BAN_EXP_UNITS`. The string is
+            case-insensitive.
+
+            Example duration strings:
+            '4 Hour'
+            '3day'
+            '1Year'
+        :param notify_players:
+            If True, notify players on the server.
+        """
+        self._adapter.ban_player(player, reason, duration,
+                                 notify_players)
 
     def kick_player(self, player: Union[Player, PlayerWrapper],
-                    reason: str, duration: str):
-        self._adapter.kick_player(player, reason, duration)
+                    reason: str, notify_players: bool = False):
+        """Kick player from the server.
+
+        :param player:
+            The player to kick.
+        :param reason:
+            Kick reason.
+        :param notify_players:
+            If True, notify players on the server.
+        """
+        self._adapter.kick_player(player, reason, notify_players)
 
     def session_ban_player(self, player: Union[Player, PlayerWrapper],
-                           reason: str):
-        self._adapter.session_ban_player(player, reason)
+                           reason: str, notify_players: bool = False):
+        """Session ban player from the server.
+        Session bans reset when the server changes level.
+
+        :param player:
+            The player to ban.
+        :param reason:
+            Session ban reason.
+        :param notify_players:
+            If True, notify players on the server.
+        """
+        self._adapter.session_ban_player(player, reason, notify_players)
 
     def get_map_cycles(self) -> List[MapCycle]:
         return self._adapter.get_map_cycles()
