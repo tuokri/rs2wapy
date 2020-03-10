@@ -96,10 +96,13 @@ class RS2WebAdminResponseParser:
         return policies
 
     def parse_current_game(self, resp: bytes) -> models.CurrentGame:
+        """TODO: headers vs. rows length assertion!"""
         parsed_html = self.parse_html(resp)
 
         info = {}
         rules = {}
+        p_scores = {}
+        t_scores = {}
 
         logger.info("parsing Ranked status")
         ranked = parsed_html.find(
@@ -110,37 +113,36 @@ class RS2WebAdminResponseParser:
         logger.info("parsing player scoreboard")
         player_scoreboard_table = parsed_html.find(
             "table", attrs={"id": "players"})
-        player_scoreboard = models.PlayerScoreboard()
         player_scoreboard_thead = player_scoreboard_table.find("thead")
-        headers = player_scoreboard_thead.find_all(
+        p_thead = player_scoreboard_thead.find_all(
             "a", attrs={"class": "sortable"})
-        header = ["Team"]
-        header.extend([h.text.strip() for h in headers])
-        header.extend(["Admin", "Spectator"])
-        player_scoreboard.header = header
+        p_headers = ["Team"]
+        p_headers.extend([h.text.strip() for h in p_thead])
+        p_headers.extend(["Admin", "Spectator"])
 
-        row_elements = player_scoreboard_table.find_all("tr")
-        scoreboard_parsed = self._parse_table(row_elements)
-        for cols in scoreboard_parsed:
-            cols[0] = "North" if cols[0] == "0" else "South"
-            player_scoreboard.append(cols)
+        p_row_elements = player_scoreboard_table.find_all("tr")
+        p_scoreboard_parsed = self._parse_table(p_row_elements)
+        for p_cols in p_scoreboard_parsed:
+            p_cols[0] = "North" if p_cols[0] == "0" else "South"
+            for p_key, p_col in zip(p_headers, p_cols):
+                p_scores[p_key] = p_col
+        player_scoreboard = models.PlayerScoreboard(stats=p_scores)
 
         logger.info("parsing team scoreboard")
         team_scoreboard_table = parsed_html.find(
             "table", attrs={"id": "teams"})
-        team_scoreboard = models.TeamScoreboard()
-        team_scoreboard_thead = team_scoreboard_table.find("thead")
-        headers = team_scoreboard_thead.find_all("th")
-        headers = [h.text.strip() for h in headers if h.text.strip()]
-        team_scoreboard.header = headers
+        t_thead = team_scoreboard_table.find("thead")
+        t_headers = t_thead.find_all("th")
+        t_headers = [h.text.strip() for h in t_headers]
+        t_headers = ["Team Index"] + t_headers[1:]
 
-        row_elements = team_scoreboard_table.find_all("tr")
-        scoreboard_parsed = self._parse_table(row_elements)
-        for cols in scoreboard_parsed:
-            cols = cols[1:]
-            if not len(cols) == len(scoreboard_parsed[0]):
-                cols.append("")
-            team_scoreboard.append(cols)
+        t_row_elements = team_scoreboard_table.find_all("tr")
+        t_scoreboard_parsed = self._parse_table(t_row_elements)
+        for t_cols in t_scoreboard_parsed:
+            for t_key, t_col in zip(t_headers, t_cols):
+                t_scores[t_key] = t_col
+
+        team_scoreboard = models.TeamScoreboard(stats=t_scores)
 
         logger.info("parsing currentGame and currentRules")
         info_element = parsed_html.find("dl", attrs={"id": "currentGame"})

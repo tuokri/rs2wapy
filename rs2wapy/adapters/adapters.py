@@ -649,9 +649,7 @@ class WebAdminAdapter:
             self._headers[name] = value
 
     def _find_sessionid(self) -> str:
-        """
-        Find latest session ID in headers.
-        """
+        """Find latest session ID in headers."""
         # 'sessionid="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
         r = ""
         try:
@@ -668,7 +666,7 @@ class WebAdminAdapter:
             else:
                 logger.error(
                     "type(_headers['set-cookie']) == {t}", t=type(self._headers["set-cookie"]))
-                logger.error("cant get sessionid from headers")
+                logger.error("cannot get sessionid from headers")
                 return r
         except AttributeError as ae:
             logger.exception(ae)

@@ -3,7 +3,6 @@ from __future__ import annotations
 import abc
 import datetime
 from typing import List
-from typing import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -195,35 +194,23 @@ class ChatMessage(Model):
         return self._channel
 
 
-class Scoreboard(list, abc.ABC):
-    def __init__(self, seq: Sequence = (), header: List[str] = None):
-        super().__init__(seq)
-        if not header:
-            header = []
-        self._header = header
+class Scoreboard(abc.ABC):
+    def __init__(self, stats: dict):
+        self._stats = stats
 
-    @property
-    def header(self) -> List[str]:
-        return self._header
+    def __str__(self) -> str:
+        return self._stats.__str__()
 
-    @header.setter
-    def header(self, header: List[str]):
-        self._header = header
+    def __repr__(self) -> str:
+        return f"{__class__}({self.__str__()})"
 
 
 class PlayerScoreboard(Scoreboard):
-    """
-    PlayerScoreboard does not store player IDs because deducing
-    them from WebAdmin scoreboard is not reliable.
-    """
-
-    def __init__(self, seq: Sequence = (), header: List[str] = None):
-        super().__init__(seq, header)
+    pass
 
 
 class TeamScoreboard(Scoreboard):
-    def __init__(self, seq: Sequence = (), header: List[str] = None):
-        super().__init__(seq, header)
+    pass
 
 
 class CurrentGame(Model):
