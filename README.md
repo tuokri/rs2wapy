@@ -17,15 +17,17 @@ Follow development at https://discord.gg/6tgWHpM
 pip install rs2wapy
 ```
 
-##### Steam Web API key
+##### Steam Web API key (optional)
 Setting your Steam Web API key as an environment variable
 allows `rs2wapy` to offer some extra functionality.
+
+Unix:
 ```bash
-# Unix.
 export STEAM_WEB_API_KEY="TOPSECRETKEY"
 ```
+
+Windows:
 ```Batchfile
-# Windows.
 set STEAM_WEB_API_KEY="TOPSECRETKEY"
 ```
 
