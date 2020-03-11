@@ -256,6 +256,10 @@ class WebAdminAdapter:
         self._auth_data = auth_data
 
     @property
+    def steam_web_api(self) -> steam.webapi.WebAPI:
+        return self._steam_web_api
+
+    @property
     def _pw_hash(self) -> str:
         return base64.decodebytes(self._password_hash).decode("utf-8")
 
@@ -913,6 +917,9 @@ class PlayerWrapper:
     def __init__(self, player: models.Player, adapter: WebAdminAdapter):
         self._player = player
         self._adapter = adapter
+        self._persona_name = ""
+        if self._adapter.steam_web_api:
+            self._persona_name = self._get_persona_name()
 
     def __str__(self) -> str:
         return self._player.__str__()
@@ -926,6 +933,9 @@ class PlayerWrapper:
 
     @property
     def stats(self) -> dict:
+        """Player's stats as displayed in RS2 WebAdmin's
+        'Players' table.
+        """
         return self._player.stats
 
     @property
@@ -936,8 +946,7 @@ class PlayerWrapper:
     @property
     def persona_name(self) -> str:
         """Player's Steam persona (profile) name."""
-        # TODO: Use Steam WebAPI.
-        raise NotImplementedError
+        return self._persona_name
 
     @property
     def steam_id(self) -> models.SteamID:
@@ -991,3 +1000,11 @@ class PlayerWrapper:
 
     def make_member(self):
         raise NotImplementedError
+
+    def _get_persona_name(self) -> str:
+        try:
+            return self._adapter.steam_web_api.ISteamUser.GetPlayerSummaries(
+                steamids=self.player.steam_id)["response"]["players"][0]["personaname"]
+        except Exception as e:
+            logger.debug(e, exc_info=True)
+            logger.warning("unable to get persona name")
