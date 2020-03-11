@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import http.client
+import os
 import re
 import sys
 import threading
@@ -22,6 +23,8 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 import pycurl
+import requests.exceptions
+import steam
 from logbook import Logger
 from logbook import StreamHandler
 
@@ -150,6 +153,18 @@ class WebAdminAdapter:
         self._auth_data = None
         self._chat_message_deque = deque(maxlen=512)
 
+        self._steam_web_api = None
+        try:
+            steam_api_key = os.environ["STEAM_WEB_API_KEY"]
+            self._steam_web_api = steam.webapi.WebAPI(steam_api_key)
+        except KeyError:
+            logger.info("'STEAM_WEB_API_KEY' environment variable not set, "
+                        "some features are not available")
+        except requests.exceptions.HTTPError as e:
+            logger.debug(e, exc_info=True)
+            logger.warning("unable to initialize Steam Web API, "
+                           "some features are not available")
+
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
                      "path={path}, params={params}, query={query}, fragment={fragment}",
@@ -270,8 +285,7 @@ class WebAdminAdapter:
         return chat_msgs
 
     def post_chat_message(self, message: str, team: Type[models.Team]):
-        """Post chat message to RS2 WebAdmin server.
-        """
+        """Post chat message to RS2 WebAdmin server."""
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
         team_code = {
@@ -310,8 +324,7 @@ class WebAdminAdapter:
 
     # TODO: Refactor.
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
-        """
-        Add IP access policy.
+        """Add IP access policy.
 
         :param ip_mask:
             IP mask of the policy to be added.
@@ -366,8 +379,7 @@ class WebAdminAdapter:
 
     # TODO: Refactor.
     def delete_access_policy(self, ip_mask: str) -> bool:
-        """
-        Delete IP access policy.
+        """Delete IP access policy.
 
         :param ip_mask:
             IP mask of the access policy to be deleted.
@@ -491,14 +503,12 @@ class WebAdminAdapter:
 
     def ban_player(self, player: Union[models.Player, PlayerWrapper],
                    reason: str, duration: str, notify_players: bool = False):
-        # ISteamUser.GetPlayerSummaries(steamids="")["response"]["players"][0]["personaname"]
-
         steam_id = player.steam_id.as_64
 
         name = ""
         try:
-            # TODO: Use Steam WebAPI.
-            raise Exception("TODO")
+            name = self._steam_web_api.ISteamUser.GetPlayerSummaries(
+                steamids=steam_id)["response"]["players"][0]["personaname"]
         except Exception as e:
             logger.info("unable to resolve player name via Steam API, "
                         "falling back to name stored in WebAdmin "
