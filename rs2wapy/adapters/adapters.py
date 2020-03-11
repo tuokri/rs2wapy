@@ -5,7 +5,6 @@ import datetime
 import hashlib
 import http.client
 import os
-import re
 import sys
 import threading
 import time
@@ -25,6 +24,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 import pycurl
+import regex as re
 import requests.exceptions
 import steam
 from logbook import Logger
@@ -53,8 +53,11 @@ BAN_EXP_UNITS = frozenset((
     "Month",
     "Year"
 ))
-BAN_EXP_NUMBERS = range(13)
-BAN_EXP_PATTERN = re.compile(r"([0-9]*)\s?(.*)")
+BAN_EXP_NUMBER_MAX = 365
+# WebAdmin limits to [0, 12] but larger numbers also work.
+BAN_EXP_NUMBERS = range(BAN_EXP_NUMBER_MAX)
+BAN_EXP_PATTERN = re.compile(r"([0-9]*)\s?(\L<units>)",
+                             units=[b.lower() for b in BAN_EXP_UNITS])
 BAN_ID_TYPE_STEAM_ID_64 = 1
 
 MAP_PREFIX_TO_GAME_TYPE = {
@@ -898,10 +901,11 @@ class WebAdminAdapter:
             duration = duration.lower().strip()
             m = re.match(BAN_EXP_PATTERN, duration)
             ban_duration = int(m.group(1))
+            # Clamp.
+            ban_duration = max(min(BAN_EXP_NUMBERS),
+                               min(ban_duration, max(BAN_EXP_NUMBERS)))
             duration_unit = m.group(2)
             logger.debug("duration_unit: {du}", du=duration_unit)
-            if duration_unit not in [b.lower() for b in BAN_EXP_UNITS]:
-                raise ValueError("invalid duration unit")
             duration_unit = duration_unit[0].upper() + duration_unit[1:]
             return ban_duration, duration_unit
         except Exception as e:
