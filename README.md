@@ -17,7 +17,21 @@ Follow development at https://discord.gg/6tgWHpM
 pip install rs2wapy
 ```
 
+##### Steam Web API key
+Setting your Steam Web API key as an environment variable
+allows `rs2wapy` to offer some extra functionality.
+```bash
+# Unix.
+export STEAM_WEB_API_KEY="TOPSECRETKEY"
+```
+```Batchfile
+# Windows.
+set STEAM_WEB_API_KEY="TOPSECRETKEY"
+```
+
 ##### Quickstart
+It is recommended to create a new WebAdmin account for
+`rs2wapy`.
 ```python
 from rs2wapy import RS2WebAdmin
 
@@ -28,7 +42,7 @@ wa = RS2WebAdmin(
 )
 ```
 
-##### Poll server ranked status and switch map automatically.
+##### Poll server ranked status and switch map automatically
 ```python
 while True:
     if not wa.get_current_game().ranked:
