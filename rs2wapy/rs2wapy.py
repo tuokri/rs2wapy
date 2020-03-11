@@ -48,9 +48,9 @@ class RS2WebAdmin:
     def post_chat_message(self, message: str, team: Type[Team] = AllTeam):
         """Post new chat message, visible to specific team(s).
 
-        :param: message:
+        :param message:
             The chat message to post.
-        :param: team:
+        :param team:
             The team the message is visible to.
         """
         self._adapter.post_chat_message(message, team)
@@ -63,9 +63,9 @@ class RS2WebAdmin:
     def change_map(self, new_map: str, url_extra: dict = None):
         """Change map.
 
-        :param: new_map:
+        :param new_map:
             New map name string.
-        :param: url_extra:
+        :param url_extra:
             Dictionary, with extra URL variables as keys
             and URL variable values as values.
 
