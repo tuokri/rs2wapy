@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import datetime
 import hashlib
 import http.client
 import os
@@ -927,6 +928,10 @@ class PlayerWrapper:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__str__()})"
+
+    @property
+    def timestamp(self) -> datetime.datetime:
+        return self._player.timestamp
 
     @property
     def player(self) -> models.Player:
