@@ -47,6 +47,11 @@ class RS2WebAdmin:
 
     def post_chat_message(self, message: str, team: Type[Team] = AllTeam):
         """Post new chat message, visible to specific team(s).
+
+        :param: message:
+            The chat message to post.
+        :param: team:
+            The team the message is visible to.
         """
         self._adapter.post_chat_message(message, team)
 
@@ -56,9 +61,13 @@ class RS2WebAdmin:
         return self._adapter.get_current_game()
 
     def change_map(self, new_map: str, url_extra: dict = None):
-        """Change map. New map name is provided as a string.
-        The url_extra parameter is a dictionary, with extra
-        URL variables as keys and URL variable values as values.
+        """Change map.
+
+        :param: new_map:
+            New map name string.
+        :param: url_extra:
+            Dictionary, with extra URL variables as keys
+            and URL variable values as values.
 
         Example call:
         change_map("VNTE-Resort", url_extra={
@@ -186,7 +195,7 @@ class RS2WebAdmin:
         Session bans reset when the server changes level.
 
         :param player:
-            The player to ban.
+            The player to session ban.
         :param reason:
             Session ban reason.
         :param notify_players:
