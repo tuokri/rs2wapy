@@ -15,6 +15,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import List
 from typing import Sequence
+from typing import Tuple
 from typing import Type
 from typing import Union
 from urllib.error import HTTPError
@@ -884,14 +885,14 @@ class WebAdminAdapter:
                         + bytearray(username, "utf-8")).hexdigest()
 
     @staticmethod
-    def _headers_to_list(headers: dict) -> list:
+    def _headers_to_list(headers: dict) -> List[str]:
         """
         Convert headers dictionary to list for PycURL.
         """
         return [f"{key}: {value}" for key, value in headers.items()]
 
     @staticmethod
-    def _parse_ban_duration(duration: str):
+    def _parse_ban_duration(duration: str) -> Tuple[int, str]:
         try:
             duration = duration.lower().strip()
             m = re.match(BAN_EXP_PATTERN, duration)
