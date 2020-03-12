@@ -14,6 +14,7 @@ setuptools.setup(
     name="rs2wapy",
     version=versioneer.get_version(),
     packages=setuptools.find_packages(),
+    package_dir={"rs2wapy": "rs2wapy"},
     url="https://github.com/tuokri/rs2wapy",
     author="tuokri",
     author_email="tuokri@tuta.io",
@@ -26,7 +27,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    cmd_class=versioneer.get_cmdclass(),
+    cmdclass=versioneer.get_cmdclass(),
     python_requires=">=3.7",
     install_requires=[
         "beautifulsoup4",
