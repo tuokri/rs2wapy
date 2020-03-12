@@ -1,4 +1,5 @@
 # rs2wapy
+[![Discord](https://img.shields.io/discord/684326231210328074?label=Discord)](https://discord.gg/6tgWHpM)
 
 ### Rising Storm 2: Vietnam WebAdmin Python Interface
 Provides a Python interface for performing RS2 WebAdmin
@@ -6,10 +7,11 @@ tasks programmatically.
 
 **Work in progress; interface will change!**
 
-Follow development at https://discord.gg/6tgWHpM
-
 
 ### Brief Usage Examples
+This section contains some brief usage examples.
+For more comprehensive tutorials check out the
+[examples repository](https://github.com/tuokri/rs2wapy-examples).
 
 ##### Installation
 ```bash
