@@ -2,13 +2,8 @@ import setuptools
 
 import versioneer
 
-long_description = """
-Provides programmable interface to Rising Storm 2: Vietnam
-WebAdmin for building server management automation applications.
-
-The library uses PycURL internally to communicate with RS2
-WebAdmin.
-"""
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
     name="rs2wapy",
@@ -20,6 +15,7 @@ setuptools.setup(
     author_email="tuokri@tuta.io",
     description="Rising Storm 2: Vietnam WebAdmin Python Interface",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     keywords="automation webadmin ue3 rcon",
     classifiers=[
         "Programming Language :: Python :: 3.7",

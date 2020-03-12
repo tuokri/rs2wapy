@@ -5,6 +5,8 @@
 Provides a Python interface for performing RS2 WebAdmin
 tasks programmatically.
 
+The library uses PycURL internally to communicate with RS2 WebAdmin.
+
 **Work in progress; interface will change!**
 
 
