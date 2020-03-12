@@ -26,7 +26,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    cmdclass=versioneer.get_cmdclass(),
     python_requires=">=3.7",
     install_requires=[
         "beautifulsoup4",
