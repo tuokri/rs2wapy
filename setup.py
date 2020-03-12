@@ -35,5 +35,6 @@ setuptools.setup(
         "soupsieve",
         "requests",
         "steam",
+        "regex",
     ]
 )
