@@ -393,6 +393,52 @@ class RS2WebAdminResponseParser:
                 for m, rl in zip(maps, round_limits)]
         return maps
 
+    def parse_squads(self, resp: bytes,
+                     adapter: adapters.WebAdminAdapter
+                     ) -> List[adapters.SquadWrapper]:
+        parsed_html = self.parse_html(resp)
+        parsed_html = parsed_html.find("table", attrs={"id": "squads"})
+
+        squads_table = parsed_html.find("tbody")
+        squads_table = squads_table.find_all("tr")
+        squads_table = self._parse_table(squads_table)
+
+        squads = []
+        for row in squads_table:
+            teamcolor = models.HEX_COLOR_UNKNOWN_TEAM
+            try:
+                teamcolor = re.match(TEAMCOLOR_PATTERN, row[0]).groups()[0]
+            except IndexError as ie:
+                logger.error("error getting teamcolor: {e}", e=ie)
+            team = models.Team.from_hex_color(teamcolor)
+
+            number = -1
+            try:
+                number = int(row[1])
+            except Exception as e:
+                logger.error("unable to get squad number: {e}", e=e)
+
+            name = ""
+            try:
+                number = row[2]
+            except Exception as e:
+                logger.error("unable to get squad number: {e}", e=e)
+
+            squads.append(models.Squad(
+                team=team,
+                number=number,
+                name=name,
+            ))
+
+        squad_wrappers = [
+            adapters.SquadWrapper(
+                squad=squad,
+                adapter=adapter,
+            ) for squad in squads
+        ]
+
+        return squad_wrappers
+
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:
         all_cols = []

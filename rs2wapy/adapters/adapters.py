@@ -44,6 +44,7 @@ HEADERS_MAX_LEN = 50
 POLICIES = ["ACCEPT", "DENY"]
 REMEMBER_LOGIN_1M = 2678400
 
+BAN_EXP_UNIT_PERM = "Never"
 BAN_EXP_UNITS = frozenset((
     "Hour",
     "Day",
@@ -80,6 +81,7 @@ WEB_ADMIN_PLAYERS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("players/")
 WEB_ADMIN_SETTINGS_PATH = WEB_ADMIN_BASE_PATH / Path("settings/")
 WEB_ADMIN_MAP_LIST_PATH = WEB_ADMIN_SETTINGS_PATH / Path("maplist/")
 WEB_ADMIN_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("bans/")
+WEB_ADMIN_SQUADS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("squads/")
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -215,6 +217,10 @@ class WebAdminAdapter:
         )
         self._bans_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_BANS_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._squads_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_SQUADS_PATH.as_posix(),
              params, query, fragment)
         )
 
@@ -500,7 +506,7 @@ class WebAdminAdapter:
             name = player.name
 
         exp_number = ""
-        exp_unit = "Never"
+        exp_unit = BAN_EXP_UNIT_PERM = "Never"
 
         if duration:
             # noinspection PyBroadException
@@ -576,8 +582,8 @@ class WebAdminAdapter:
                 self._map_list_url, headers=headers, postfields=postfields)
 
     def get_squads(self) -> List[SquadWrapper]:
-        # TODO:
-        return []
+        resp = self._perform(self._squads_url)
+        return self._rparser.parse_squads(resp, adapter=self)
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():

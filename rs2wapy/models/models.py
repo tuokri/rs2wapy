@@ -328,5 +328,14 @@ class MapCycle(Model):
 
 
 class Squad(Model):
-    def __init__(self):
+    def __init__(self, team: Team, number: int, name: str):
         super().__init__()
+        self._team = team
+        self._number = number
+        self._name = name
+
+    def __str__(self) -> str:
+        return f"team={self._team}, number={self._number}, name={self._name}"
+
+    def __repr__(self) -> str:
+        return f"{__class__.__name__}({self.__str__()})"
