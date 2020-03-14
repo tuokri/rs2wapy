@@ -286,7 +286,7 @@ class RS2WebAdminResponseParser:
         id_index = player_headers.index(UNIQUE_ID_KEY)
 
         players = []
-        stats = []
+        id_to_stats = {}
         steam_ids = []
 
         for player_row in player_table:
@@ -307,11 +307,13 @@ class RS2WebAdminResponseParser:
                 if key.lower() != "actions"
             }
 
+            id_to_stats[steam_id] = stats
+
         persona_names = SteamWebAPI().get_persona_names(
             steam_ids=steam_ids
         )
 
-        for steam_id, p_stats in zip(steam_ids, stats):
+        for steam_id in steam_ids:
             persona_name = ""
             try:
                 persona_name = persona_names[steam_id]
@@ -321,9 +323,11 @@ class RS2WebAdminResponseParser:
                     sid=steam_id)
                 logger.exception(ke)
 
+            p_stats = id_to_stats[steam_id]
+
             player = models.Player(
                 steam_id=steam_id,
-                stats=stats,
+                stats=p_stats,
                 persona_name=persona_name,
             )
 

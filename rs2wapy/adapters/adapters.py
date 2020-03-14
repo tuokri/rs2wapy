@@ -631,8 +631,9 @@ class WebAdminAdapter:
         try:
             curl_obj.perform()
         except pycurl.error as e:
-            logger.exception(e)
-            raise
+            logger.debug(e, exc_info=True)
+            logger.warning(e)
+            return b""
 
         status = curl_obj.getinfo(pycurl.HTTP_CODE)
         logger.debug("HTTP status: {s}", s=status)
