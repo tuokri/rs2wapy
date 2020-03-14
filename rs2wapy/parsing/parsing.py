@@ -405,24 +405,24 @@ class RS2WebAdminResponseParser:
 
         squads = []
         for row in squads_table:
-            teamcolor = models.HEX_COLOR_UNKNOWN_TEAM
+            team = models.UnknownTeam
             try:
-                teamcolor = re.match(TEAMCOLOR_PATTERN, row[0]).groups()[0]
-            except IndexError as ie:
-                logger.error("error getting teamcolor: {e}", e=ie)
-            team = models.Team.from_hex_color(teamcolor)
+                team_idx = int(row[0].strip())
+                team = models.Team.from_team_index(team_idx)
+            except Exception as e:
+                logger.error("unable to parse squad team: {e}", e=e)
 
             number = -1
             try:
                 number = int(row[1])
             except Exception as e:
-                logger.error("unable to get squad number: {e}", e=e)
+                logger.error("unable to parse squad number: {e}", e=e)
 
             name = ""
             try:
-                number = row[2]
+                name = row[2]
             except Exception as e:
-                logger.error("unable to get squad number: {e}", e=e)
+                logger.error("unable to parse squad name: {e}", e=e)
 
             squads.append(models.Squad(
                 team=team,

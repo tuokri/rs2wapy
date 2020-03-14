@@ -5,6 +5,7 @@ import datetime
 import sys
 from typing import List
 from typing import Tuple
+from typing import Type
 from typing import Union
 
 from logbook import Logger
@@ -45,7 +46,7 @@ class Team(abc.ABC):
     HEX_COLOR = None
 
     @staticmethod
-    def from_hex_color(hex_color: str):
+    def from_hex_color(hex_color: str) -> Type[Team]:
         return HEX_COLOR_TO_TEAM[hex_color]
 
     @classmethod
@@ -53,6 +54,13 @@ class Team(abc.ABC):
         if not cls.HEX_COLOR:
             raise NotImplementedError("not implemented for abstract base class")
         return TEAM_TO_HEX_COLOR[cls.HEX_COLOR]
+
+    @staticmethod
+    def from_team_index(index: int) -> Type[Team]:
+        try:
+            return TEAM_INDEX_TO_TEAM[index]
+        except KeyError:
+            return UnknownTeam
 
 
 class BlueTeam(Team):
@@ -83,6 +91,16 @@ TEAM_TO_HEX_COLOR = {
     RedTeam: HEX_COLOR_RED_TEAM,
     UnknownTeam: HEX_COLOR_UNKNOWN_TEAM,
     AllTeam: HEX_COLOR_ALL_TEAM,
+}
+
+TEAM_INDEX_TO_TEAM = {
+    0: RedTeam,
+    1: BlueTeam,
+}
+
+TEAM_TO_TEAM_INDEX = {
+    RedTeam: 0,
+    BlueTeam: 1,
 }
 
 STEAM_ID_TYPE = Union[SteamID, int, str]
