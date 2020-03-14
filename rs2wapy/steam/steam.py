@@ -1,5 +1,7 @@
 import os
 import sys
+from typing import Dict
+from typing import Sequence
 
 import requests
 import steam
@@ -31,9 +33,27 @@ class Singleton(type):
 
 
 class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
+    """Helper class for using Steam Web API quickly."""
+    # TODO: Cache results.
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def get_persona_name(self, steam_id: steam.SteamID) -> str:
         return self.ISteamUser.GetPlayerSummaries(
             steamids=steam_id.as_64)["response"]["players"][0]["personaname"]
+
+    def get_persona_names(self, steam_ids: Sequence[steam.SteamID]
+                          ) -> Dict[steam.SteamID, str]:
+        # TODO: handle more than 100 IDs.
+        if len(steam_ids) > 100:
+            raise ValueError("TODO: May request only 100 players at a time!")
+
+        steam_ids = [str(sid.as_64) for sid in steam_ids]
+        steam_ids = ",".join(steam_ids)
+
+        resp = self.ISteamUser.GetPlayerSummaries(
+            steamids=steam_ids)["response"]["players"]
+
+        return {
+            steam.SteamID(r["steamid"]): r["personaname"] for r in resp
+        }

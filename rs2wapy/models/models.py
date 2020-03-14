@@ -89,7 +89,8 @@ STEAM_ID_TYPE = Union[SteamID, int, str]
 
 
 class Player(Model):
-    def __init__(self, steam_id: STEAM_ID_TYPE, stats: dict = None):
+    def __init__(self, steam_id: STEAM_ID_TYPE, stats: dict = None,
+                 persona_name: str = None):
         super().__init__()
 
         if not stats:
@@ -106,6 +107,10 @@ class Player(Model):
             raise ValueError(
                 f"invalid steam_id type: {type(steam_id)}, expected "
                 f"{STEAM_ID_TYPE}")
+
+        if persona_name is None:
+            persona_name = SteamWebAPI().get_persona_name(self.steam_id)
+        self._persona_name = persona_name
 
     @property
     def stats(self) -> dict:
@@ -128,7 +133,7 @@ class Player(Model):
     @property
     def persona_name(self) -> str:
         """Player's Steam persona (profile) name."""
-        return SteamWebAPI().get_persona_name(self.steam_id)
+        return self._persona_name
 
     def __str__(self) -> str:
         steam_id = (self._steam_id.as_64

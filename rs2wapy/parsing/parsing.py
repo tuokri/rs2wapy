@@ -10,12 +10,14 @@ from typing import List
 from typing import Sequence
 from typing import Tuple
 
+import steam
 from bs4 import BeautifulSoup
 from logbook import Logger
 from logbook import StreamHandler
 
 import rs2wapy.models as models
 from rs2wapy.adapters import adapters
+from rs2wapy.steam import SteamWebAPI
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
@@ -284,6 +286,9 @@ class RS2WebAdminResponseParser:
         id_index = player_headers.index(UNIQUE_ID_KEY)
 
         players = []
+        stats = []
+        steam_ids = []
+
         for player_row in player_table:
             steam_id = player_row[id_index]
 
@@ -294,15 +299,32 @@ class RS2WebAdminResponseParser:
                 logger.exception(ve)
                 steam_id = 0
 
+            steam_ids.append(steam.SteamID(steam_id))
+
             stats = {
                 key: value for key, value in zip(
                     player_headers, player_row)
                 if key.lower() != "actions"
             }
 
+        persona_names = SteamWebAPI().get_persona_names(
+            steam_ids=steam_ids
+        )
+
+        for steam_id, p_stats in zip(steam_ids, stats):
+            persona_name = ""
+            try:
+                persona_name = persona_names[steam_id]
+            except KeyError as ke:
+                logger.error(
+                    "error getting persona name for Steam ID: {sid}",
+                    sid=steam_id)
+                logger.exception(ke)
+
             player = models.Player(
                 steam_id=steam_id,
                 stats=stats,
+                persona_name=persona_name,
             )
 
             players.append(adapters.PlayerWrapper(
