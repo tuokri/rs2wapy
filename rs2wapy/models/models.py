@@ -2,13 +2,20 @@ from __future__ import annotations
 
 import abc
 import datetime
+import sys
 from typing import List
 from typing import Tuple
 from typing import Union
 
+from logbook import Logger
+from logbook import StreamHandler
 from steam import SteamID
 
 from rs2wapy.adapters import adapters
+from rs2wapy.steam import SteamWebAPI
+
+StreamHandler(sys.stdout, level="WARNING").push_application()
+logger = Logger(__name__)
 
 
 class Model(abc.ABC):
@@ -107,6 +114,21 @@ class Player(Model):
     @property
     def steam_id(self) -> SteamID:
         return self._steam_id
+
+    @property
+    def name(self) -> str:
+        """Player's name as stored in RS2 WebAdmin."""
+        try:
+            return self.stats["Player name"]
+        except KeyError as ke:
+            logger.debug(ke)
+            logger.warn("unable to get player name")
+            return ""
+
+    @property
+    def persona_name(self) -> str:
+        """Player's Steam persona (profile) name."""
+        return SteamWebAPI().get_persona_name(self.steam_id)
 
     def __str__(self) -> str:
         steam_id = (self._steam_id.as_64
@@ -298,3 +320,8 @@ class MapCycle(Model):
 
     def __repr__(self) -> str:
         return f"{__class__.__name__}({self.__str__()})"
+
+
+class Squad(Model):
+    def __init__(self):
+        super().__init__()

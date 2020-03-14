@@ -12,6 +12,7 @@ from logbook import StreamHandler
 
 from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.adapters import WebAdminAdapter
+from rs2wapy.adapters.adapters import SquadWrapper
 from rs2wapy.models import AccessPolicy
 from rs2wapy.models import AllTeam
 from rs2wapy.models import ChatMessage
@@ -119,12 +120,11 @@ class RS2WebAdmin:
         return self._adapter.get_current_game().player_scoreboard
 
     def get_team_scoreboard(self) -> TeamScoreboard:
-        """Return current team scoreboard.
-        """
+        """Return current team scoreboard."""
         return self._adapter.get_current_game().team_scoreboard
 
-    def get_squads(self):
-        raise NotImplementedError
+    def get_squads(self) -> List[SquadWrapper]:
+        return self._adapter.get_squads()
 
     def get_banned_players(self) -> dict:
         raise NotImplementedError

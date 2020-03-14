@@ -11,6 +11,7 @@ __all__ = [
     "CurrentGame",
     "Player",
     "PlayerScoreboard",
+    "Squad",
     "Team",
     "TeamScoreboard",
     "BlueTeam",

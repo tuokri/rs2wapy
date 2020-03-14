@@ -4,7 +4,6 @@ import base64
 import datetime
 import hashlib
 import http.client
-import os
 import sys
 import threading
 import time
@@ -25,8 +24,6 @@ from urllib.parse import urlunparse
 
 import pycurl
 import regex as re
-import requests.exceptions
-import steam
 from logbook import Logger
 from logbook import StreamHandler
 
@@ -158,18 +155,6 @@ class WebAdminAdapter:
         self._auth_data = None
         self._chat_message_deque = deque(maxlen=512)
 
-        self._steam_web_api = None
-        try:
-            steam_api_key = os.environ["STEAM_WEB_API_KEY"]
-            self._steam_web_api = steam.webapi.WebAPI(steam_api_key)
-        except KeyError:
-            logger.info("'STEAM_WEB_API_KEY' environment variable not set, "
-                        "some features are not available")
-        except requests.exceptions.HTTPError as e:
-            logger.debug(e, exc_info=True)
-            logger.warning("unable to initialize Steam Web API, "
-                           "some features are not available")
-
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
                      "path={path}, params={params}, query={query}, fragment={fragment}",
@@ -259,10 +244,6 @@ class WebAdminAdapter:
     @auth_data.setter
     def auth_data(self, auth_data: AuthData):
         self._auth_data = auth_data
-
-    @property
-    def steam_web_api(self) -> steam.webapi.WebAPI:
-        return self._steam_web_api
 
     @property
     def _pw_hash(self) -> str:
@@ -514,19 +495,9 @@ class WebAdminAdapter:
                    reason: str, duration: str, notify_players: bool = False):
         steam_id = player.steam_id.as_64
 
-        name = ""
-        try:
-            name = self._steam_web_api.ISteamUser.GetPlayerSummaries(
-                steamids=steam_id)["response"]["players"][0]["personaname"]
-        except Exception as e:
-            logger.info("unable to resolve player name via Steam API, "
-                        "falling back to name stored in WebAdmin "
-                        "('{e}' occurred)", e=e)
-            logger.debug("{e}", e=e, exc_info=True)
-            try:
-                name = player.stats["Player name"]
-            except KeyError:
-                logger.warn("unable to get player name")
+        name = player.persona_name
+        if not name:
+            name = player.name
 
         exp_number = ""
         exp_unit = "Never"
@@ -603,6 +574,10 @@ class WebAdminAdapter:
 
             self._perform(
                 self._map_list_url, headers=headers, postfields=postfields)
+
+    def get_squads(self) -> List[SquadWrapper]:
+        # TODO:
+        return []
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():
@@ -915,52 +890,56 @@ class WebAdminAdapter:
             raise ValueError(f"error parsing ban duration string{opt_info}")
 
 
-class PlayerWrapper:
+class ModelWrapper:
+    def __init__(self, model: models.Model, adapter: WebAdminAdapter):
+        self._model = model
+        self._adapter = adapter
+
+    @property
+    def timestamp(self) -> datetime.datetime:
+        return self._model.timestamp
+
+
+class PlayerWrapper(ModelWrapper):
     """Wrapper around models.Player, providing functionality
     via WebAdminAdapter.
     """
 
     def __init__(self, player: models.Player, adapter: WebAdminAdapter):
-        self._player = player
-        self._adapter = adapter
-        self._persona_name = ""
-        if self._adapter.steam_web_api:
-            self._persona_name = self._get_persona_name()
+        super().__init__(player, adapter)
 
     def __str__(self) -> str:
-        return self._player.__str__()
+        return self._model.__str__()
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__str__()})"
 
     @property
-    def timestamp(self) -> datetime.datetime:
-        return self._player.timestamp
-
-    @property
     def player(self) -> models.Player:
-        return self._player
+        assert isinstance(self._model, models.Player)
+        return self._model
 
     @property
     def stats(self) -> dict:
         """Player's stats as displayed in RS2 WebAdmin's
         'Players' table.
         """
-        return self._player.stats
+        return self.player.stats
 
     @property
     def name(self) -> str:
         """Player's name as stored in RS2 WebAdmin."""
-        return self._player.stats["Player name"]
+        return self.player.name
 
     @property
     def persona_name(self) -> str:
         """Player's Steam persona (profile) name."""
-        return self._persona_name
+        return self.player.persona_name
 
     @property
     def steam_id(self) -> models.SteamID:
-        return self._player.steam_id
+        """Player's Steam ID."""
+        return self.player.steam_id
 
     def ban(self, reason: str, duration: str = None,
             notify_players: bool = False):
@@ -1011,10 +990,16 @@ class PlayerWrapper:
     def make_member(self):
         raise NotImplementedError
 
-    def _get_persona_name(self) -> str:
-        try:
-            return self._adapter.steam_web_api.ISteamUser.GetPlayerSummaries(
-                steamids=self.player.steam_id)["response"]["players"][0]["personaname"]
-        except Exception as e:
-            logger.debug(e, exc_info=True)
-            logger.warning("unable to get persona name")
+
+class SquadWrapper(ModelWrapper):
+    """Wrapper around models.Squad, providing functionality
+    via WebAdminAdapter.
+    """
+
+    def __init__(self, squad: models.Squad, adapter: WebAdminAdapter):
+        super().__init__(squad, adapter)
+
+    @property
+    def squad(self) -> models.Squad:
+        assert isinstance(self._model, models.Squad)
+        return self._model
