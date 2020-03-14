@@ -1011,3 +1011,9 @@ class SquadWrapper(ModelWrapper):
     def squad(self) -> models.Squad:
         assert isinstance(self._model, models.Squad)
         return self._model
+
+    def __str__(self) -> str:
+        return self._model.__str__()
+
+    def __repr__(self) -> str:
+        return self._model.__repr__()
