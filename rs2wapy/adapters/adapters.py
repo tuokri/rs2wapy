@@ -583,8 +583,8 @@ class WebAdminAdapter:
 
     def get_squads(self) -> List[SquadWrapper]:
         headers = self._make_auth_headers()
-        resp = self._perform(self._squads_url)
-        return self._rparser.parse_squads(resp, adapter=self, headers=headers)
+        resp = self._perform(self._squads_url, headers=headers)
+        return self._rparser.parse_squads(resp, adapter=self)
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():
