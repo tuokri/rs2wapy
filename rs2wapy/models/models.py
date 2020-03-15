@@ -144,7 +144,7 @@ class Player(Model):
         try:
             return self.stats["Player name"]
         except KeyError as ke:
-            logger.debug(ke)
+            logger.debug(ke, exc_info=True)
             logger.warn("unable to get player name")
             return ""
 
@@ -366,10 +366,15 @@ class Squad(Model):
 
 
 class Ban(Model):
-    def __init__(self, player: Player, reason: str):
+    def __init__(self, player: Player, reason: str,
+                 until: Union[str, datetime.datetime] = None):
         super().__init__()
         self._player = player
         self._reason = reason
+
+        if isinstance(until, str):
+            until = self._parse_until(until)
+        self._until = until
 
     @property
     def player(self) -> Player:
@@ -378,3 +383,19 @@ class Ban(Model):
     @property
     def reason(self) -> str:
         return self._reason
+
+    @property
+    def until(self) -> datetime.datetime:
+        """Ban expiration date. If None, the ban is permanent."""
+        return self._until
+
+    @staticmethod
+    def _parse_until(until: str) -> datetime.datetime:
+        """Ban expiration date str to datetime.datetime object."""
+        return datetime.datetime.strptime(until, "")
+
+
+class SessionBan(Ban):
+    def __init__(self, player: Player, reason: str):
+        super().__init__(player, reason, None)
+        self._until = None

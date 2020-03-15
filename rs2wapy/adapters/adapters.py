@@ -1041,4 +1041,10 @@ class BanWrapper(ModelWrapper):
         return self.ban.player
 
     def revoke(self):
-        self._adapter.revoke_player_ban(self.player)
+        if isinstance(self._model, models.Ban):
+            self._adapter.revoke_player_ban(self.player)
+        elif isinstance(self._model, models.SessionBan):
+            self._adapter.revoke_session_ban(self.player)
+        else:
+            logger.warn("can't revoke unknown ban type: {t}",
+                        t=type(self))
