@@ -1017,3 +1017,28 @@ class SquadWrapper(ModelWrapper):
 
     def __repr__(self) -> str:
         return self._model.__repr__()
+
+
+class BanWrapper(ModelWrapper):
+    """Wrapper around models.Ban, providing functionality
+    via WebAdminAdapter.
+    """
+
+    def __init__(self, ban: models.Ban, adapter: WebAdminAdapter):
+        super().__init__(ban, adapter)
+
+    @property
+    def ban(self) -> models.Ban:
+        assert isinstance(self._model, models.Ban)
+        return self._model
+
+    @property
+    def reason(self) -> str:
+        return self.ban.reason
+
+    @property
+    def player(self) -> models.Player:
+        return self.ban.player
+
+    def revoke(self):
+        self._adapter.revoke_player_ban(self.player)
