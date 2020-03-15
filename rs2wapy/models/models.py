@@ -162,6 +162,9 @@ class Player(Model):
     def __repr__(self) -> str:
         return f"Player({self.__str__()})"
 
+    def __hash__(self) -> int:
+        return self._steam_id.as_64
+
 
 CHAT_CHANNEL_ALL_STR = "(ALL)"
 CHAT_CHANNEL_TEAM_STR = "(TEAM)"
@@ -357,3 +360,21 @@ class Squad(Model):
 
     def __repr__(self) -> str:
         return f"{__class__.__name__}({self.__str__()})"
+
+    def __hash__(self) -> int:
+        return self._number
+
+
+class Ban(Model):
+    def __init__(self, player: Player, reason: str):
+        super().__init__()
+        self._player = player
+        self._reason = reason
+
+    @property
+    def player(self) -> Player:
+        return self._player
+
+    @property
+    def reason(self) -> str:
+        return self._reason
