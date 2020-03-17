@@ -431,7 +431,7 @@ class WebAdminAdapter:
         raise NotImplementedError
 
     def change_map(self, new_map: str, url_extra: dict = None):
-        if new_map.lower() not in [m.lower() for m in self.get_maps()]:
+        if new_map.lower() not in [m.lower() for m in self.get_maps_list()]:
             logger.warning("{nm} not in server map list", nm=new_map)
 
         if url_extra is None:
