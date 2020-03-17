@@ -506,7 +506,7 @@ class WebAdminAdapter:
             name = player.name
 
         exp_number = ""
-        exp_unit = BAN_EXP_UNIT_PERM = "Never"
+        exp_unit = BAN_EXP_UNIT_PERM
 
         if duration:
             # noinspection PyBroadException
@@ -661,6 +661,12 @@ class WebAdminAdapter:
             raise HTTPError(url=url, msg=phrase,
                             code=status, hdrs=hdrs, fp=None)
 
+        # Server changing maps will trigger sessionid change,
+        # keep track of latest sessionid in response headers.
+        sessionid = self._find_sessionid()
+        if sessionid:
+            self._auth_data.sessionid = sessionid
+
         return buffer.getvalue()
 
     def _header_function(self, header_line):
@@ -737,6 +743,7 @@ class WebAdminAdapter:
             logger.exception(e)
             return r
 
+        logger.debug("got sessionid: {si}, from headers", si=r)
         return f'sessionid="{r}";'
 
     def _post_login(self, sessionid: str, token: str,
@@ -784,7 +791,6 @@ class WebAdminAdapter:
             logger.error("unable to get token: {e}", e=ae)
 
         sessionid = self._find_sessionid()
-        logger.debug("got sessionid: {si}, from headers", si=sessionid)
 
         self._post_login(sessionid=sessionid, token=token)
 
