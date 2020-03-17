@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 import sys
 from typing import List
 from typing import Sequence
@@ -101,9 +100,7 @@ class RS2WebAdmin:
         """Return list of all maps of all game modes
         currently installed on the server.
         """
-        return list(
-            itertools.chain(*self._adapter.get_maps().values())
-        )
+        return self._adapter.get_maps_list()
 
     def get_players(self) -> List[PlayerWrapper]:
         """Return players currently online on the server.
