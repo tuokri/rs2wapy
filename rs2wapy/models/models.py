@@ -182,6 +182,7 @@ class ChatChannel(abc.ABC):
 
     @classmethod
     def to_team_str(cls) -> str:
+        # noinspection PyTypeChecker
         return CHAT_CHANNEL_TO_STR[cls]
 
 
@@ -208,7 +209,7 @@ class ChatMessage(Model):
     def __init__(self,
                  sender: Union[Player, adapters.PlayerWrapper, str],
                  text: str,
-                 team: Team, channel: ChatChannel):
+                 team: Type[Team], channel: Type[ChatChannel]):
         super().__init__()
         self._sender = sender
         self._text = text
@@ -234,11 +235,11 @@ class ChatMessage(Model):
         return self._text
 
     @property
-    def team(self) -> Team:
+    def team(self) -> Type[Team]:
         return self._team
 
     @property
-    def channel(self) -> ChatChannel:
+    def channel(self) -> Type[ChatChannel]:
         return self._channel
 
 
@@ -349,7 +350,7 @@ class MapCycle(Model):
 
 
 class Squad(Model):
-    def __init__(self, team: Team, number: int, name: str):
+    def __init__(self, team: Type[Team], number: int, name: str):
         super().__init__()
         self._team = team
         self._number = number
