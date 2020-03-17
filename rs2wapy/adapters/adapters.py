@@ -664,7 +664,7 @@ class WebAdminAdapter:
         # Server changing maps will trigger sessionid change,
         # keep track of latest sessionid in response headers.
         sessionid = self._find_sessionid()
-        if sessionid:
+        if sessionid and self._auth_data:
             self._auth_data.sessionid = sessionid
 
         return buffer.getvalue()
