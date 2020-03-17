@@ -32,7 +32,9 @@ TEAM_INDEX_KEY = "\xa0"
 
 class RS2WebAdminResponseParser:
 
-    def __init__(self, encoding: str):
+    def __init__(self, encoding: str = None):
+        if not encoding:
+            encoding = "iso-8859-1"
         self._encoding = encoding
 
     def parse_html(self, resp: bytes, encoding: str = None) -> BeautifulSoup:
