@@ -4,6 +4,7 @@ import base64
 import datetime
 import hashlib
 import http.client
+import itertools
 import sys
 import threading
 import time
@@ -26,6 +27,7 @@ import pycurl
 import regex as re
 from logbook import Logger
 from logbook import StreamHandler
+
 from rs2wapy._version import get_versions
 from rs2wapy.models import models
 from rs2wapy.parsing import RS2WebAdminResponseParser
@@ -484,6 +486,14 @@ class WebAdminAdapter:
             maps[gto] = self._rparser.parse_map_options(resp)
 
         return maps
+
+    def get_maps_list(self) -> List[str]:
+        """Return list of all maps of all game modes
+        currently installed on the server.
+        """
+        return list(
+            itertools.chain(*self.get_maps().values())
+        )
 
     def get_players(self) -> List[PlayerWrapper]:
         headers = self._make_auth_headers()
@@ -1049,6 +1059,7 @@ class BanWrapper(ModelWrapper):
         if isinstance(self._model, models.Ban):
             self._adapter.revoke_player_ban(self.player)
         elif isinstance(self._model, models.SessionBan):
+            # TODO!
             self._adapter.revoke_session_ban(self.player)
         else:
             logger.warn("can't revoke unknown ban type: {t}",
