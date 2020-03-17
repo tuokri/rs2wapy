@@ -26,7 +26,6 @@ import pycurl
 import regex as re
 from logbook import Logger
 from logbook import StreamHandler
-
 from rs2wapy._version import get_versions
 from rs2wapy.models import models
 from rs2wapy.parsing import RS2WebAdminResponseParser
@@ -737,10 +736,10 @@ class WebAdminAdapter:
                 logger.error("cannot get sessionid from headers")
                 return r
         except AttributeError as ae:
-            logger.exception(ae)
+            logger.debug(ae, exc_info=True)
             return r
         except Exception as e:
-            logger.exception(e)
+            logger.debug(e, exc_info=True)
             return r
 
         logger.debug("got sessionid: {si}, from headers", si=r)
