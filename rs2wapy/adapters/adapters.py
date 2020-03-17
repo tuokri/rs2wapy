@@ -124,7 +124,7 @@ class AuthData:
 
     def timed_out(self) -> bool:
         time_now = time.time()
-        if (self.timeout_start + self.timeout) > time_now:
+        if (self.timeout_start + self.timeout) < time_now:
             logger.debug(
                 "authentication timed out for start_time={s}, "
                 "timeout={t}, time_now={tn}", s=self.timeout_start,
