@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import datetime
+import functools
 import hashlib
 import http.client
 import itertools
@@ -83,6 +84,35 @@ WEB_ADMIN_SETTINGS_PATH = WEB_ADMIN_BASE_PATH / Path("settings/")
 WEB_ADMIN_MAP_LIST_PATH = WEB_ADMIN_SETTINGS_PATH / Path("maplist/")
 WEB_ADMIN_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("bans/")
 WEB_ADMIN_SQUADS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("squads/")
+
+
+def retry(on_exc: Union[Exception, Tuple],
+          tries: int = 10, delay: int = 3, backoff: int = 2,
+          cap: int = 30):
+    """Retry calling the decorated function
+    using an exponential back-off with back-off cap.
+    """
+
+    def deco_retry(f):
+
+        @functools.wraps(f)
+        def f_retry(*args, **kwargs):
+            mtries, mdelay = tries, delay
+            while mtries > 1:
+                try:
+                    return f(*args, **kwargs)
+                except on_exc as e:
+                    logger.info(f"{f.__name__}(): {e}, "
+                                f"retrying in {mdelay} seconds...")
+                    time.sleep(mdelay)
+                    mtries -= 1
+                    mdelay *= backoff
+                    mdelay = min(mdelay, cap)
+            return f(*args, **kwargs)
+
+        return f_retry
+
+    return deco_retry
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
@@ -610,6 +640,7 @@ class WebAdminAdapter:
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
         return chat_msgs
 
+    @retry(Exception)
     def _perform(self, url: str, curl_obj: pycurl.Curl = None,
                  headers: dict = None, postfields: dict = None,
                  skip_auth=False) -> bytes:
@@ -648,8 +679,7 @@ class WebAdminAdapter:
             curl_obj.perform()
         except pycurl.error as e:
             logger.debug(e, exc_info=True)
-            logger.warning(e)
-            return b""
+            raise
 
         status = curl_obj.getinfo(pycurl.HTTP_CODE)
         logger.debug("HTTP status: {s}", s=status)
