@@ -441,6 +441,39 @@ class RS2WebAdminResponseParser:
 
         return squad_wrappers
 
+    def parse_tracking(self, resp: bytes,
+                       adapter: adapters.WebAdminAdapter
+                       ) -> List[adapters.TrackingWrapper]:
+
+        parsed_html = self.parse_html(resp)
+        tracking_table = parsed_html.find("table", attrs={"id": "tracking"})
+        tracking_headers = [th.text for th in tracking_table.find_all("th")]
+        tracking_tbody = tracking_table.find("tbody")
+        tb_row_entries = tracking_tbody.find_all("tr")
+        tracking_rows = self._parse_table(tb_row_entries)
+
+        tracking_wrappers = []
+        for row in tracking_rows:
+            steam_id = row[3]
+            player = models.Player(
+                steam_id=steam_id,
+                id_intstr_base=10,
+            )
+
+            tracking_data = {
+                key: value for key, value in zip(
+                    tracking_headers, row)
+                if key.lower() != "actions"
+            }
+
+            tracking_wrappers.append(adapters.TrackingWrapper(
+                player=player,
+                tracking_data=tracking_data,
+                adapter=adapter,
+            ))
+
+        return tracking_wrappers
+
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:
         all_cols = []

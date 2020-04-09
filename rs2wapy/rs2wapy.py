@@ -13,6 +13,7 @@ from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.adapters import WebAdminAdapter
 from rs2wapy.adapters.adapters import BanWrapper
 from rs2wapy.adapters.adapters import SquadWrapper
+from rs2wapy.adapters.adapters import TrackingWrapper
 from rs2wapy.models import AccessPolicy
 from rs2wapy.models import AllTeam
 from rs2wapy.models import ChatMessage
@@ -126,14 +127,16 @@ class RS2WebAdmin:
         return self._adapter.get_squads()
 
     def get_banned_players(self) -> List[BanWrapper]:
+        """Return banned players."""
         raise NotImplementedError
         # return self._adapter.get_banned_players()
 
-    def get_tracked_players(self) -> dict:
-        raise NotImplementedError
-        # return self._adapter.get_tracked_players()
+    def get_tracked_players(self) -> List[TrackingWrapper]:
+        """Return tracked players."""
+        return self._adapter.get_tracked_players()
 
     def get_access_policies(self) -> List[AccessPolicy]:
+        """Return access policies."""
         raise NotImplementedError
         # return self._adapter.get_access_policies()
 
@@ -203,9 +206,11 @@ class RS2WebAdmin:
         self._adapter.session_ban_player(player, reason, notify_players)
 
     def get_map_cycles(self) -> List[MapCycle]:
+        """Return map cycles."""
         return self._adapter.get_map_cycles()
 
     def set_map_cycles(self, map_cycles: List[MapCycle]):
+        """Set map cycles."""
         self._adapter.set_map_cycles(map_cycles)
 
     def get_advertisement_messages(self) -> List[str]:

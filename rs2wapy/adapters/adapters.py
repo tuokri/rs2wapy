@@ -33,7 +33,6 @@ from rs2wapy._version import get_versions
 from rs2wapy.models import models
 from rs2wapy.parsing import RS2WebAdminResponseParser
 
-
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
@@ -85,6 +84,7 @@ WEB_ADMIN_SETTINGS_PATH = WEB_ADMIN_BASE_PATH / Path("settings/")
 WEB_ADMIN_MAP_LIST_PATH = WEB_ADMIN_SETTINGS_PATH / Path("maplist/")
 WEB_ADMIN_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("bans/")
 WEB_ADMIN_SQUADS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("squads/")
+WEB_ADMIN_TRACKING_PATH = WEB_ADMIN_POLICY_PATH / Path("tracking/")
 
 
 def retry(on_exc: Union[Exception, Tuple],
@@ -253,6 +253,10 @@ class WebAdminAdapter:
         )
         self._squads_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_SQUADS_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._tracking_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_TRACKING_PATH.as_posix(),
              params, query, fragment)
         )
 
@@ -580,6 +584,9 @@ class WebAdminAdapter:
         # action=revoke&uniqueid=0x01100001013F76D0&playername=&__Submitter=
         raise NotImplementedError
 
+    def revoke_session_ban(self, player: Union[models.Player, PlayerWrapper]):
+        raise NotImplementedError
+
     def get_map_cycles(self) -> List[models.MapCycle]:
         headers = self._make_auth_headers()
         resp = self._perform(self._map_list_url, headers=headers)
@@ -625,6 +632,18 @@ class WebAdminAdapter:
         headers = self._make_auth_headers()
         resp = self._perform(self._squads_url, headers=headers)
         return self._rparser.parse_squads(resp, adapter=self)
+
+    def get_tracked_players(self) -> List[TrackingWrapper]:
+        headers = self._make_auth_headers()
+        resp = self._perform(self._tracking_url, headers=headers)
+        tracked_players = []
+        for _ in range(1):
+            tracked_players.extend(
+                self._rparser.parse_tracking(resp, adapter=self))
+
+        # Remove duplicates in case tracking tab was
+        # mutated during parsing.
+        return list(set(tracked_players))
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():
@@ -968,6 +987,9 @@ class PlayerWrapper(ModelWrapper):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.__str__()})"
 
+    def __hash__(self) -> int:
+        return hash(self.player)
+
     @property
     def player(self) -> models.Player:
         assert isinstance(self._model, models.Player)
@@ -1009,10 +1031,10 @@ class PlayerWrapper(ModelWrapper):
                                          notify_players)
 
     def revoke_ban(self):
-        raise NotImplementedError
+        self._adapter.revoke_player_ban(self)
 
     def revoke_session_ban(self):
-        raise NotImplementedError
+        pass
 
     def track(self):
         raise NotImplementedError
@@ -1087,11 +1109,62 @@ class BanWrapper(ModelWrapper):
         return self.ban.player
 
     def revoke(self):
-        if isinstance(self._model, models.Ban):
-            self._adapter.revoke_player_ban(self.player)
-        elif isinstance(self._model, models.SessionBan):
-            # TODO!
-            self._adapter.revoke_session_ban(self.player)
-        else:
-            logger.warn("can't revoke unknown ban type: {t}",
-                        t=type(self))
+        self._adapter.revoke_player_ban(self.player)
+
+
+class SessionBanWrapper(BanWrapper):
+    def __init__(self, ban: models.SessionBan, adapter: WebAdminAdapter):
+        super().__init__(ban, adapter)
+
+    def revoke(self):
+        self._adapter.revoke_session_ban(self.player)
+
+
+class TrackingWrapper(PlayerWrapper):
+
+    def __init__(self, player: models.Player, tracking_data: dict,
+                 adapter: WebAdminAdapter):
+        super().__init__(player, adapter)
+        self._tracking = tracking_data
+
+    def __str__(self) -> str:
+        return f"{self._model.__str__()}, {self._tracking}"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.__str__()})"
+
+    @property
+    def tracking(self) -> dict:
+        return self._tracking
+
+    @property
+    def alias(self) -> str:
+        """Current alias."""
+        return self.tracking["Alias"]
+
+    @property
+    def ksb(self) -> str:
+        """Kick, session ban and ban count.
+        A string of format '{K}/{S}/{B}'.
+        E.g. '0/1/1'.
+        """
+        return self.tracking["# K/S/B"]
+
+    @property
+    def num_notes(self) -> int:
+        """Number of notes attached to player."""
+        return self.tracking["# Notes"]
+
+    @property
+    def created(self) -> datetime.datetime:
+        """Creation date of tracking entry."""
+        return self.tracking["Created"]
+
+    @property
+    def num_connects(self) -> datetime.datetime:
+        """The number of times player has connected."""
+        return self.tracking["# Connects"]
+
+    @property
+    def last_seen(self) -> datetime.datetime:
+        return self.tracking["Last Seen"]
