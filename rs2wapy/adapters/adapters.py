@@ -33,6 +33,7 @@ from rs2wapy._version import get_versions
 from rs2wapy.models import models
 from rs2wapy.parsing import RS2WebAdminResponseParser
 
+
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
