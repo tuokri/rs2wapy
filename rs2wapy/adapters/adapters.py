@@ -643,7 +643,6 @@ class WebAdminAdapter:
 
         while has_more_pages:
             fvri = self._rparser.parse_tracking_fvri(resp)
-            print(fvri)
             logger.debug("first visible row index: {fvri}", fvri=fvri)
             postfields = {
                 "action": "nextpage",
