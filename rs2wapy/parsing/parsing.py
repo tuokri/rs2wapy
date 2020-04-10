@@ -453,7 +453,11 @@ class RS2WebAdminResponseParser:
         tb_row_entries = tracking_tbody.find_all("tr")
         tracking_rows = self._parse_table(tb_row_entries)
 
-        steam_ids = [steam.SteamID(int(row[3]))
+        # Unique ID field is more reliable as Steam ID
+        # might be missing in the table in some cases.
+        id_index = tracking_headers.index("Unique ID")
+
+        steam_ids = [steam.SteamID(int(row[id_index], 16))
                      for row in tracking_rows]
         persona_names = SteamWebAPI().get_persona_names(
             steam_ids=steam_ids
@@ -461,11 +465,17 @@ class RS2WebAdminResponseParser:
 
         tracking_wrappers = []
         for row in tracking_rows:
-            steam_id = steam.SteamID(int(row[3]))
+            steam_id = steam.SteamID(int(row[id_index], 16))
+
+            persona_name = ""
+            try:
+                persona_name = persona_names[steam_id]
+            except KeyError as ke:
+                logger.warn(f"cannot get persona name for Steam ID: {steam_id}")
 
             player = models.Player(
                 steam_id=steam_id,
-                persona_name=persona_names[steam_id],
+                persona_name=persona_name,
             )
 
             tracking_data = {
@@ -481,6 +491,19 @@ class RS2WebAdminResponseParser:
             ))
 
         return tracking_wrappers
+
+    def parse_tracking_fvri(self, resp: bytes):
+        """Parse first visible row index from response."""
+        parsed_html = self.parse_html(resp)
+        return parsed_html.find(
+            "input", attrs={"id": "__FirstVisibleRowIndex"}).get("value")
+
+    def parse_tracking_has_more(self, resp):
+        """Return True if next page button is enabled."""
+        parsed_html = self.parse_html(resp)
+        np_button = parsed_html.find(
+            "button", attrs={"id": "__NextPage"})
+        return not np_button.has_attr("disabled")
 
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:

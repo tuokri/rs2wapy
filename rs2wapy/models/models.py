@@ -143,7 +143,7 @@ class Player(Model):
             return self.stats["Player name"]
         except KeyError as ke:
             logger.debug(ke, exc_info=True)
-            logger.warn("unable to get player name")
+            logger.warn(f"unable to get player name for Steam ID {self.steam_id}")
             return ""
 
     @property

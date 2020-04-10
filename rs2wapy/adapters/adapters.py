@@ -637,10 +637,23 @@ class WebAdminAdapter:
     def get_tracked_players(self) -> List[TrackingWrapper]:
         headers = self._make_auth_headers()
         resp = self._perform(self._tracking_url, headers=headers)
-        tracked_players = []
-        for _ in range(1):
+
+        tracked_players = self._rparser.parse_tracking(resp, adapter=self)
+        has_more_pages = self._rparser.parse_tracking_has_more(resp)
+
+        while has_more_pages:
+            fvri = self._rparser.parse_tracking_fvri(resp)
+            print(fvri)
+            logger.debug("first visible row index: {fvri}", fvri=fvri)
+            postfields = {
+                "action": "nextpage",
+                "__FirstVisibleRowIndex": fvri,
+            }
+            resp = self._perform(
+                self._tracking_url, headers=headers, postfields=postfields)
             tracked_players.extend(
                 self._rparser.parse_tracking(resp, adapter=self))
+            has_more_pages = self._rparser.parse_tracking_has_more(resp)
 
         # Remove duplicates in case tracking tab was
         # mutated during parsing.

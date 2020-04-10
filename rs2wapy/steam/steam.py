@@ -83,12 +83,22 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
                 "TODO: May request only 100 players at a time!")
 
         steam_ids = [str(sid.as_64) for sid in steam_ids]
-        steam_ids = ",".join(steam_ids)
+        steam_ids_str = ",".join(steam_ids)
 
         resp = self.ISteamUser.GetPlayerSummaries(
-            steamids=steam_ids)["response"]["players"]
+            steamids=steam_ids_str)["response"]["players"]
         SteamWebAPI._REQUESTS_MADE += 1
 
-        return {
+        ret = {
             steam.SteamID(r["steamid"]): r["personaname"] for r in resp
         }
+
+        input_len = len(steam_ids)
+        output_len = len(ret)
+        if input_len != output_len:
+            logger.warn(
+                f"Steam API did not return valid value "
+                f"for input Steam IDs "
+                f"(input_len={input_len}, output_len={output_len})")
+
+        return ret
