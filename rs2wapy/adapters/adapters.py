@@ -58,6 +58,7 @@ BAN_EXP_NUMBER_MAX = 365
 BAN_EXP_NUMBERS = range(BAN_EXP_NUMBER_MAX)
 BAN_EXP_PATTERN = re.compile(r"([0-9]*)\s?(\L<units>)",
                              units=[b.lower() for b in BAN_EXP_UNITS])
+WEB_ADMIN_DATE_FMT = "%Y%m%d %H%M"
 BAN_ID_TYPE_STEAM_ID_64 = 1
 
 MAP_PREFIX_TO_GAME_TYPE = {
@@ -1017,6 +1018,11 @@ class PlayerWrapper(ModelWrapper):
         """Player's Steam ID."""
         return self.player.steam_id
 
+    @property
+    def notes(self) -> dict:
+        """Notes attached to player."""
+        raise NotImplementedError
+
     def ban(self, reason: str, duration: str = None,
             notify_players: bool = False):
         self._adapter.ban_player(self.player, reason, duration,
@@ -1034,7 +1040,7 @@ class PlayerWrapper(ModelWrapper):
         self._adapter.revoke_player_ban(self)
 
     def revoke_session_ban(self):
-        pass
+        self._adapter.revoke_session_ban(self)
 
     def track(self):
         raise NotImplementedError
@@ -1086,6 +1092,9 @@ class SquadWrapper(ModelWrapper):
     def __repr__(self) -> str:
         return self._model.__repr__()
 
+    def reset_name(self):
+        raise NotImplementedError
+
 
 class BanWrapper(ModelWrapper):
     """Wrapper around models.Ban, providing functionality
@@ -1121,6 +1130,7 @@ class SessionBanWrapper(BanWrapper):
 
 
 class TrackingWrapper(PlayerWrapper):
+    # TODO: Should we store parsed dates?
 
     def __init__(self, player: models.Player, tracking_data: dict,
                  adapter: WebAdminAdapter):
@@ -1158,13 +1168,20 @@ class TrackingWrapper(PlayerWrapper):
     @property
     def created(self) -> datetime.datetime:
         """Creation date of tracking entry."""
-        return self.tracking["Created"]
+        return datetime.datetime.strptime(
+            self.tracking["Created"], "")
 
     @property
     def num_connects(self) -> datetime.datetime:
         """The number of times player has connected."""
-        return self.tracking["# Connects"]
+        return datetime.datetime.strptime(
+            self.tracking["# Connects"], "")
 
     @property
     def last_seen(self) -> datetime.datetime:
-        return self.tracking["Last Seen"]
+        return datetime.datetime.strptime(
+            self.tracking["Last Seen"], "")
+
+    def track(self):
+        """No effect on already tracked player."""
+        pass

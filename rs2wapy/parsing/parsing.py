@@ -31,6 +31,7 @@ TEAM_INDEX_KEY = "\xa0"
 
 
 class RS2WebAdminResponseParser:
+    # TODO: Refactor magic numbers.
 
     def __init__(self, encoding: str = None):
         if not encoding:
@@ -452,12 +453,19 @@ class RS2WebAdminResponseParser:
         tb_row_entries = tracking_tbody.find_all("tr")
         tracking_rows = self._parse_table(tb_row_entries)
 
+        steam_ids = [steam.SteamID(int(row[3]))
+                     for row in tracking_rows]
+        persona_names = SteamWebAPI().get_persona_names(
+            steam_ids=steam_ids
+        )
+
         tracking_wrappers = []
         for row in tracking_rows:
-            steam_id = row[3]
+            steam_id = steam.SteamID(int(row[3]))
+
             player = models.Player(
                 steam_id=steam_id,
-                id_intstr_base=10,
+                persona_name=persona_names[steam_id],
             )
 
             tracking_data = {
@@ -479,7 +487,7 @@ class RS2WebAdminResponseParser:
         all_cols = []
         for row in row_elements:
             cols = row.find_all("td")
-            cols = [ele.text.strip() for ele in cols]
+            cols = [ele.get_text(" ").strip() for ele in cols]
             if not cols:
                 continue
             all_cols.append(cols)

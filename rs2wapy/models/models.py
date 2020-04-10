@@ -126,8 +126,6 @@ class Player(Model):
                 f"invalid steam_id type: {type(steam_id)}, expected "
                 f"{STEAM_ID_TYPE}")
 
-        if persona_name is None:
-            persona_name = SteamWebAPI().get_persona_name(self.steam_id)
         self._persona_name = persona_name
 
     @property
@@ -151,6 +149,8 @@ class Player(Model):
     @property
     def persona_name(self) -> str:
         """Player's Steam persona (profile) name."""
+        if self._persona_name is None:
+            self._persona_name = SteamWebAPI().get_persona_name(self.steam_id)
         return self._persona_name
 
     def __str__(self) -> str:
@@ -390,9 +390,15 @@ class Ban(Model):
         """Ban expiration date. If None, the ban is permanent."""
         return self._until
 
+    @property
+    def expired(self) -> bool:
+        """True if ban has expired."""
+        return self.until > datetime.datetime.now()
+
     @staticmethod
     def _parse_until(until: str) -> datetime.datetime:
         """Ban expiration date str to datetime.datetime object."""
+        # TODO:
         return datetime.datetime.strptime(until, "")
 
 
