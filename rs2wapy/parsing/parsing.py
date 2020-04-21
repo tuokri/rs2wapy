@@ -54,38 +54,6 @@ class RS2WebAdminResponseParser:
             cm.append(self.parse_chat_message(div))
         return cm
 
-    @staticmethod
-    def parse_chat_message(div: BeautifulSoup) -> models.ChatMessage:
-        teamcolor = str(div.find(
-            "span", attrs={"class": "teamcolor"}).get("style"))
-        if not teamcolor:
-            logger.error(
-                "no teamcolor in chat message div={div}", div=div)
-        else:
-            try:
-                teamcolor = re.match(TEAMCOLOR_PATTERN, teamcolor).groups()[0]
-            except IndexError as ie:
-                logger.error("error getting teamcolor: {e}", e=ie)
-
-        teamnotice = div.find("span", attrs={"class": "teamnotice"})
-        if teamnotice:
-            teamnotice = teamnotice.text
-
-        name = div.find("span", attrs={"class": "username"})
-        if name:
-            name = name.text
-
-        msg = div.find("span", attrs={"class": "message"})
-        if msg:
-            msg = msg.text
-
-        return models.ChatMessage(
-            sender=name,
-            text=msg,
-            team=models.Team.from_hex_color(str(teamcolor)),
-            channel=models.ChatChannel.from_teamnotice(teamnotice)
-        )
-
     def parse_access_policy(self, resp: bytes,
                             encoding: str = None) -> List[str]:
         parsed_html = self.parse_html(resp, encoding)
@@ -504,6 +472,38 @@ class RS2WebAdminResponseParser:
         np_button = parsed_html.find(
             "button", attrs={"id": "__NextPage"})
         return not np_button.has_attr("disabled")
+
+    @staticmethod
+    def parse_chat_message(div: BeautifulSoup) -> models.ChatMessage:
+        teamcolor = str(div.find(
+            "span", attrs={"class": "teamcolor"}).get("style"))
+        if not teamcolor:
+            logger.error(
+                "no teamcolor in chat message div={div}", div=div)
+        else:
+            try:
+                teamcolor = re.match(TEAMCOLOR_PATTERN, teamcolor).groups()[0]
+            except IndexError as ie:
+                logger.error("error getting teamcolor: {e}", e=ie)
+
+        teamnotice = div.find("span", attrs={"class": "teamnotice"})
+        if teamnotice:
+            teamnotice = teamnotice.text
+
+        name = div.find("span", attrs={"class": "username"})
+        if name:
+            name = name.text
+
+        msg = div.find("span", attrs={"class": "message"})
+        if msg:
+            msg = msg.text
+
+        return models.ChatMessage(
+            sender=name,
+            text=msg,
+            team=models.Team.from_hex_color(str(teamcolor)),
+            channel=models.ChatChannel.from_teamnotice(teamnotice)
+        )
 
     @staticmethod
     def _parse_table(row_elements: Sequence) -> List[List[str]]:
