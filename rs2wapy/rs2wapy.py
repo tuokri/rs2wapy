@@ -132,7 +132,13 @@ class RS2WebAdmin:
         # return self._adapter.get_banned_players()
 
     def get_tracked_players(self) -> List[TrackingWrapper]:
-        """Return tracked players."""
+        """Return tracked players.
+
+        WARNING: This method is extremely slow for servers
+        with large tracking databases.
+
+        TODO: Can we leverage async?
+        """
         return self._adapter.get_tracked_players()
 
     def get_access_policies(self) -> List[AccessPolicy]:

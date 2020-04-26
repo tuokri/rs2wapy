@@ -925,7 +925,7 @@ class WebAdminAdapter:
         self._hash_alg = self._rparser.parse_hash_alg(resp)
         logger.debug("using hash algorithm: '{a}'", a=self._hash_alg)
         if self._hash_alg:
-            self._pw_hash = self._ue3_pw_hash_digest(username, password)
+            self._pw_hash = self._pw_hash_digest(username, password)
         else:
             # Hash algorithm was not set.
             self._pw_hash = password.encode("utf-8")
@@ -946,15 +946,20 @@ class WebAdminAdapter:
             logger.debug("assuming encoding is {enc}", enc=encoding)
         return encoding
 
-    def _ue3_pw_hash_digest(self, username: str, password: str) -> bytes:
+    def _pw_hash_digest(self, username: str, password: str) -> bytes:
         """
-        Calculate the hex digest used by Unreal Engine 3 WebAdmin,
-        which is transmitted over the wire.
+        Calculate the hex digest used by Rising Storm 2: Vietnam
+        WebAdmin, which is transmitted over the wire.
         """
-        hash_alg = getattr(hashlib, self._hash_alg)
-        return hash_alg(bytearray(password, "utf-8")
-                        + bytearray(username, "utf-8")
-                        ).hexdigest()
+        try:
+            hash_alg = getattr(hashlib, self._hash_alg)
+            return hash_alg(bytearray(password, "utf-8")
+                            + bytearray(username, "utf-8")
+                            ).hexdigest().encode("utf-8")
+        except AttributeError as ae:
+            logger.debug(ae, exc_info=True)
+            logger.error("hash algorithm '{ha}' is not supported",
+                         ha=self._hash_alg)
 
     @staticmethod
     def _headers_to_list(headers: dict) -> List[str]:

@@ -1,7 +1,6 @@
 from .models import *
 
 __all__ = [
-    "STEAM_ID_TYPE",
     "AllTeam",
     "AccessPolicy",
     "ChatMessage",
@@ -17,4 +16,5 @@ __all__ = [
     "BlueTeam",
     "RedTeam",
     "MapCycle",
+    "logger",
 ]
