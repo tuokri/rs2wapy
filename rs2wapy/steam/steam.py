@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 from typing import Dict
@@ -13,7 +15,7 @@ logger = Logger(__name__)
 
 
 class Singleton(type):
-    _instances = {}
+    _instances: Dict[type, Singleton] = {}
 
     def __call__(cls, *args, **kwargs):
         try:

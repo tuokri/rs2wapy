@@ -175,8 +175,8 @@ class RS2WebAdmin:
         :param notify_players:
             If True, notify players on the server.
         """
-        self._adapter.ban_player(player, reason, duration,
-                                 notify_players)
+        self._adapter.ban_player(player, reason=reason, duration=duration,
+                                 notify_players=notify_players)
 
     def kick_player(self, player: Union[Player, PlayerWrapper],
                     reason: str, notify_players: bool = False):

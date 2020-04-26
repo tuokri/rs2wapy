@@ -3,7 +3,9 @@ from __future__ import annotations
 import abc
 import datetime
 import sys
+from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Type
 from typing import Union
@@ -43,17 +45,11 @@ HEX_COLOR_ALL_TEAM = ""
 
 
 class Team(abc.ABC):
-    HEX_COLOR = None
+    HEX_COLOR: Optional[str] = None
 
     @staticmethod
     def from_hex_color(hex_color: str) -> Type[Team]:
         return HEX_COLOR_TO_TEAM[hex_color]
-
-    @classmethod
-    def to_hex_color(cls) -> str:
-        if not cls.HEX_COLOR:
-            raise NotImplementedError("not implemented for abstract base class")
-        return TEAM_TO_HEX_COLOR[cls.HEX_COLOR]
 
     @staticmethod
     def from_team_index(index: int) -> Type[Team]:
@@ -86,28 +82,19 @@ HEX_COLOR_TO_TEAM = {
     HEX_COLOR_ALL_TEAM: AllTeam,
 }
 
-TEAM_TO_HEX_COLOR = {
-    BlueTeam: HEX_COLOR_BLUE_TEAM,
-    RedTeam: HEX_COLOR_RED_TEAM,
-    UnknownTeam: HEX_COLOR_UNKNOWN_TEAM,
-    AllTeam: HEX_COLOR_ALL_TEAM,
-}
-
-TEAM_INDEX_TO_TEAM = {
+TEAM_INDEX_TO_TEAM: Dict[int, Type[Team]] = {
     0: RedTeam,
     1: BlueTeam,
 }
 
-TEAM_TO_TEAM_INDEX = {
+TEAM_TO_TEAM_INDEX: Dict[Type[Team], int] = {
     RedTeam: 0,
     BlueTeam: 1,
 }
 
-STEAM_ID_TYPE = Union[SteamID, int, str]
-
 
 class Player(Model):
-    def __init__(self, steam_id: STEAM_ID_TYPE, stats: dict = None,
+    def __init__(self, steam_id: Union[SteamID, int, str], stats: dict = None,
                  persona_name: str = None, id_intstr_base=16):
         super().__init__()
 
@@ -124,7 +111,7 @@ class Player(Model):
         else:
             raise ValueError(
                 f"invalid steam_id type: {type(steam_id)}, expected "
-                f"{STEAM_ID_TYPE}")
+                f"{Union[SteamID, int, str]}")
 
         self._persona_name = persona_name
 
@@ -224,7 +211,7 @@ class ChatMessage(Model):
         return f"{self._timestamp.isoformat()} {self._sender} {channel}: {self._text}"
 
     def __repr__(self) -> str:
-        return f"{__class__.__name__}({self.__str__()})"
+        return f"{type(self).__name__}({self.__str__()})"
 
     @property
     def sender(self) -> Union[Player, adapters.PlayerWrapper, str]:
@@ -251,7 +238,7 @@ class Scoreboard(abc.ABC):
         return self._stats.__str__()
 
     def __repr__(self) -> str:
-        return f"{__class__}({self.__str__()})"
+        return f"{type(self).__name__}({self.__str__()})"
 
 
 class PlayerScoreboard(Scoreboard):
@@ -346,7 +333,7 @@ class MapCycle(Model):
         return f"{self._maps}"
 
     def __repr__(self) -> str:
-        return f"{__class__.__name__}({self.__str__()})"
+        return f"{type(self).__name__}({self.__str__()})"
 
 
 class Squad(Model):
@@ -360,7 +347,7 @@ class Squad(Model):
         return f"team={self._team}, number={self._number}, name={self._name}"
 
     def __repr__(self) -> str:
-        return f"{__class__.__name__}({self.__str__()})"
+        return f"{type(self).__name__}({self.__str__()})"
 
     def __hash__(self) -> int:
         return self._number
@@ -386,14 +373,17 @@ class Ban(Model):
         return self._reason
 
     @property
-    def until(self) -> datetime.datetime:
+    def until(self) -> Optional[datetime.datetime]:
         """Ban expiration date. If None, the ban is permanent."""
         return self._until
 
     @property
     def expired(self) -> bool:
         """True if ban has expired."""
-        return self.until > datetime.datetime.now()
+        if self.until is not None:
+            return self.until > datetime.datetime.now()
+        else:
+            return False
 
     @staticmethod
     def _parse_until(until: str) -> datetime.datetime:

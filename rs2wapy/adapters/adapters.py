@@ -14,7 +14,9 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
+from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Type
@@ -88,7 +90,7 @@ WEB_ADMIN_SQUADS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("squads/")
 WEB_ADMIN_TRACKING_PATH = WEB_ADMIN_POLICY_PATH / Path("tracking/")
 
 
-def retry(on_exc: Union[Exception, Tuple],
+def retry(on_exc: Union[Type[Exception], Tuple[Exception, ...]],
           tries: int = 10, delay: int = 3, backoff: int = 2,
           cap: int = 30):
     """Retry calling the decorated function
@@ -129,16 +131,16 @@ def _set_postfields(curl_obj: pycurl.Curl, postfields: str):
     postfieldsize = len(postfields)
     logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
     logger.debug("postfields: {pf}", pf=postfields)
-    curl_obj.setopt(curl_obj.POSTFIELDS, postfields)
-    curl_obj.setopt(curl_obj.POSTFIELDSIZE_LARGE, postfieldsize)
+    curl_obj.setopt(pycurl.POSTFIELDS, postfields)
+    curl_obj.setopt(pycurl.POSTFIELDSIZE_LARGE, postfieldsize)
 
 
 def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
     del_index = [idx for idx, s in enumerate(policies) if to_delete in s][0]
-    policies = [p.split(":") for p in policies]
+    policies_split = [p.split(":") for p in policies]
     policies = [(f"ipmask={p[0].strip()}&policy={p[1].strip()}"
                  f"{f'&delete={del_index}' if p[0] == to_delete else ''}")
-                for p in policies]
+                for p in policies_split]
     return "&".join(policies)
 
 
@@ -182,13 +184,14 @@ class WebAdminAdapter:
     }
 
     def __init__(self, username: str, password: str, webadmin_url: str):
-        self._headers = {}
+        self._headers: Dict[str, str] = {}
+        self._chat_message_deque: deque = deque(maxlen=512)
+        self._auth_data: Optional[AuthData] = None
+
         self._username = username
         self._webadmin_url = webadmin_url
-        self._password_hash = ""
+        self._password_hash = b""
         self._hash_alg = ""
-        self._auth_data = None
-        self._chat_message_deque = deque(maxlen=512)
 
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
         logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
@@ -281,7 +284,7 @@ class WebAdminAdapter:
             pass
 
     @property
-    def auth_data(self) -> AuthData:
+    def auth_data(self) -> Optional[AuthData]:
         return self._auth_data
 
     @auth_data.setter
@@ -289,14 +292,14 @@ class WebAdminAdapter:
         self._auth_data = auth_data
 
     @property
-    def _pw_hash(self) -> str:
-        return base64.decodebytes(self._password_hash).decode("utf-8")
+    def _pw_hash(self) -> bytes:
+        return base64.decodebytes(self._password_hash)
 
     @_pw_hash.setter
-    def _pw_hash(self, pw_hash: str):
+    def _pw_hash(self, pw_hash: bytes):
         # Avoid storing plaintext password in memory in case
         # WebAdmin did not set 'hashAlg'.
-        self._password_hash = base64.encodebytes(pw_hash.encode("utf-8"))
+        self._password_hash = base64.encodebytes(pw_hash)
 
     def get_current_game(self) -> models.CurrentGame:
         headers = self._make_auth_headers()
@@ -341,19 +344,20 @@ class WebAdminAdapter:
         self._chat_message_deque.extend(chat_msgs)
 
     def get_access_policy(self) -> List[str]:
-        sessionid = self._auth_data.sessionid
-        authcred = self._auth_data.authcred
-        authtimeout = self._auth_data.authtimeout
-
-        headers = self.BASE_HEADERS.copy()
-        headers["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
-        headers["Cache-Control"] = "no-cache"
-
-        # Prevent caching with randomized parameter.
-        url = f"{self._access_policy_url}?$(date +%s)"
-
-        resp = self._perform(url, headers=headers)
-        return self._rparser.parse_access_policy(resp)
+        # sessionid = self._auth_data.sessionid
+        # authcred = self._auth_data.authcred
+        # authtimeout = self._auth_data.authtimeout
+        #
+        # headers = self.BASE_HEADERS.copy()
+        # headers["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
+        # headers["Cache-Control"] = "no-cache"
+        #
+        # # Prevent caching with randomized parameter.
+        # url = f"{self._access_policy_url}?$(date +%s)"
+        #
+        # resp = self._perform(url, headers=headers)
+        # return self._rparser.parse_access_policy(resp)
+        raise NotImplementedError
 
     # TODO: Refactor.
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
@@ -543,7 +547,8 @@ class WebAdminAdapter:
         raise NotImplementedError
 
     def ban_player(self, player: Union[models.Player, PlayerWrapper],
-                   reason: str, duration: str, notify_players: bool = False):
+                   reason: str, duration: Optional[str] = None,
+                   notify_players: bool = False):
         steam_id = player.steam_id.as_64
 
         name = player.persona_name
@@ -554,10 +559,9 @@ class WebAdminAdapter:
         exp_unit = BAN_EXP_UNIT_PERM
 
         if duration:
-            # noinspection PyBroadException
             try:
                 exp_number, exp_unit = self._parse_ban_duration(duration)
-            except Exception:
+            except ValueError:
                 logger.warning("invalid ban duration")
 
         postfields = {
@@ -684,15 +688,15 @@ class WebAdminAdapter:
             curl_obj = pycurl.Curl()
 
         if postfields:
-            postfields = urlencode(postfields)
-            _set_postfields(curl_obj, postfields)
+            postfields_dict = urlencode(postfields)
+            _set_postfields(curl_obj, postfields_dict)
 
         logger.debug("url={url}, headers={headers}", url=url, headers=headers)
         if not headers:
             headers = self.BASE_HEADERS.copy()
-        headers = self._headers_to_list(headers)
+        headers_list = self._headers_to_list(headers)
 
-        logger.debug("prepared headers={h}", h=headers)
+        logger.debug("prepared headers={h}", h=headers_list)
 
         buffer = BytesIO()
 
@@ -700,7 +704,7 @@ class WebAdminAdapter:
         curl_obj.setopt(pycurl.HEADERFUNCTION, self._header_function)
         curl_obj.setopt(pycurl.BUFFERSIZE, 102400)
         curl_obj.setopt(pycurl.URL, url)
-        curl_obj.setopt(pycurl.HTTPHEADER, headers)
+        curl_obj.setopt(pycurl.HTTPHEADER, headers_list)
         curl_obj.setopt(pycurl.USERAGENT, CURL_USERAGENT)
         curl_obj.setopt(pycurl.MAXREDIRS, 50)
         curl_obj.setopt(pycurl.ACCEPT_ENCODING, "")
@@ -827,10 +831,11 @@ class WebAdminAdapter:
         pw_hash = ""
         pw = ""
 
+        pw_hash_str = self._pw_hash.decode("utf-8")
         if self._hash_alg:
-            pw_hash = f"${self._hash_alg}${self._pw_hash}"
+            pw_hash = f"${self._hash_alg}${pw_hash_str}"
         else:
-            pw = self._pw_hash
+            pw = pw_hash_str
 
         postfields = {
             "token": token,
@@ -901,11 +906,12 @@ class WebAdminAdapter:
             logger.exception(ae)
 
     def _make_auth_headers(self) -> dict:
-        sessionid = self._auth_data.sessionid
-        authcred = self._auth_data.authcred
-        authtimeout = self._auth_data.authtimeout
         headers = self.BASE_HEADERS.copy()
-        headers["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
+        if self._auth_data is not None:
+            sessionid = self._auth_data.sessionid
+            authcred = self._auth_data.authcred
+            authtimeout = self._auth_data.authtimeout
+            headers["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
         return headers
 
     def _make_chat_headers(self) -> dict:
@@ -922,7 +928,7 @@ class WebAdminAdapter:
             self._pw_hash = self._ue3_pw_hash_digest(username, password)
         else:
             # Hash algorithm was not set.
-            self._pw_hash = password
+            self._pw_hash = password.encode("utf-8")
 
     def _read_encoding(self, index: int = -1) -> str:
         encoding = None
@@ -940,14 +946,15 @@ class WebAdminAdapter:
             logger.debug("assuming encoding is {enc}", enc=encoding)
         return encoding
 
-    def _ue3_pw_hash_digest(self, username: str, password: str) -> str:
+    def _ue3_pw_hash_digest(self, username: str, password: str) -> bytes:
         """
         Calculate the hex digest used by Unreal Engine 3 WebAdmin,
         which is transmitted over the wire.
         """
         hash_alg = getattr(hashlib, self._hash_alg)
         return hash_alg(bytearray(password, "utf-8")
-                        + bytearray(username, "utf-8")).hexdigest()
+                        + bytearray(username, "utf-8")
+                        ).hexdigest()
 
     @staticmethod
     def _headers_to_list(headers: dict) -> List[str]:
@@ -957,7 +964,7 @@ class WebAdminAdapter:
         return [f"{key}: {value}" for key, value in headers.items()]
 
     @staticmethod
-    def _parse_ban_duration(duration: str) -> Tuple[int, str]:
+    def _parse_ban_duration(duration: str) -> Tuple[str, str]:
         try:
             duration = duration.lower().strip()
             m = re.match(BAN_EXP_PATTERN, duration)
@@ -968,12 +975,12 @@ class WebAdminAdapter:
             duration_unit = m.group(2)
             logger.debug("duration_unit: {du}", du=duration_unit)
             duration_unit = duration_unit[0].upper() + duration_unit[1:]
-            return ban_duration, duration_unit
+            return str(ban_duration), duration_unit
         except Exception as e:
             logger.debug("error parsing ban duration string: {e}",
                          e=e, exc_info=True)
             opt_info = f"{e}" if isinstance(e, ValueError) else ""
-            raise ValueError(f"error parsing ban duration string{opt_info}")
+            raise ValueError(f"error parsing ban duration string {opt_info}")
 
 
 class ModelWrapper:
@@ -1035,10 +1042,10 @@ class PlayerWrapper(ModelWrapper):
         """Notes attached to player."""
         raise NotImplementedError
 
-    def ban(self, reason: str, duration: str = None,
+    def ban(self, reason: str, duration: Optional[str] = None,
             notify_players: bool = False):
-        self._adapter.ban_player(self.player, reason, duration,
-                                 notify_players)
+        self._adapter.ban_player(self.player, reason=reason, duration=duration,
+                                 notify_players=notify_players)
 
     def kick(self, reason: str, notify_players: bool = False):
         self._adapter.kick_player(self.player, reason,

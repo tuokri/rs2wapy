@@ -34,5 +34,10 @@ setuptools.setup(
         "requests",
         "steam",
         "regex",
-    ]
+    ],
+    extras_require = {
+        "dev": [
+            "mypy",
+        ]
+    },
 )

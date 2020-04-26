@@ -312,12 +312,10 @@ class RS2WebAdminResponseParser:
     def parse_hash_alg(self, resp: bytes) -> str:
         parsed_html = self.parse_html(resp)
         login_script = parsed_html.find("script", text=re.compile(r".*hashAlg.*"))
+        match = re.search(r'.*var\shashAlg\s=\s"(.*)";.*', str(login_script))
         alg = ""
-        try:
-            alg = re.search(r'.*var\shashAlg\s=\s"(.*)";.*', str(login_script))
-            alg = alg.group(1)
-        except AttributeError as ae:
-            logger.error("unable to parse hash alg: {e}", e=ae)
+        if match:
+            alg = match.group(1)
         return alg
 
     def parse_map_list_indices(self, resp) -> dict:
@@ -376,11 +374,11 @@ class RS2WebAdminResponseParser:
 
         squads = []
         for row in squads_table:
-            team = models.UnknownTeam
             try:
                 team_idx = int(row[0].strip())
                 team = models.Team.from_team_index(team_idx)
             except Exception as e:
+                team = models.UnknownTeam
                 logger.error("unable to parse squad team: {e}", e=e)
 
             number = -1
@@ -482,7 +480,9 @@ class RS2WebAdminResponseParser:
                 "no teamcolor in chat message div={div}", div=div)
         else:
             try:
-                teamcolor = re.match(TEAMCOLOR_PATTERN, teamcolor).groups()[0]
+                match = re.match(TEAMCOLOR_PATTERN, teamcolor)
+                if match:
+                    teamcolor = match.groups()[0]
             except IndexError as ie:
                 logger.error("error getting teamcolor: {e}", e=ie)
 
