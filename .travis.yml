@@ -11,4 +11,5 @@ install:
 jobs:
   include:
     - stage: test
+      name: "mypy"
       script: ./tests/run_mypy.sh
