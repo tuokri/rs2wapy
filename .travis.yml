@@ -5,7 +5,7 @@ notifications:
 
 os:
   - linux
-  - windows
+  # - windows
 
 python:
   - "3.7"
