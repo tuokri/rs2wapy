@@ -5,7 +5,7 @@ python:
   - "3.8"
 
 install:
-  - apt-get install gnutls-dev
+  - sudo apt-get install gnutls-dev
   - pip install -e .[dev]
 
 jobs:
