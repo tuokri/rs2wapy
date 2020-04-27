@@ -8,6 +8,9 @@ install:
   - sudo apt-get install gnutls-dev
   - pip install -e .[dev]
 
+stages:
+  - test
+
 jobs:
   include:
     - stage: test
