@@ -960,6 +960,7 @@ class WebAdminAdapter:
             logger.debug(ae, exc_info=True)
             logger.error("hash algorithm '{ha}' is not supported",
                          ha=self._hash_alg)
+            raise
 
     @staticmethod
     def _headers_to_list(headers: dict) -> List[str]:
