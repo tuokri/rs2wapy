@@ -137,7 +137,8 @@ class RS2WebAdmin:
         WARNING: This method is extremely slow for servers
         with large tracking databases.
 
-        TODO: Can we leverage async?
+        TODO: Can we leverage asyncio?
+        TODO: Back ground collection like chat?
         """
         return self._adapter.get_tracked_players()
 
