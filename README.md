@@ -1,6 +1,7 @@
 # rs2wapy
 [![Discord](https://img.shields.io/discord/684326231210328074?label=Discord)](https://discord.gg/6tgWHpM)
 [![Travis](https://travis-ci.com/tuokri/rs2wapy.svg?branch=master)](https://travis-ci.com/github/tuokri/rs2wapy)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9d561a84b14c8c3486f6/maintainability)](https://codeclimate.com/github/tuokri/rs2wapy/maintainability)
 
 ### Rising Storm 2: Vietnam WebAdmin Python Interface
 Provides a Python interface for performing RS2 WebAdmin
