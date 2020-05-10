@@ -544,7 +544,26 @@ class WebAdminAdapter:
 
     def kick_player(self, player: Union[models.Player, PlayerWrapper],
                     reason: str, notify_players: bool = False):
-        raise NotImplementedError
+        headers = self._make_auth_headers()
+        players_resp = self._perform(self._players_url, headers=headers)
+        player_id, player_key = self._rparser.parse_player_id_key(
+            players_resp, player)
+
+        postfields = {
+            "action": "kick",
+            "playerid": player_id,
+            "playerkey": player_key,
+            "__Submitter": "",
+            "__UniqueId": "",
+            "__PlayerName": "",
+            "__Reason": reason,
+            "__NotifyPlayers": int(notify_players),
+            "__IdType": 0,
+            "__ExpNumber": "",
+            "__ExpUnit": "Never",
+        }
+        self._perform(self._players_url, headers=headers,
+                      postfields=postfields)
 
     def ban_player(self, player: Union[models.Player, PlayerWrapper],
                    reason: str, duration: Optional[str] = None,

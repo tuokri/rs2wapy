@@ -9,6 +9,7 @@ import sys
 from typing import List
 from typing import Sequence
 from typing import Tuple
+from typing import Union
 
 import steam
 from bs4 import BeautifulSoup
@@ -464,12 +465,49 @@ class RS2WebAdminResponseParser:
         return parsed_html.find(
             "input", attrs={"id": "__FirstVisibleRowIndex"}).get("value")
 
-    def parse_tracking_has_more(self, resp):
+    def parse_tracking_has_more(self, resp: bytes):
         """Return True if next page button is enabled."""
         parsed_html = self.parse_html(resp)
         np_button = parsed_html.find(
             "button", attrs={"id": "__NextPage"})
         return not np_button.has_attr("disabled")
+
+    def parse_player_id_key(
+            self, resp: bytes,
+            player: Union[models.Player, adapters.PlayerWrapper]
+    ) -> Tuple[int, str]:
+        """Parse "hidden" player key and ID from players table."""
+        parsed_html = self.parse_html(resp)
+        trs = parsed_html.find_all("tr")
+        player_id = -1
+        player_key = ""
+
+        for tr in trs:
+            div = tr.find("div")
+            if not div:
+                continue
+
+            # Find x from <input id = "__PlayerId_x">.
+            x = div.find("input").get("id").split("_")[-1]
+            div_player_key = div.find(
+                "input", attrs={"id": f"__PlayerKey_{x}"}).get("value")
+            div_player_name = div.find(
+                "input", attrs={"id": f"__PlayerName_{x}"}).get("value")
+
+            div_player_steam_id = div_player_key.split("_")[1].strip().lower()
+            steam_id = player.steam_id.as_64
+            # Match leading zeros.
+            steam_id = f"{steam_id:#0{len(div_player_steam_id)}x}"
+            steam_id = steam_id.strip().lower()
+
+            if (steam_id == div_player_steam_id
+                    and (div_player_name == player.name)):
+                player_id = int(div.find(
+                    "input", attrs={"id": f"__PlayerId_{x}"}).get("value"))
+                player_key = div_player_key
+                break
+
+        return player_id, player_key
 
     @staticmethod
     def parse_chat_message(div: BeautifulSoup) -> models.ChatMessage:
