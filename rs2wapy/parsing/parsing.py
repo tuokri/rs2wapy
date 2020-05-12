@@ -13,10 +13,10 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
-import steam
 from bs4 import BeautifulSoup
 from logbook import Logger
 from logbook import StreamHandler
+from steam import steamid
 
 import rs2wapy.models as models
 from rs2wapy.adapters import adapters
@@ -273,7 +273,7 @@ class RS2WebAdminResponseParser:
                 logger.exception(ve)
                 steam_id = 0
 
-            steam_ids.append(steam.SteamID(steam_id))
+            steam_ids.append(steamid.SteamID(steam_id))
 
             stats = {
                 key: value for key, value in zip(
@@ -426,7 +426,7 @@ class RS2WebAdminResponseParser:
         # might be missing in the table in some cases.
         id_index = tracking_headers.index("Unique ID")
 
-        steam_ids = [steam.SteamID(int(row[id_index], 16))
+        steam_ids = [steamid.SteamID(int(row[id_index], 16))
                      for row in tracking_rows]
         persona_names = SteamWebAPI().get_persona_names(
             steam_ids=steam_ids
@@ -434,7 +434,7 @@ class RS2WebAdminResponseParser:
 
         tracking_wrappers = []
         for row in tracking_rows:
-            steam_id = steam.SteamID(int(row[id_index], 16))
+            steam_id = steamid.SteamID(int(row[id_index], 16))
 
             persona_name = ""
             try:
@@ -524,7 +524,7 @@ class RS2WebAdminResponseParser:
 
         id_index = members_headers.index("Unique ID")
 
-        steam_ids = [steam.SteamID(int(row[id_index], 16))
+        steam_ids = [steamid.SteamID(int(row[id_index], 16))
                      for row in members_rows]
 
         persona_names = SteamWebAPI().get_persona_names(
@@ -533,7 +533,7 @@ class RS2WebAdminResponseParser:
 
         member_wrappers = []
         for row in members_rows:
-            steam_id = steam.SteamID(int(row[id_index], 16))
+            steam_id = steamid.SteamID(int(row[id_index], 16))
 
             persona_name = ""
             try:

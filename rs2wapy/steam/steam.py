@@ -6,9 +6,10 @@ from typing import Dict
 from typing import Sequence
 
 import requests
-import steam
+import steam.webapi
 from logbook import Logger
 from logbook import StreamHandler
+from steam import steamid
 
 StreamHandler(sys.stdout, level="WARNING", bubble=True).push_application()
 logger = Logger(__name__)
@@ -57,7 +58,7 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
         if not dummy:
             super().__init__(*args, **kwargs)
 
-    def get_persona_name(self, steam_id: steam.SteamID) -> str:
+    def get_persona_name(self, steam_id: steamid.SteamID) -> str:
         # TODO: Refer to variable in docstring.
         """Return persona name for Steam ID.
         Use get_persona_names for multiple requests to limit
@@ -73,8 +74,8 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
             SteamWebAPI._REQUESTS_MADE += 1
             return ret
 
-    def get_persona_names(self, steam_ids: Sequence[steam.SteamID]
-                          ) -> Dict[steam.SteamID, str]:
+    def get_persona_names(self, steam_ids: Sequence[steamid.SteamID]
+                          ) -> Dict[steamid.SteamID, str]:
         """Return dictionary of Steam IDs to persona names
         for given Steam IDs. Queries the Steam Web API in
         batches of 100 Steam IDs.
@@ -94,7 +95,7 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
             SteamWebAPI._REQUESTS_MADE += 1
 
             ret = {
-                steam.SteamID(r["steamid"]): r["personaname"] for r in resp
+                steamid.SteamID(r["steamid"]): r["personaname"] for r in resp
             }
 
             input_len = len(chunk_ids)

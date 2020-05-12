@@ -12,7 +12,7 @@ from typing import Union
 
 from logbook import Logger
 from logbook import StreamHandler
-from steam import SteamID
+from steam.steamid import SteamID
 
 from rs2wapy.adapters import adapters
 from rs2wapy.steam import SteamWebAPI
