@@ -1,6 +1,8 @@
 """
 Provides utilities for parsing responses from
 Rising Storm 2: Vietnam WebAdmin.
+
+TODO: This module is growing fast. Needs refactoring.
 """
 from __future__ import annotations
 
@@ -438,7 +440,8 @@ class RS2WebAdminResponseParser:
             try:
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
-                logger.warn(f"cannot get persona name for Steam ID: {steam_id}")
+                logger.warn("cannot get persona name for Steam ID: {sid}: {e}",
+                            sid=steam_id, e=ke)
 
             player = models.Player(
                 steam_id=steam_id,
@@ -459,13 +462,13 @@ class RS2WebAdminResponseParser:
 
         return tracking_wrappers
 
-    def parse_tracking_fvri(self, resp: bytes):
+    def parse_fvri(self, resp: bytes):
         """Parse first visible row index from response."""
         parsed_html = self.parse_html(resp)
         return parsed_html.find(
             "input", attrs={"id": "__FirstVisibleRowIndex"}).get("value")
 
-    def parse_tracking_has_more(self, resp: bytes):
+    def parse_has_next_page(self, resp: bytes):
         """Return True if next page button is enabled."""
         parsed_html = self.parse_html(resp)
         np_button = parsed_html.find(
@@ -496,7 +499,7 @@ class RS2WebAdminResponseParser:
 
             div_player_steam_id = div_player_key.split("_")[1].strip().lower()
             steam_id = player.steam_id.as_64
-            # Match leading zeros.
+            # Match leading zeros of strings to compare.
             steam_id = f"{steam_id:#0{len(div_player_steam_id)}x}"
             steam_id = steam_id.strip().lower()
 
@@ -508,6 +511,57 @@ class RS2WebAdminResponseParser:
                 break
 
         return player_id, player_key
+
+    def parse_members(self, resp: bytes,
+                      adapter: adapters.WebAdminAdapter
+                      ) -> List[adapters.MemberWrapper]:
+        parsed_html = self.parse_html(resp)
+        members_table = parsed_html.find("table", attrs={"id": "members"})
+        members_headers = [th.text for th in members_table.find_all("th")]
+        tracking_tbody = members_table.find("tbody")
+        tb_row_entries = tracking_tbody.find_all("tr")
+        members_rows = self._parse_table(tb_row_entries)
+
+        id_index = members_headers.index("Unique ID")
+
+        steam_ids = [steam.SteamID(int(row[id_index], 16))
+                     for row in members_rows]
+
+        persona_names = SteamWebAPI().get_persona_names(
+            steam_ids=steam_ids
+        )
+
+        member_wrappers = []
+        for row in members_rows:
+            steam_id = steam.SteamID(int(row[id_index], 16))
+
+            persona_name = ""
+            try:
+                if not steam_id.is_valid():
+                    raise KeyError("invalid SteamID")
+                persona_name = persona_names[steam_id]
+            except KeyError as ke:
+                logger.warn("cannot get persona name for Steam ID: {sid}: {e}",
+                            sid=steam_id, e=ke)
+
+            player = models.Player(
+                steam_id=steam_id,
+                persona_name=persona_name,
+            )
+
+            member_data = {
+                key: value for key, value in zip(
+                    members_headers, row)
+                if key.lower() != "actions"
+            }
+
+            member_wrappers.append(adapters.MemberWrapper(
+                player=player,
+                member_data=member_data,
+                adapter=adapter,
+            ))
+
+        return member_wrappers
 
     @staticmethod
     def parse_chat_message(div: BeautifulSoup) -> models.ChatMessage:

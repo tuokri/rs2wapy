@@ -95,7 +95,7 @@ TEAM_TO_TEAM_INDEX: Dict[Type[Team], int] = {
 
 class Player(Model):
     def __init__(self, steam_id: Union[SteamID, int, str], stats: dict = None,
-                 persona_name: str = None, id_intstr_base=16):
+                 persona_name: str = None, id_intstr_base: int = 16):
         super().__init__()
 
         if not stats:

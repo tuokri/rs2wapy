@@ -1,3 +1,5 @@
+"""High level API."""
+
 from __future__ import annotations
 
 import sys
@@ -12,6 +14,7 @@ from logbook import StreamHandler
 from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.adapters import WebAdminAdapter
 from rs2wapy.adapters.adapters import BanWrapper
+from rs2wapy.adapters.adapters import MemberWrapper
 from rs2wapy.adapters.adapters import SquadWrapper
 from rs2wapy.adapters.adapters import TrackingWrapper
 from rs2wapy.models import AccessPolicy
@@ -138,7 +141,7 @@ class RS2WebAdmin:
         with large tracking databases.
 
         TODO: Can we leverage asyncio?
-        TODO: Back ground collection like chat?
+        TODO: Background collection like chat?
         """
         return self._adapter.get_tracked_players()
 
@@ -231,3 +234,6 @@ class RS2WebAdmin:
 
     def set_advertisement_interval(self, ad_interval: int):
         raise NotImplementedError
+
+    def get_members(self) -> List[MemberWrapper]:
+        return self._adapter.get_members()

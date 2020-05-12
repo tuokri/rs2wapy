@@ -14,6 +14,12 @@ StreamHandler(sys.stdout, level="WARNING", bubble=True).push_application()
 logger = Logger(__name__)
 
 
+def _chunks(seq: Sequence, n: int):
+    """Yield successive n-sized chunks from seq."""
+    for i in range(0, len(seq), n):
+        yield seq[i:i + n]
+
+
 class Singleton(type):
     _instances: Dict[type, Singleton] = {}
 
@@ -37,11 +43,7 @@ class Singleton(type):
 
 
 class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
-    """Helper class for using Steam Web API quickly.
-
-    API request return values are not cached at this time,
-    but will be cached in future revisions.
-    """
+    """Helper class for using Steam Web API quickly."""
 
     _REQUESTS_MADE = 0
 
@@ -50,7 +52,6 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
         """Return the number of requests made to Steam API."""
         return self._REQUESTS_MADE
 
-    # TODO: Cache results.
     def __init__(self, *args, dummy=False, **kwargs):
         self._dummy = dummy
         if not dummy:
@@ -60,47 +61,49 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
         # TODO: Refer to variable in docstring.
         """Return persona name for Steam ID.
         Use get_persona_names for multiple requests to limit
-        the number of made to Steam API.
+        the number of requests made to Steam API.
         """
         if self._dummy:
             return ""
         else:
-            ret = self.ISteamUser.GetPlayerSummaries(
-                steamids=steam_id.as_64)["response"]["players"][0]["personaname"]
+            # noinspection PyUnresolvedReferences
+            response = self.ISteamUser.GetPlayerSummaries(
+                steamids=steam_id.as_64)["response"]
+            ret = response["players"][0]["personaname"]
             SteamWebAPI._REQUESTS_MADE += 1
             return ret
 
     def get_persona_names(self, steam_ids: Sequence[steam.SteamID]
                           ) -> Dict[steam.SteamID, str]:
         """Return dictionary of Steam IDs to persona names
-        for given Steam IDs. Current limited to a maximum
-        of 100 IDs per request.
+        for given Steam IDs. Queries the Steam Web API in
+        batches of 100 Steam IDs.
         """
         if self._dummy:
             return {steam_id: "" for steam_id in steam_ids}
 
-        # TODO: handle more than 100 IDs.
-        if len(steam_ids) > 100:
-            raise NotImplementedError(
-                "TODO: May request only 100 players at a time!")
+        ret = {}
 
-        steam_ids = [str(sid.as_64) for sid in steam_ids]
-        steam_ids_str = ",".join(steam_ids)
+        for chunk in _chunks(steam_ids, n=100):
+            chunk_ids = [str(cid.as_64) for cid in chunk]
+            chunk_ids_str = ",".join(chunk_ids)
 
-        resp = self.ISteamUser.GetPlayerSummaries(
-            steamids=steam_ids_str)["response"]["players"]
-        SteamWebAPI._REQUESTS_MADE += 1
+            # noinspection PyUnresolvedReferences
+            resp = self.ISteamUser.GetPlayerSummaries(
+                steamids=chunk_ids_str)["response"]["players"]
+            SteamWebAPI._REQUESTS_MADE += 1
 
-        ret = {
-            steam.SteamID(r["steamid"]): r["personaname"] for r in resp
-        }
+            ret = {
+                steam.SteamID(r["steamid"]): r["personaname"] for r in resp
+            }
 
-        input_len = len(steam_ids)
-        output_len = len(ret)
-        if input_len != output_len:
-            logger.warn(
-                f"Steam API did not return valid value "
-                f"for input Steam IDs "
-                f"(input_len={input_len}, output_len={output_len})")
+            input_len = len(chunk_ids)
+            output_len = len(ret)
+            num_bad = int(abs(input_len - output_len))
+            if input_len != output_len:
+                logger.warn(
+                    f"Steam API did not return valid value "
+                    f"for {num_bad} input Steam IDs "
+                    f"(input_len={input_len}, output_len={output_len})")
 
         return ret

@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
+from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -88,6 +90,7 @@ WEB_ADMIN_MAP_LIST_PATH = WEB_ADMIN_SETTINGS_PATH / Path("maplist/")
 WEB_ADMIN_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("bans/")
 WEB_ADMIN_SQUADS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("squads/")
 WEB_ADMIN_TRACKING_PATH = WEB_ADMIN_POLICY_PATH / Path("tracking/")
+WEB_ADMIN_MEMBERS_URL = WEB_ADMIN_POLICY_PATH / Path("members/")
 
 
 def retry(on_exc: Union[Type[Exception], Tuple[Exception, ...]],
@@ -261,6 +264,10 @@ class WebAdminAdapter:
         )
         self._tracking_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_TRACKING_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._members_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_MEMBERS_URL.as_posix(),
              params, query, fragment)
         )
 
@@ -658,28 +665,43 @@ class WebAdminAdapter:
         return self._rparser.parse_squads(resp, adapter=self)
 
     def get_tracked_players(self) -> List[TrackingWrapper]:
+        return self._get_multi_page_content(
+            url=self._tracking_url,
+            parse_func=self._rparser.parse_tracking,
+        )
+
+    def get_members(self) -> List[MemberWrapper]:
+        return self._get_multi_page_content(
+            url=self._members_url,
+            parse_func=self._rparser.parse_members,
+        )
+
+    def _get_multi_page_content(
+            self,
+            url: str,
+            parse_func: Callable[[bytes, WebAdminAdapter], List[Any]],
+    ) -> List[Any]:
         headers = self._make_auth_headers()
-        resp = self._perform(self._tracking_url, headers=headers)
 
-        tracked_players = self._rparser.parse_tracking(resp, adapter=self)
-        has_more_pages = self._rparser.parse_tracking_has_more(resp)
+        resp = self._perform(url, headers=headers)
 
-        while has_more_pages:
-            fvri = self._rparser.parse_tracking_fvri(resp)
+        content = parse_func(resp, self)
+        has_next_page = self._rparser.parse_has_next_page(resp)
+
+        while has_next_page:
+            fvri = self._rparser.parse_fvri(resp)
             logger.debug("first visible row index: {fvri}", fvri=fvri)
             postfields = {
                 "action": "nextpage",
                 "__FirstVisibleRowIndex": fvri,
             }
-            resp = self._perform(
-                self._tracking_url, headers=headers, postfields=postfields)
-            tracked_players.extend(
-                self._rparser.parse_tracking(resp, adapter=self))
-            has_more_pages = self._rparser.parse_tracking_has_more(resp)
+            resp = self._perform(url, headers=headers, postfields=postfields)
+            content.extend(parse_func(resp, self))
+            has_next_page = self._rparser.parse_has_next_page(resp)
 
-        # Remove duplicates in case tracking tab was
+        # Remove duplicates in case content tab was
         # mutated during parsing.
-        return list(set(tracked_players))
+        return list(set(content))
 
     def _enqueue_chat_messages(self):
         while True and not self._stop_event.is_set():
@@ -1229,3 +1251,13 @@ class TrackingWrapper(PlayerWrapper):
     def track(self):
         """No effect on already tracked player."""
         pass
+
+
+class MemberWrapper(PlayerWrapper):
+    def __init__(self, player: models.Player, member_data: dict,
+                 adapter: WebAdminAdapter):
+        super().__init__(player, adapter)
+        self._member_data = member_data
+
+    def __str__(self) -> str:
+        return f"{self._model.__str__()}, {self._member_data}"
