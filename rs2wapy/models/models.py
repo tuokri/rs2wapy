@@ -1,11 +1,16 @@
+"""TODO: Use dataclasses."""
+
 from __future__ import annotations
 
 import abc
 import datetime
 import sys
+from typing import Any
 from typing import Dict
+from typing import KeysView
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 from typing import Type
 from typing import Union
@@ -240,6 +245,12 @@ class Scoreboard(abc.ABC):
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.__str__()})"
 
+    def keys(self) -> KeysView:
+        return self._stats.keys()
+
+    def __getitem__(self, item: Any):
+        return self._stats.__getitem__(item)
+
 
 class PlayerScoreboard(Scoreboard):
     pass
@@ -258,6 +269,19 @@ class CurrentGame(Model):
         self._team_scoreboard = team_scoreboard
         self._info = info
         self._rules = rules
+
+    def __str__(self) -> str:
+        # TODO: implement keys() and __getitem__?
+        all_info = {}
+        all_info.update(self._info)
+        all_info.update(self._rules)
+        all_info.update(self._player_scoreboard)
+        all_info.update(self._team_scoreboard)
+        return str(all_info)
+
+    def __repr__(self) -> str:
+        # TODO:
+        return self.__str__()
 
     @property
     def player_scoreboard(self) -> PlayerScoreboard:
