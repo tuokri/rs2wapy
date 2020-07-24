@@ -15,4 +15,5 @@ install:
   - sudo apt-get install gnutls-dev
   - pip install -e .[dev]
 
-script: ./tests/run_mypy.sh
+script:
+  - ./tests/run_mypy.sh
