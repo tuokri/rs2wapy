@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import List
+from typing import List, Dict
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -16,10 +16,11 @@ from typing import Union
 from bs4 import BeautifulSoup
 from logbook import Logger
 from logbook import StreamHandler
-from steam import steamid
+from steam.steamid import SteamID
 
 import rs2wapy.models as models
 from rs2wapy.adapters import adapters
+from rs2wapy.epicgamesstore import EGSID
 from rs2wapy.steam import SteamWebAPI
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
@@ -256,24 +257,24 @@ class RS2WebAdminResponseParser:
         # We use 'Unique ID' column here instead of 'Steam ID'
         # column because 'Steam ID' column is sometimes not filled.
         # 'Unique ID' is just a hex-string of the user's SteamID64
-        # anyway.
+        # anyway. EGS players are also handled in similar way.
         id_index = player_headers.index(UNIQUE_ID_KEY)
 
         players = []
-        id_to_stats = {}
+        id_to_stats: Dict[Union[SteamID, EGSID], Dict] = {}
         steam_ids = []
+        egs_ids = []
 
         for player_row in player_table:
-            steam_id = player_row[id_index]
+            unique_id = player_row[id_index]
 
             try:
-                steam_id = int(steam_id, 16)
+                unique_id = int(unique_id, 16)
             except ValueError as ve:
-                logger.error("unable to convert Unique ID to SteamID64")
+                logger.error("unable to convert Unique ID '{uid}' to int, skipping",
+                             uid=unique_id)
                 logger.exception(ve)
-                steam_id = 0
-
-            steam_ids.append(steamid.SteamID(steam_id))
+                continue
 
             stats = {
                 key: value for key, value in zip(
@@ -281,7 +282,16 @@ class RS2WebAdminResponseParser:
                 if key.lower() != "actions"
             }
 
-            id_to_stats[steam_id] = stats
+            # Very likely a Steam ID.
+            if len(str(unique_id)) == 17:
+                steam_id = SteamID(unique_id)
+                steam_ids.append(steam_id)
+                id_to_stats[steam_id] = stats
+            # Very likely an EGS ID.
+            else:
+                egs_id = EGSID(unique_id)
+                egs_ids.append(egs_id)
+                id_to_stats[egs_id] = stats
 
         persona_names = SteamWebAPI().get_persona_names(
             steam_ids=steam_ids
@@ -299,11 +309,17 @@ class RS2WebAdminResponseParser:
 
             p_stats = id_to_stats[steam_id]
 
-            player = models.Player(
-                steam_id=steam_id,
-                stats=p_stats,
-                persona_name=persona_name,
-            )
+            player = models.Player(ident=steam_id, stats=p_stats, persona_name=persona_name)
+
+            players.append(adapters.PlayerWrapper(
+                player=player,
+                adapter=adapter,
+            ))
+
+        for egs_id in egs_ids:
+            p_stats = id_to_stats[egs_id]
+
+            player = models.Player(ident=egs_id, stats=p_stats)
 
             players.append(adapters.PlayerWrapper(
                 player=player,
@@ -426,7 +442,7 @@ class RS2WebAdminResponseParser:
         # might be missing in the table in some cases.
         id_index = tracking_headers.index("Unique ID")
 
-        steam_ids = [steamid.SteamID(int(row[id_index], 16))
+        steam_ids = [SteamID(int(row[id_index], 16))
                      for row in tracking_rows]
         persona_names = SteamWebAPI().get_persona_names(
             steam_ids=steam_ids
@@ -434,7 +450,7 @@ class RS2WebAdminResponseParser:
 
         tracking_wrappers = []
         for row in tracking_rows:
-            steam_id = steamid.SteamID(int(row[id_index], 16))
+            steam_id = SteamID(int(row[id_index], 16))
 
             persona_name = ""
             try:
@@ -443,10 +459,7 @@ class RS2WebAdminResponseParser:
                 logger.warn("cannot get persona name for Steam ID: {sid}: {e}",
                             sid=steam_id, e=ke)
 
-            player = models.Player(
-                steam_id=steam_id,
-                persona_name=persona_name,
-            )
+            player = models.Player(ident=steam_id, persona_name=persona_name)
 
             tracking_data = {
                 key: value for key, value in zip(
@@ -473,7 +486,10 @@ class RS2WebAdminResponseParser:
         parsed_html = self.parse_html(resp)
         np_button = parsed_html.find(
             "button", attrs={"id": "__NextPage"})
-        return not np_button.has_attr("disabled")
+        if not np_button:
+            return False
+        button_disabled = np_button.has_attr("disabled")
+        return not button_disabled
 
     def parse_player_id_key(
             self, resp: bytes,
@@ -524,7 +540,7 @@ class RS2WebAdminResponseParser:
 
         id_index = members_headers.index("Unique ID")
 
-        steam_ids = [steamid.SteamID(int(row[id_index], 16))
+        steam_ids = [SteamID(int(row[id_index], 16))
                      for row in members_rows]
 
         persona_names = SteamWebAPI().get_persona_names(
@@ -533,7 +549,7 @@ class RS2WebAdminResponseParser:
 
         member_wrappers = []
         for row in members_rows:
-            steam_id = steamid.SteamID(int(row[id_index], 16))
+            steam_id = SteamID(int(row[id_index], 16))
 
             persona_name = ""
             try:
@@ -544,10 +560,7 @@ class RS2WebAdminResponseParser:
                 logger.warn("cannot get persona name for Steam ID: {sid}: {e}",
                             sid=steam_id, e=ke)
 
-            player = models.Player(
-                steam_id=steam_id,
-                persona_name=persona_name,
-            )
+            player = models.Player(ident=steam_id, persona_name=persona_name)
 
             member_data = {
                 key: value for key, value in zip(

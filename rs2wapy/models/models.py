@@ -10,7 +10,6 @@ from typing import Dict
 from typing import KeysView
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Tuple
 from typing import Type
 from typing import Union
@@ -20,6 +19,7 @@ from logbook import StreamHandler
 from steam.steamid import SteamID
 
 from rs2wapy.adapters import adapters
+from rs2wapy.epicgamesstore import EGSID
 from rs2wapy.steam import SteamWebAPI
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
@@ -98,24 +98,33 @@ TEAM_TO_TEAM_INDEX: Dict[Type[Team], int] = {
 }
 
 
+# TODO: SteamPlayer and EGSPlayer classes?
 class Player(Model):
-    def __init__(self, steam_id: Union[SteamID, int, str], stats: dict = None,
-                 persona_name: str = None, id_intstr_base: int = 16):
+
+    # TODO: Given int or str ID, determine Steam / EGS ID?
+    def __init__(self, ident: Union[SteamID, int, str, EGSID] = None,
+                 stats: dict = None, persona_name: str = None,
+                 id_intstr_base: int = 16):
         super().__init__()
+
+        self._steam_id = 0
+        self._egs_id = 0
 
         if not stats:
             stats = {}
         self._stats = stats
 
-        if isinstance(steam_id, SteamID):
-            self._steam_id = steam_id
-        elif isinstance(steam_id, int):
-            self._steam_id = SteamID(steam_id)
-        elif isinstance(steam_id, str):
-            self._steam_id = SteamID(int(steam_id, id_intstr_base))
+        if isinstance(ident, SteamID):
+            self._steam_id = ident
+        elif isinstance(ident, EGSID):
+            self._egs_id = ident
+        elif isinstance(ident, int):
+            self._steam_id = SteamID(ident)
+        elif isinstance(ident, str):
+            self._steam_id = SteamID(int(ident, id_intstr_base))
         else:
             raise ValueError(
-                f"invalid steam_id type: {type(steam_id)}, expected "
+                f"invalid steam_id type: {type(ident)}, expected "
                 f"{Union[SteamID, int, str]}")
 
         self._persona_name = persona_name
@@ -127,6 +136,18 @@ class Player(Model):
     @property
     def steam_id(self) -> SteamID:
         return self._steam_id
+
+    @property
+    def egs_id(self) -> EGSID:
+        return self._egs_id
+
+    @property
+    def is_steam_player(self) -> bool:
+        return self._steam_id != 0
+
+    @property
+    def is_egs_player(self) -> bool:
+        return not self.is_steam_player
 
     @property
     def name(self) -> str:
@@ -141,21 +162,29 @@ class Player(Model):
     @property
     def persona_name(self) -> str:
         """Player's Steam persona (profile) name."""
-        if self._persona_name is None:
+        if self._persona_name is None and self.is_steam_player:
             self._persona_name = SteamWebAPI().get_persona_name(self.steam_id)
         return self._persona_name
 
     def __str__(self) -> str:
-        steam_id = (self._steam_id.as_64
-                    if isinstance(self._steam_id, SteamID)
-                    else self._steam_id)
-        return f"SteamID64={steam_id}"
+        if self.is_steam_player:
+            ident = (self._steam_id.as_64
+                     if isinstance(self._steam_id, SteamID)
+                     else self._steam_id)
+            s = f"SteamID64={ident}"
+        else:
+            ident = self.egs_id.ident
+            s = f"EGSID={ident}"
+        return s
 
     def __repr__(self) -> str:
         return f"Player({self.__str__()})"
 
     def __hash__(self) -> int:
-        return self._steam_id.as_64
+        if self.is_steam_player:
+            return self._steam_id.as_64
+        else:
+            return self._egs_id.ident
 
 
 CHAT_CHANNEL_ALL_STR = "(ALL)"
@@ -213,7 +242,7 @@ class ChatMessage(Model):
             channel = f"({self._channel.to_team_str()})"
         else:
             channel = f"({self._team.__name__}) {self._channel.to_team_str()}"
-        return f"{self._timestamp.isoformat()} {self._sender} {channel}: {self._text}"
+        return f"{self.timestamp.isoformat()} {self._sender} {channel}: {self._text}"
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.__str__()})"
