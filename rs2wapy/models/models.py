@@ -22,6 +22,8 @@ from rs2wapy.adapters import adapters
 from rs2wapy.epicgamesstore import EGSID
 from rs2wapy.steam import SteamWebAPI
 
+BAN_DATE_FMT = "%Y/%m/%d %H:%M:%S"
+
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
@@ -406,12 +408,16 @@ class Squad(Model):
         return self._number
 
 
+# TODO: Refactor attributes etc.
 class Ban(Model):
     def __init__(self, player: Player, reason: str,
+                 when: str, admin: str,
                  until: Union[str, datetime.datetime] = None):
         super().__init__()
         self._player = player
         self._reason = reason
+        self._admin = admin
+        self._when = datetime.datetime.strptime(when, BAN_DATE_FMT)
 
         if isinstance(until, str):
             until = self._parse_until(until)
@@ -438,14 +444,30 @@ class Ban(Model):
         else:
             return False
 
+    @property
+    def when(self) -> datetime.datetime:
+        return self._when
+
+    @property
+    def admin(self) -> str:
+        return self._admin
+
     @staticmethod
     def _parse_until(until: str) -> datetime.datetime:
         """Ban expiration date str to datetime.datetime object."""
-        # TODO:
-        return datetime.datetime.strptime(until, "")
+        return datetime.datetime.strptime(until, BAN_DATE_FMT)
+
+    def __str__(self) -> str:
+        return (f"player={self.player}, reason={self.reason}, "
+                f"when={self.when}, admin={self.admin}, until={self.until}")
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.__str__()})"
 
 
 class SessionBan(Ban):
-    def __init__(self, player: Player, reason: str):
-        super().__init__(player, reason, None)
+    def __init__(self, player: Player, when: str,
+                 reason: str, admin: str):
+        super().__init__(player, reason=reason,
+                         when=when, admin=admin, until=None)
         self._until = None

@@ -676,6 +676,12 @@ class WebAdminAdapter:
             parse_func=self._rparser.parse_members,
         )
 
+    def get_banned_players(self) -> List[BanWrapper]:
+        return self._get_multi_page_content(
+            url=self._bans_url,
+            parse_func=self._rparser.parse_bans,
+        )
+
     def _get_multi_page_content(
             self,
             url: str,
@@ -1185,6 +1191,12 @@ class BanWrapper(ModelWrapper):
 
     def revoke(self):
         self._adapter.revoke_player_ban(self.player)
+
+    def __str__(self) -> str:
+        return self.ban.__str__()
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.ban})"
 
 
 class SessionBanWrapper(BanWrapper):

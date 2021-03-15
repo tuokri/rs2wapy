@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import re
 import sys
-from typing import List, Dict
+from functools import lru_cache
+from typing import Dict
+from typing import List
 from typing import Sequence
 from typing import Tuple
 from typing import Union
@@ -269,11 +271,11 @@ class RS2WebAdminResponseParser:
             unique_id = player_row[id_index]
 
             try:
-                unique_id = int(unique_id, 16)
+                int_id = int(unique_id, 16)
+                is_steam_id = self._is_steam_id(int_id)
             except ValueError as ve:
-                logger.error("unable to convert Unique ID '{uid}' to int, skipping",
-                             uid=unique_id)
                 logger.exception(ve)
+                logger.error("invalid Unique ID: '{uid}', skipping", uid=unique_id)
                 continue
 
             stats = {
@@ -282,14 +284,12 @@ class RS2WebAdminResponseParser:
                 if key.lower() != "actions"
             }
 
-            # Very likely a Steam ID.
-            if len(str(unique_id)) == 17:
-                steam_id = SteamID(unique_id)
+            if is_steam_id:
+                steam_id = SteamID(int_id)
                 steam_ids.append(steam_id)
                 id_to_stats[steam_id] = stats
-            # Very likely an EGS ID.
             else:
-                egs_id = EGSID(unique_id)
+                egs_id = EGSID(int_id)
                 egs_ids.append(egs_id)
                 id_to_stats[egs_id] = stats
 
@@ -308,7 +308,6 @@ class RS2WebAdminResponseParser:
                 logger.exception(ke)
 
             p_stats = id_to_stats[steam_id]
-
             player = models.Player(ident=steam_id, stats=p_stats, persona_name=persona_name)
 
             players.append(adapters.PlayerWrapper(
@@ -440,32 +439,67 @@ class RS2WebAdminResponseParser:
 
         # Unique ID field is more reliable as Steam ID
         # might be missing in the table in some cases.
-        id_index = tracking_headers.index("Unique ID")
+        id_index = tracking_headers.index(UNIQUE_ID_KEY)
 
-        steam_ids = [SteamID(int(row[id_index], 16))
-                     for row in tracking_rows]
-        persona_names = SteamWebAPI().get_persona_names(
-            steam_ids=steam_ids
-        )
+        id_to_tracking_data = {}
+        steam_ids = []
+        egs_ids = []
 
-        tracking_wrappers = []
         for row in tracking_rows:
-            steam_id = SteamID(int(row[id_index], 16))
+            unique_id = row[id_index]
 
-            persona_name = ""
             try:
-                persona_name = persona_names[steam_id]
-            except KeyError as ke:
-                logger.warn("cannot get persona name for Steam ID: {sid}: {e}",
-                            sid=steam_id, e=ke)
-
-            player = models.Player(ident=steam_id, persona_name=persona_name)
+                int_id = int(unique_id, 16)
+                is_steam_id = self._is_steam_id(int_id)
+            except ValueError as ve:
+                logger.exception(ve)
+                logger.error("invalid Unique ID: '{uid}', skipping", uid=unique_id)
+                continue
 
             tracking_data = {
                 key: value for key, value in zip(
                     tracking_headers, row)
                 if key.lower() != "actions"
             }
+
+            if is_steam_id:
+                steam_id = SteamID(int_id)
+                steam_ids.append(steam_id)
+                id_to_tracking_data[steam_id] = tracking_data
+            else:
+                egs_id = EGSID(int_id)
+                egs_ids.append(egs_id)
+                id_to_tracking_data[egs_id] = tracking_data
+
+        persona_names = SteamWebAPI().get_persona_names(
+            steam_ids=steam_ids
+        )
+
+        tracking_wrappers = []
+
+        for steam_id in steam_ids:
+            persona_name = ""
+            try:
+                persona_name = persona_names[steam_id]
+            except KeyError as ke:
+                logger.error(
+                    "error getting persona name for Steam ID: {sid}",
+                    sid=steam_id)
+                logger.exception(ke)
+
+            tracking_data = id_to_tracking_data[steam_id]
+            player = models.Player(ident=steam_id, persona_name=persona_name)
+
+            tracking_wrappers.append(adapters.TrackingWrapper(
+                player=player,
+                tracking_data=tracking_data,
+                adapter=adapter,
+            ))
+
+        for egs_id in egs_ids:
+            tracking_data = id_to_tracking_data[egs_id]
+
+            player = models.Player(ident=egs_id)
 
             tracking_wrappers.append(adapters.TrackingWrapper(
                 player=player,
@@ -474,6 +508,103 @@ class RS2WebAdminResponseParser:
             ))
 
         return tracking_wrappers
+
+    def parse_bans(self, resp: bytes,
+                   adapter: adapters.WebAdminAdapter
+                   ) -> List[adapters.BanWrapper]:
+
+        parsed_html = self.parse_html(resp)
+        ban_table = parsed_html.find("table", attrs={"class": "grid"})
+        ban_headers = [th.text for th in ban_table.find_all("th")]
+        ban_tbody = ban_table.find("tbody")
+        ban_row_entries = ban_tbody.find_all("tr")
+        ban_rows = self._parse_table(ban_row_entries)
+
+        # Unique ID field is more reliable as Steam ID
+        # might be missing in the table in some cases.
+        id_index = ban_headers.index(UNIQUE_ID_KEY)
+
+        id_to_extra_data = {}
+        steam_ids = []
+        egs_ids = []
+
+        for row in ban_rows:
+            unique_id = row[id_index]
+
+            try:
+                int_id = int(unique_id, 16)
+                is_steam_id = self._is_steam_id(int_id)
+            except ValueError as ve:
+                logger.exception(ve)
+                logger.error("invalid Unique ID: '{uid}', skipping", uid=unique_id)
+                continue
+
+            extra_data = {
+                key: value for key, value in zip(
+                    ban_headers, row)
+                if key.lower() != "actions"
+            }
+
+            if is_steam_id:
+                steam_id = SteamID(int_id)
+                steam_ids.append(steam_id)
+                id_to_extra_data[steam_id] = extra_data
+            else:
+                egs_id = EGSID(int_id)
+                egs_ids.append(egs_id)
+                id_to_extra_data[egs_id] = extra_data
+
+        persona_names = SteamWebAPI().get_persona_names(
+            steam_ids=steam_ids
+        )
+
+        ban_wrappers = []
+
+        for steam_id in steam_ids:
+            persona_name = ""
+            try:
+                persona_name = persona_names[steam_id]
+            except KeyError as ke:
+                logger.error(
+                    "error getting persona name for Steam ID: {sid}",
+                    sid=steam_id)
+                logger.exception(ke)
+
+            extra_data = id_to_extra_data[steam_id]
+            player = models.Player(ident=steam_id, persona_name=persona_name)
+
+            ban = models.Ban(
+                player=player,
+                reason=extra_data["Reason"],
+                until=extra_data["Expires On"],
+                admin=extra_data["Admin"],
+                when=extra_data["When"],
+            )
+
+            ban_wrappers.append(adapters.BanWrapper(
+                ban=ban,
+                adapter=adapter,
+            ))
+
+        for egs_id in egs_ids:
+            extra_data = id_to_extra_data[egs_id]
+
+            player = models.Player(ident=egs_id)
+
+            ban = models.Ban(
+                player=player,
+                reason=extra_data["Reason"],
+                until=extra_data["Expires On"],
+                admin=extra_data["Admin"],
+                when=extra_data["When"],
+            )
+
+            ban_wrappers.append(adapters.BanWrapper(
+                ban=ban,
+                adapter=adapter,
+            ))
+
+        return ban_wrappers
 
     def parse_fvri(self, resp: bytes):
         """Parse first visible row index from response."""
@@ -538,39 +669,71 @@ class RS2WebAdminResponseParser:
         tb_row_entries = tracking_tbody.find_all("tr")
         members_rows = self._parse_table(tb_row_entries)
 
-        id_index = members_headers.index("Unique ID")
+        id_index = members_headers.index(UNIQUE_ID_KEY)
 
-        steam_ids = [SteamID(int(row[id_index], 16))
-                     for row in members_rows]
+        id_to_extra_data = {}
+        steam_ids = []
+        egs_ids = []
+
+        for row in members_rows:
+            unique_id = row[id_index]
+
+            try:
+                int_id = int(unique_id, 16)
+                is_steam_id = self._is_steam_id(int_id)
+            except ValueError as ve:
+                logger.exception(ve)
+                logger.error("invalid Unique ID: '{uid}', skipping", uid=unique_id)
+                continue
+
+            tracking_data = {
+                key: value for key, value in zip(
+                    members_headers, row)
+                if key.lower() != "actions"
+            }
+
+            if is_steam_id:
+                steam_id = SteamID(int_id)
+                steam_ids.append(steam_id)
+                id_to_extra_data[steam_id] = tracking_data
+            else:
+                egs_id = EGSID(int_id)
+                egs_ids.append(egs_id)
+                id_to_extra_data[egs_id] = tracking_data
 
         persona_names = SteamWebAPI().get_persona_names(
             steam_ids=steam_ids
         )
 
         member_wrappers = []
-        for row in members_rows:
-            steam_id = SteamID(int(row[id_index], 16))
 
+        for steam_id in steam_ids:
             persona_name = ""
             try:
-                if not steam_id.is_valid():
-                    raise KeyError("invalid SteamID")
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
-                logger.warn("cannot get persona name for Steam ID: {sid}: {e}",
-                            sid=steam_id, e=ke)
+                logger.error(
+                    "error getting persona name for Steam ID: {sid}",
+                    sid=steam_id)
+                logger.exception(ke)
 
+            extra_data = id_to_extra_data[steam_id]
             player = models.Player(ident=steam_id, persona_name=persona_name)
-
-            member_data = {
-                key: value for key, value in zip(
-                    members_headers, row)
-                if key.lower() != "actions"
-            }
 
             member_wrappers.append(adapters.MemberWrapper(
                 player=player,
-                member_data=member_data,
+                member_data=extra_data,
+                adapter=adapter,
+            ))
+
+        for egs_id in egs_ids:
+            extra_data = id_to_extra_data[egs_id]
+
+            player = models.Player(ident=egs_id)
+
+            member_wrappers.append(adapters.MemberWrapper(
+                player=player,
+                member_data=extra_data,
                 adapter=adapter,
             ))
 
@@ -620,3 +783,26 @@ class RS2WebAdminResponseParser:
                 continue
             all_cols.append(cols)
         return all_cols
+
+    @staticmethod
+    @lru_cache(maxsize=64)
+    def _is_steam_id(unique_id: Union[str, int]) -> bool:
+        """Best-effort check whether hex-string or integer is Steam ID.
+
+        :param unique_id: Unique ID hex-string or integer.
+        :return: True if Steam ID.
+        """
+        if isinstance(unique_id, str):
+            try:
+                unique_id = int(unique_id, 16)
+            except ValueError:
+                raise ValueError(f"unable to convert Unique ID "
+                                 f"'{unique_id}' to int")
+
+        # Very likely a Steam ID.
+        return len(str(unique_id)) == 17
+
+    @staticmethod
+    @lru_cache(maxsize=64)
+    def _id_to_player(unique_id: str) -> models.Player:
+        raise NotImplementedError

@@ -3,16 +3,21 @@ from __future__ import annotations
 import os
 import sys
 from typing import Dict
+from typing import List
 from typing import Sequence
 
 import requests
 import steam.webapi
+from cachetools import TTLCache
+from cachetools import cached
 from logbook import Logger
 from logbook import StreamHandler
 from steam import steamid
 
 StreamHandler(sys.stdout, level="WARNING", bubble=True).push_application()
 logger = Logger(__name__)
+
+_ttl_cache = TTLCache(maxsize=256, ttl=60)
 
 
 def _chunks(seq: Sequence, n: int):
@@ -58,6 +63,7 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
         if not dummy:
             super().__init__(*args, **kwargs)
 
+    @cached(cache=_ttl_cache)
     def get_persona_name(self, steam_id: steamid.SteamID) -> str:
         # TODO: Refer to variable in docstring.
         """Return persona name for Steam ID.
@@ -74,7 +80,7 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
             SteamWebAPI._REQUESTS_MADE += 1
             return ret
 
-    def get_persona_names(self, steam_ids: Sequence[steamid.SteamID]
+    def get_persona_names(self, steam_ids: List[steamid.SteamID]
                           ) -> Dict[steamid.SteamID, str]:
         """Return dictionary of Steam IDs to persona names
         for given Steam IDs. Queries the Steam Web API in
@@ -85,8 +91,17 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
 
         ret = {}
 
+        for steam_id in steam_ids:
+            try:
+                personaname = _ttl_cache[steam_id]
+                ret[steam_id] = personaname
+            except KeyError:
+                pass
+
         for chunk in _chunks(steam_ids, n=100):
-            chunk_ids = [str(cid.as_64) for cid in chunk]
+            chunk_ids = [str(cid.as_64)
+                         for cid in chunk
+                         if cid not in ret]
             chunk_ids_str = ",".join(chunk_ids)
 
             # noinspection PyUnresolvedReferences
@@ -94,9 +109,11 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
                 steamids=chunk_ids_str)["response"]["players"]
             SteamWebAPI._REQUESTS_MADE += 1
 
-            ret = {
-                steamid.SteamID(r["steamid"]): r["personaname"] for r in resp
-            }
+            for r in resp:
+                steam_id = steamid.SteamID(r["steamid"])
+                personaname = r["personaname"]
+                ret[steam_id] = personaname
+                _ttl_cache[steam_id] = personaname
 
             input_len = len(chunk_ids)
             output_len = len(ret)

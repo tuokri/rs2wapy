@@ -131,8 +131,7 @@ class RS2WebAdmin:
 
     def get_banned_players(self) -> List[BanWrapper]:
         """Return banned players."""
-        raise NotImplementedError
-        # return self._adapter.get_banned_players()
+        return self._adapter.get_banned_players()
 
     def get_tracked_players(self) -> List[TrackingWrapper]:
         """Return tracked players.
