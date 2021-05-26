@@ -75,6 +75,8 @@ MAP_PREFIX_TO_GAME_TYPE = {
     "GMTE": "GreenMenMod.GMGameInfoTerritories",
     "GMSU": "GreenMenMod.GMGameInfoSupremacy",
     "GMSK": "GreenMenMod.GMGameInfoSkirmish",
+    "DRTE": "DesertRats.DRGameInfoTerritories",
+    "HCTE": "HeloCombat.HCGameInfoTerritories",
 }
 
 WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
@@ -91,6 +93,7 @@ WEB_ADMIN_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("bans/")
 WEB_ADMIN_SQUADS_PATH = WEB_ADMIN_CURRENT_GAME_PATH / Path("squads/")
 WEB_ADMIN_TRACKING_PATH = WEB_ADMIN_POLICY_PATH / Path("tracking/")
 WEB_ADMIN_MEMBERS_URL = WEB_ADMIN_POLICY_PATH / Path("members/")
+WEB_ADMIN_SESSION_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("session/")
 
 
 def retry(on_exc: Union[Type[Exception], Tuple[Exception, ...]],
@@ -256,6 +259,10 @@ class WebAdminAdapter:
         )
         self._bans_url = urlunparse(
             (scheme, netloc, WEB_ADMIN_BANS_PATH.as_posix(),
+             params, query, fragment)
+        )
+        self._session_bans_url = urlunparse(
+            (scheme, netloc, WEB_ADMIN_SESSION_BANS_PATH.as_posix(),
              params, query, fragment)
         )
         self._squads_url = urlunparse(
@@ -680,6 +687,12 @@ class WebAdminAdapter:
         return self._get_multi_page_content(
             url=self._bans_url,
             parse_func=self._rparser.parse_bans,
+        )
+
+    def get_session_banned_players(self) -> List[SessionBanWrapper]:
+        return self._get_multi_page_content(
+            url=self._session_bans_url,
+            parse_func=self._rparser.parse_session_bans,
         )
 
     def _get_multi_page_content(

@@ -520,6 +520,13 @@ class RS2WebAdminResponseParser:
         ban_row_entries = ban_tbody.find_all("tr")
         ban_rows = self._parse_table(ban_row_entries)
 
+        if len(ban_rows) == 1:
+            try:
+                if ban_rows[0][0].lower() == "there are no active bans":
+                    return []
+            except IndexError:
+                pass
+
         # Unique ID field is more reliable as Steam ID
         # might be missing in the table in some cases.
         id_index = ban_headers.index(UNIQUE_ID_KEY)
@@ -605,6 +612,113 @@ class RS2WebAdminResponseParser:
             ))
 
         return ban_wrappers
+
+    def parse_session_bans(self, resp: bytes,
+                           adapter: adapters.WebAdminAdapter
+                           ) -> List[adapters.SessionBanWrapper]:
+
+        parsed_html = self.parse_html(resp)
+        ban_table = parsed_html.find("table", attrs={"class": "grid"})
+        ban_headers = [th.text for th in ban_table.find_all("th")]
+        ban_tbody = ban_table.find("tbody")
+        ban_row_entries = ban_tbody.find_all("tr")
+        ban_rows = self._parse_table(ban_row_entries)
+
+        if len(ban_rows) == 1:
+            try:
+                if ban_rows[0][0].lower() == "there are no active session-bans":
+                    return []
+            except IndexError:
+                pass
+
+        # Unique ID field is more reliable as Steam ID
+        # might be missing in the table in some cases.
+        id_index = ban_headers.index(UNIQUE_ID_KEY)
+
+        id_to_extra_data = {}
+        steam_ids = []
+        egs_ids = []
+
+        for row in ban_rows:
+            unique_id = row[id_index]
+
+            try:
+                int_id = int(unique_id, 16)
+
+                # Session bans sometimes show a dummy ban.
+                if int_id == 0:
+                    continue
+
+                is_steam_id = self._is_steam_id(int_id)
+            except ValueError as ve:
+                logger.exception(ve)
+                logger.error("invalid Unique ID: '{uid}', skipping", uid=unique_id)
+                continue
+
+            extra_data = {
+                key: value for key, value in zip(
+                    ban_headers, row)
+                if key.lower() != "actions"
+            }
+
+            if is_steam_id:
+                steam_id = SteamID(int_id)
+                steam_ids.append(steam_id)
+                id_to_extra_data[steam_id] = extra_data
+            else:
+                egs_id = EGSID(int_id)
+                egs_ids.append(egs_id)
+                id_to_extra_data[egs_id] = extra_data
+
+        persona_names = SteamWebAPI().get_persona_names(
+            steam_ids=steam_ids
+        )
+
+        session_ban_wrappers = []
+
+        for steam_id in steam_ids:
+            persona_name = ""
+            try:
+                persona_name = persona_names[steam_id]
+            except KeyError as ke:
+                logger.error(
+                    "error getting persona name for Steam ID: {sid}",
+                    sid=steam_id)
+                logger.exception(ke)
+
+            extra_data = id_to_extra_data[steam_id]
+            player = models.Player(ident=steam_id, persona_name=persona_name)
+
+            ban = models.SessionBan(
+                player=player,
+                reason=extra_data["Reason"],
+                admin=extra_data["Admin"],
+                when=extra_data["When"],
+            )
+
+            session_ban_wrappers.append(adapters.SessionBanWrapper(
+                ban=ban,
+                adapter=adapter,
+            ))
+
+        for egs_id in egs_ids:
+            extra_data = id_to_extra_data[egs_id]
+
+            player = models.Player(ident=egs_id)
+
+            ban = models.SessionBan(
+                player=player,
+                reason=extra_data["Reason"],
+                admin=extra_data["Admin"],
+                when=extra_data["When"],
+            )
+
+            session_ban_wrappers.append(adapters.BanWrapper(
+                ban=ban,
+                adapter=adapter,
+            ))
+
+        return session_ban_wrappers
 
     def parse_fvri(self, resp: bytes):
         """Parse first visible row index from response."""

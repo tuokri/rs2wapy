@@ -15,6 +15,7 @@ from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.adapters import WebAdminAdapter
 from rs2wapy.adapters.adapters import BanWrapper
 from rs2wapy.adapters.adapters import MemberWrapper
+from rs2wapy.adapters.adapters import SessionBanWrapper
 from rs2wapy.adapters.adapters import SquadWrapper
 from rs2wapy.adapters.adapters import TrackingWrapper
 from rs2wapy.models import AccessPolicy
@@ -132,6 +133,10 @@ class RS2WebAdmin:
     def get_banned_players(self) -> List[BanWrapper]:
         """Return banned players."""
         return self._adapter.get_banned_players()
+
+    def get_session_banned_players(self) -> List[SessionBanWrapper]:
+        """Return session banned players."""
+        return self._adapter.get_session_banned_players()
 
     def get_tracked_players(self) -> List[TrackingWrapper]:
         """Return tracked players.
