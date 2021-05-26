@@ -39,6 +39,7 @@ setuptools.setup(
     extras_require={
         "dev": [
             "mypy",
+            "versioneer",
         ]
     },
 )
