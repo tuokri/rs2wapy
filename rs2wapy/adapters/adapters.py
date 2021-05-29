@@ -783,7 +783,7 @@ class WebAdminAdapter:
         curl_obj.close()
 
         if status != HTTPStatus.OK:
-            hdrs = None
+            hdrs = {}
             try:
                 hdrs = {k: v[-1] for k, v in self._headers.items()}
             except (IndexError, KeyError):
@@ -1094,7 +1094,7 @@ class PlayerWrapper(ModelWrapper):
         return self.player.name
 
     @property
-    def persona_name(self) -> str:
+    def persona_name(self) -> Optional[str]:
         """Player's Steam persona (profile) name."""
         return self.player.persona_name
 

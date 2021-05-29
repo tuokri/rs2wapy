@@ -5,8 +5,10 @@ from __future__ import annotations
 import abc
 import datetime
 import sys
+from collections import MutableMapping
 from typing import Any
 from typing import Dict
+from typing import Iterator
 from typing import KeysView
 from typing import List
 from typing import Optional
@@ -109,8 +111,8 @@ class Player(Model):
                  id_intstr_base: int = 16):
         super().__init__()
 
-        self._steam_id = 0
-        self._egs_id = 0
+        self._steam_id = SteamID(0)
+        self._egs_id = EGSID(0)
 
         if not stats:
             stats = {}
@@ -155,14 +157,15 @@ class Player(Model):
     def name(self) -> str:
         """Player's name as stored in RS2 WebAdmin."""
         try:
-            return self.stats["Player name"]
+            return self.stats["Player Name"]
         except KeyError as ke:
-            logger.debug(ke, exc_info=True)
-            logger.warn(f"unable to get player name for Steam ID {self.steam_id}")
+            # logger.debug(ke, exc_info=True)
+            # logger.warn(f"unable to get player name for Steam ID {self.steam_id}")
+            self.stats["Player Name"] = ""
             return ""
 
     @property
-    def persona_name(self) -> str:
+    def persona_name(self) -> Optional[str]:
         """Player's Steam persona (profile) name."""
         if self._persona_name is None and self.is_steam_player:
             self._persona_name = SteamWebAPI().get_persona_name(self.steam_id)
@@ -266,9 +269,21 @@ class ChatMessage(Model):
         return self._channel
 
 
-class Scoreboard(abc.ABC):
+class Scoreboard(MutableMapping):
     def __init__(self, stats: dict):
         self._stats = stats
+
+    def __delitem__(self, key: Any):
+        del self._stats[key]
+
+    def __len__(self) -> int:
+        return self._stats.__len__()
+
+    def __iter__(self) -> Iterator[Any]:
+        return self._stats.__iter__()
+
+    def __setitem__(self, key: Any, value: Any):
+        self._stats.__setitem__(key, value)
 
     def __str__(self) -> str:
         return self._stats.__str__()
@@ -453,9 +468,12 @@ class Ban(Model):
         return self._admin
 
     @staticmethod
-    def _parse_until(until: str) -> datetime.datetime:
+    def _parse_until(until: str) -> Optional[datetime.datetime]:
         """Ban expiration date str to datetime.datetime object."""
-        return datetime.datetime.strptime(until, BAN_DATE_FMT)
+        try:
+            return datetime.datetime.strptime(until, BAN_DATE_FMT)
+        except ValueError:
+            return None
 
     def __str__(self) -> str:
         return (f"player={self.player}, reason={self.reason}, "

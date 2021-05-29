@@ -578,7 +578,9 @@ class RS2WebAdminResponseParser:
                 logger.exception(ke)
 
             extra_data = id_to_extra_data[steam_id]
-            player = models.Player(ident=steam_id, persona_name=persona_name)
+            player_stats = {"Player Name": extra_data["Player Name"]}
+            player = models.Player(ident=steam_id, persona_name=persona_name,
+                                   stats=player_stats)
 
             ban = models.Ban(
                 player=player,
@@ -596,7 +598,8 @@ class RS2WebAdminResponseParser:
         for egs_id in egs_ids:
             extra_data = id_to_extra_data[egs_id]
 
-            player = models.Player(ident=egs_id)
+            player_stats = {"Player Name": extra_data["Player Name"]}
+            player = models.Player(ident=egs_id, stats=player_stats)
 
             ban = models.Ban(
                 player=player,
@@ -681,13 +684,14 @@ class RS2WebAdminResponseParser:
             try:
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
-                logger.error(
+                logger.debug(
                     "error getting persona name for Steam ID: {sid}",
-                    sid=steam_id)
-                logger.exception(ke)
+                    sid=steam_id, exc_info=ke)
 
             extra_data = id_to_extra_data[steam_id]
-            player = models.Player(ident=steam_id, persona_name=persona_name)
+            player_stats = {"Player Name": extra_data["Player Name"]}
+            player = models.Player(ident=steam_id, persona_name=persona_name,
+                                   stats=player_stats)
 
             ban = models.SessionBan(
                 player=player,
@@ -704,7 +708,8 @@ class RS2WebAdminResponseParser:
         for egs_id in egs_ids:
             extra_data = id_to_extra_data[egs_id]
 
-            player = models.Player(ident=egs_id)
+            player_stats = {"Player Name": extra_data["Player Name"]}
+            player = models.Player(ident=egs_id, stats=player_stats)
 
             ban = models.SessionBan(
                 player=player,
@@ -713,7 +718,7 @@ class RS2WebAdminResponseParser:
                 when=extra_data["When"],
             )
 
-            session_ban_wrappers.append(adapters.BanWrapper(
+            session_ban_wrappers.append(adapters.SessionBanWrapper(
                 ban=ban,
                 adapter=adapter,
             ))

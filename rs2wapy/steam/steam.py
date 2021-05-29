@@ -17,7 +17,7 @@ from steam import steamid
 StreamHandler(sys.stdout, level="WARNING", bubble=True).push_application()
 logger = Logger(__name__)
 
-_ttl_cache = TTLCache(maxsize=256, ttl=60)
+_ttl_cache: TTLCache = TTLCache(maxsize=256, ttl=60)
 
 
 def _chunks(seq: Sequence, n: int):
@@ -72,13 +72,13 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
         """
         if self._dummy:
             return ""
-        else:
-            # noinspection PyUnresolvedReferences
-            response = self.ISteamUser.GetPlayerSummaries(
-                steamids=steam_id.as_64)["response"]
-            ret = response["players"][0]["personaname"]
-            SteamWebAPI._REQUESTS_MADE += 1
-            return ret
+
+        # noinspection PyUnresolvedReferences
+        response = self.ISteamUser.GetPlayerSummaries(
+            steamids=steam_id.as_64)["response"]
+        ret = response["players"][0]["personaname"]
+        SteamWebAPI._REQUESTS_MADE += 1
+        return ret
 
     def get_persona_names(self, steam_ids: List[steamid.SteamID]
                           ) -> Dict[steamid.SteamID, str]:
@@ -98,7 +98,10 @@ class SteamWebAPI(steam.webapi.WebAPI, metaclass=Singleton):
             except KeyError:
                 pass
 
-        for chunk in _chunks(steam_ids, n=100):
+        new_ids = [steam_id for steam_id in steam_ids
+                   if steam_id not in ret]
+
+        for chunk in _chunks(new_ids, n=100):
             chunk_ids = [str(cid.as_64)
                          for cid in chunk
                          if cid not in ret]
