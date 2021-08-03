@@ -60,6 +60,97 @@ while True:
     time.sleep(1)
 ```
 
+##### Forward in-game chat to a Discord webhook with discord.py.
+```python
+import time
+
+from discord import RequestsWebhookAdapter
+from discord import Webhook
+from discord.utils import escape_markdown
+from discord.utils import escape_mentions
+
+from rs2wapy import RS2WebAdmin
+from rs2wapy.models import AllTeam
+from rs2wapy.models import BlueTeam
+from rs2wapy.models import RedTeam
+
+# Discord webhook info.
+
+webhook = Webhook.partial(
+    id=123456,
+    token="abcdefg",
+    adapter=RequestsWebhookAdapter()
+)
+
+# Webadmin credentials.
+USERNAME = "Admin"
+PASSWORD = "adminpassword"
+URL = "http://127.0.0.1:8080/ServerAdmin"
+
+TEAM_TO_EMOJI = {
+    BlueTeam: ":blue_square:",
+    RedTeam: ":red_square:",
+    AllTeam: ":white_square_button:",
+}
+
+TEAM_TO_TEAMNAME = {
+    BlueTeam: "SOUTH",
+    RedTeam: "NORTH",
+    AllTeam: "ALL",
+}
+
+
+def get_team_emoji(team):
+    try:
+        return TEAM_TO_EMOJI[team]
+    except KeyError:
+        return "?"
+
+
+def get_team_name(team):
+    try:
+        return TEAM_TO_TEAMNAME[team]
+    except KeyError:
+        return "?"
+
+
+def main():
+    webadmin = RS2WebAdmin(USERNAME, PASSWORD, URL)
+    messages = []
+
+    while True:
+        try:
+            messages.extend(webadmin.get_chat_messages())
+        except Exception as e:
+            print(f"error getting messages: {e}")
+            print("attempting to reconnect...")
+            webadmin = RS2WebAdmin(USERNAME, PASSWORD, URL)
+
+        if messages:
+            for message in messages:
+                text = message.text
+                sender = message.sender.name
+                team = message.team
+
+                team_name = get_team_name(team)
+                team_emoji = get_team_emoji(team)
+
+                # Prevent pinging @everyone from in-game chat
+                # and other "funny" stuff.
+                text = escape_markdown(text)
+                text = escape_mentions(text)
+                sender = escape_markdown(sender)
+                sender = escape_mentions(sender)
+
+                try:
+                    webhook.send(f"**{sender}** [{team_name}] {team_emoji}: {text}")
+                except Exception as e:
+                    print(f"error sending message: {e}")
+
+        messages = []
+        time.sleep(3)
+```
+
 The above are just simple examples of how to use the library. In the future,
 the library will be able to automate all tasks which RS2 WebAdmin offers.
 You can check the status of currently implemented WebAdmin features here:
