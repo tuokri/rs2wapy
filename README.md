@@ -60,7 +60,7 @@ while True:
     time.sleep(1)
 ```
 
-The above is just a single example of how to use the library. In the future,
+The above are just simple examples of how to use the library. In the future,
 the library will be able to automate all tasks which RS2 WebAdmin offers.
 You can check the status of currently implemented WebAdmin features here:
 https://github.com/tuokri/rs2wapy/issues/9.
