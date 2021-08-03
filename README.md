@@ -75,7 +75,6 @@ from rs2wapy.models import BlueTeam
 from rs2wapy.models import RedTeam
 
 # Discord webhook info.
-
 webhook = Webhook.partial(
     id=123456,
     token="abcdefg",
