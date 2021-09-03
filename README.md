@@ -128,7 +128,7 @@ def main():
         if messages:
             for message in messages:
                 text = message.text
-                sender = message.sender.name
+                sender = message.sender
                 team = message.team
 
                 team_name = get_team_name(team)
