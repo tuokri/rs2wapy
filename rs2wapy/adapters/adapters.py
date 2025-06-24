@@ -33,16 +33,14 @@ import regex as re
 from logbook import Logger
 from logbook import StreamHandler
 
-from rs2wapy._version import get_versions
+from rs2wapy._version import __version__
 from rs2wapy.models import models
 from rs2wapy.parsing import RS2WebAdminResponseParser
 
 StreamHandler(sys.stdout, level="WARNING").push_application()
 logger = Logger(__name__)
 
-_version = get_versions()["version"]
-USER_AGENT = f"rs2wapy/{_version}"
-del get_versions
+USER_AGENT = f"rs2wapy/{__version__}"
 
 CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
 

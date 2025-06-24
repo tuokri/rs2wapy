@@ -5,7 +5,7 @@ from __future__ import annotations
 import abc
 import datetime
 import sys
-from collections import MutableMapping
+from collections.abc import MutableMapping
 from typing import Any
 from typing import Dict
 from typing import Iterator
