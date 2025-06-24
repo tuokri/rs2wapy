@@ -18,7 +18,7 @@ For more comprehensive tutorials, check out the
 ##### Installation
 
 ```bash
-# Requires Python=>3.7
+# Requires Python=>3.9
 pip install rs2wapy
 ```
 
