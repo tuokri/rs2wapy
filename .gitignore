@@ -126,3 +126,6 @@ dmypy.json
 
 # PyCham
 .idea/
+
+# Dynamic version file
+rs2wapy/_version.py
