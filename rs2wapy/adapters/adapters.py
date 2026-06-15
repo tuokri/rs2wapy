@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import base64
 import datetime
 import functools
@@ -14,24 +15,24 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
-from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import Sequence
-from typing import Tuple
-from typing import Type
-from typing import Union
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+)
 from urllib.error import HTTPError
-from urllib.parse import urlencode
-from urllib.parse import urlparse
-from urllib.parse import urlunparse
+from urllib.parse import urlencode, urlparse, urlunparse
 
-import pycurl
+import httpx2
 import regex as re
-from logbook import Logger
-from logbook import StreamHandler
+from logbook import Logger, StreamHandler
 
 from rs2wapy._version import __version__
 from rs2wapy.models import models
@@ -42,24 +43,19 @@ logger = Logger(__name__)
 
 USER_AGENT = f"rs2wapy/{__version__}"
 
-CURL_USERAGENT = f"curl/{pycurl.version_info()[1]}"
 
 HEADERS_MAX_LEN = 50
 POLICIES = ["ACCEPT", "DENY"]
 REMEMBER_LOGIN_1M = 2678400
 
 BAN_EXP_UNIT_PERM = "Never"
-BAN_EXP_UNITS = frozenset((
-    "Hour",
-    "Day",
-    "Month",
-    "Year"
-))
+BAN_EXP_UNITS = frozenset(("Hour", "Day", "Month", "Year"))
 BAN_EXP_NUMBER_MAX = 365
-# WebAdmin limits to [0, 12] but larger numbers also work.
+# WebAdmin limits to [0, 12], but larger numbers also work.
 BAN_EXP_NUMBERS = range(BAN_EXP_NUMBER_MAX)
-BAN_EXP_PATTERN = re.compile(r"([0-9]*)\s?(\L<units>)",
-                             units=[b.lower() for b in BAN_EXP_UNITS])
+BAN_EXP_PATTERN = re.compile(
+    r"([0-9]*)\s?(\L<units>)", units=[b.lower() for b in BAN_EXP_UNITS]
+)
 WEB_ADMIN_DATE_FMT = "%Y%m%d %H%M"
 BAN_ID_TYPE_STEAM_ID_64 = 1
 
@@ -73,8 +69,10 @@ MAP_PREFIX_TO_GAME_TYPE = {
     "GMTE": "GreenMenMod.GMGameInfoTerritories",
     "GMSU": "GreenMenMod.GMGameInfoSupremacy",
     "GMSK": "GreenMenMod.GMGameInfoSkirmish",
-    "DRTE": "DesertRats.DRGameInfoTerritories",
+    "DRTE": "WW2.WW2GameInfoTE",
+    "RRTE": "WW2.WW2GameInfoTE",
     "HCTE": "HeloCombat.HCGameInfoTerritories",
+    "VNBR": "VNBR.VNBRGameInfoBattleRoyale",
 }
 
 WEB_ADMIN_BASE_PATH = Path("/ServerAdmin/")
@@ -94,11 +92,15 @@ WEB_ADMIN_MEMBERS_URL = WEB_ADMIN_POLICY_PATH / Path("members/")
 WEB_ADMIN_SESSION_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("session/")
 
 
-def retry(on_exc: Union[Type[Exception], Tuple[Exception, ...]],
-          tries: int = 10, delay: int = 3, backoff: int = 2,
-          cap: int = 30):
+def retry(
+    on_exc: Union[Type[Exception], Tuple[Exception, ...]],
+    tries: int = 10,
+    delay: int = 3,
+    backoff: int = 2,
+    cap: int = 30,
+):
     """Retry calling the decorated function
-    using an exponential back-off with back-off cap.
+    using an exponential back-off with a back-off cap.
     """
 
     def deco_retry(f):
@@ -110,8 +112,7 @@ def retry(on_exc: Union[Type[Exception], Tuple[Exception, ...]],
                 try:
                     return f(*args, **kwargs)
                 except on_exc as e:
-                    logger.info(f"{f.__name__}(): {e}, "
-                                f"retrying in {mdelay} seconds...")
+                    logger.info(f"{f.__name__}(): {e}, retrying in {mdelay} seconds...")
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
@@ -124,34 +125,38 @@ def retry(on_exc: Union[Type[Exception], Tuple[Exception, ...]],
 
 
 def _in(el: object, seq: Sequence[Sequence]) -> bool:
-    """Check if element is in any sequence of sequences."""
+    """Check if an element is in any sequence of sequences."""
     for s in seq:
         if el in s:
             return True
     return False
 
 
-def _set_postfields(curl_obj: pycurl.Curl, postfields: str):
-    postfieldsize = len(postfields)
-    logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
-    logger.debug("postfields: {pf}", pf=postfields)
-    curl_obj.setopt(pycurl.POSTFIELDS, postfields)
-    curl_obj.setopt(pycurl.POSTFIELDSIZE_LARGE, postfieldsize)
+# def _set_postfields(curl_obj: pycurl.Curl, postfields: str):
+#     postfieldsize = len(postfields)
+#     logger.debug("postfieldsize: {pf_size}", pf_size=postfieldsize)
+#     logger.debug("postfields: {pf}", pf=postfields)
+#     curl_obj.setopt(pycurl.POSTFIELDS, postfields)
+#     curl_obj.setopt(pycurl.POSTFIELDSIZE_LARGE, postfieldsize)
 
 
 def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
     del_index = [idx for idx, s in enumerate(policies) if to_delete in s][0]
     policies_split = [p.split(":") for p in policies]
-    policies = [(f"ipmask={p[0].strip()}&policy={p[1].strip()}"
-                 f"{f'&delete={del_index}' if p[0] == to_delete else ''}")
-                for p in policies_split]
+    policies = [
+        (
+            f"ipmask={p[0].strip()}&policy={p[1].strip()}"
+            f"{f'&delete={del_index}' if p[0] == to_delete else ''}"
+        )
+        for p in policies_split
+    ]
     return "&".join(policies)
 
 
 @dataclass
 class AuthData:
-    timeout: float
-    timeout_start: float
+    timeout: float | int
+    timeout_start: float | int
     authcred: str
     sessionid: str
     authtimeout: str
@@ -159,15 +164,19 @@ class AuthData:
     def __post_init__(self):
         if self.timeout < 0:
             raise ValueError(
-                f"cannot calculate authentication timeout for timeout: {self.timeout}")
+                f"cannot calculate authentication timeout for timeout: {self.timeout}"
+            )
 
     def timed_out(self) -> bool:
         time_now = time.time()
         if (self.timeout_start + self.timeout) < time_now:
             logger.debug(
                 "authentication timed out for start_time={s}, "
-                "timeout={t}, time_now={tn}", s=self.timeout_start,
-                t=self.timeout, tn=time_now)
+                "timeout={t}, time_now={tn}",
+                s=self.timeout_start,
+                t=self.timeout,
+                tn=time_now,
+            )
             return True
         return False
 
@@ -175,9 +184,11 @@ class AuthData:
 class WebAdminAdapter:
     BASE_HEADERS = {
         "User-Agent": USER_AGENT,
-        "Accept": ("text/html,application/xhtml+xml,application/xml;"
-                   "q=0.9,image/webp,image/apng,*/*;q=0.8,"
-                   "application/signed-exchange;v=b3;q=0.9"),
+        "Accept": (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/webp,image/apng,*/*;q=0.8,"
+            "application/signed-exchange;v=b3;q=0.9"
+        ),
         "Accept-Language": "en-US,en;q=0.7,fi;q=0.3",
         "Accept-Encoding": "gzip, deflate",
         "DNT": 1,
@@ -197,11 +208,20 @@ class WebAdminAdapter:
         self._password_hash = b""
         self._hash_alg = ""
 
+        self._http_client = httpx2.AsyncClient(headers=self.BASE_HEADERS)
+
         scheme, netloc, path, params, query, fragment = urlparse(self._webadmin_url)
-        logger.debug("webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
-                     "path={path}, params={params}, query={query}, fragment={fragment}",
-                     url=self._webadmin_url, scheme=scheme, netloc=netloc,
-                     path=path, params=params, query=query, fragment=fragment)
+        logger.debug(
+            "webadmin_url={url}, scheme={scheme}, netloc={netloc}, "
+            "path={path}, params={params}, query={query}, fragment={fragment}",
+            url=self._webadmin_url,
+            scheme=scheme,
+            netloc=netloc,
+            path=path,
+            params=params,
+            query=query,
+            fragment=fragment,
+        )
 
         if (not path) or (path == "/"):
             path = WEB_ADMIN_BASE_PATH.as_posix()
@@ -220,73 +240,109 @@ class WebAdminAdapter:
             self.BASE_HEADERS["Referer"] = referer
             logger.debug("setting 'Referer' to '{r}'", r=referer)
 
-        self._webadmin_url = urlunparse(
-            (scheme, netloc, path, params, query, fragment)
-        )
+        self._webadmin_url = urlunparse((scheme, netloc, path, params, query, fragment))
         self._chat_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(),
-             params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_CHAT_PATH.as_posix(), params, query, fragment)
         )
         self._chat_data_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHAT_DATA_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_CHAT_DATA_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._current_game_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CURRENT_GAME_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_CURRENT_GAME_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._access_policy_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_POLICY_PATH.as_posix(),
-             params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_POLICY_PATH.as_posix(), params, query, fragment)
         )
         self._change_map_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHANGE_MAP_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_CHANGE_MAP_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._change_map_data_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_CHANGE_MAP_DATA_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_CHANGE_MAP_DATA_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._players_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_PLAYERS_PATH.as_posix(),
-             params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_PLAYERS_PATH.as_posix(), params, query, fragment)
         )
         self._map_list_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_MAP_LIST_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_MAP_LIST_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._bans_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_BANS_PATH.as_posix(),
-             params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_BANS_PATH.as_posix(), params, query, fragment)
         )
         self._session_bans_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_SESSION_BANS_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_SESSION_BANS_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._squads_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_SQUADS_PATH.as_posix(),
-             params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_SQUADS_PATH.as_posix(), params, query, fragment)
         )
         self._tracking_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_TRACKING_PATH.as_posix(),
-             params, query, fragment)
+            (
+                scheme,
+                netloc,
+                WEB_ADMIN_TRACKING_PATH.as_posix(),
+                params,
+                query,
+                fragment,
+            )
         )
         self._members_url = urlunparse(
-            (scheme, netloc, WEB_ADMIN_MEMBERS_URL.as_posix(),
-             params, query, fragment)
+            (scheme, netloc, WEB_ADMIN_MEMBERS_URL.as_posix(), params, query, fragment)
         )
 
+        # TODO: better initialization strategy to avoid asyncio.run calls?
         # Perform a dummy request to populate self._headers.
-        self._perform(self._webadmin_url, skip_auth=True)
-        self._rparser = RS2WebAdminResponseParser(
-            encoding=self._read_encoding())
+        asyncio.run(self._get(self._webadmin_url, skip_auth=True))
+        self._rparser = RS2WebAdminResponseParser(encoding=self._read_encoding())
 
         self._set_password_hash(username, password)
-        self._authenticate()
+        asyncio.run(self._authenticate())
 
         self._stop_event = threading.Event()
+        # TODO: actually make this a task!
         self._chat_message_thread = threading.Thread(
-            target=self._enqueue_chat_messages, daemon=True)
+            target=self._enqueue_chat_messages, daemon=True
+        )
         self._chat_message_thread.start()
 
     def __del__(self):
@@ -313,12 +369,12 @@ class WebAdminAdapter:
         # WebAdmin did not set 'hashAlg'.
         self._password_hash = base64.encodebytes(pw_hash)
 
-    def get_current_game(self) -> models.CurrentGame:
+    async def get_current_game(self) -> models.CurrentGame:
         headers = self._make_auth_headers()
-        resp = self._perform(self._current_game_url, headers=headers)
+        resp = await self._get(self._current_game_url, headers=headers)
         return self._rparser.parse_current_game(resp)
 
-    def get_chat_messages(self) -> Sequence[models.ChatMessage]:
+    async def get_chat_messages(self) -> Awaitable[list[models.ChatMessage]]:
         """When the Adapter instance is created, it begins polling the
         RS2 WebAdmin server for chat messages, appending them to an internal
         queue. Calling this method pops and returns the messages from
@@ -333,7 +389,7 @@ class WebAdminAdapter:
         return chat_msgs
 
     def post_chat_message(self, message: str, team: Type[models.Team]):
-        """Post chat message to RS2 WebAdmin server."""
+        """Post a chat message to RS2 WebAdmin server."""
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
         team_code = {
@@ -348,8 +404,10 @@ class WebAdminAdapter:
             "teamsay": team_code,
         }
 
-        resp = self._perform(self._chat_data_url,
-                             postfields=postfields, headers=headers)
+        resp = self._post(self._chat_url, postfields=postfields, headers=headers)
+        resp = self._perform(
+            self._chat_data_url, postfields=postfields, headers=headers
+        )
 
         chat_msgs = self._rparser.parse_chat_messages(resp)
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
@@ -373,14 +431,14 @@ class WebAdminAdapter:
 
     # TODO: Refactor.
     def add_access_policy(self, ip_mask: str, policy: str) -> bool:
-        """Add IP access policy.
+        """Add an IP access policy.
 
         :param ip_mask:
             IP mask of the policy to be added.
         :param policy:
             "DENY" or "ACCEPT".
         :return:
-            True if policy added, else False.
+            True if the policy is added, else False.
         """
         policies = self.get_access_policy()
         if _in(ip_mask, policies):
@@ -413,8 +471,9 @@ class WebAdminAdapter:
             }
 
             try:
-                self._perform(self._access_policy_url, headers=headers,
-                              postfields=postfields)
+                self._perform(
+                    self._access_policy_url, headers=headers, postfields=postfields
+                )
             except Exception as e:
                 logger.error(e, exc_info=True)
 
@@ -427,8 +486,8 @@ class WebAdminAdapter:
         return True
 
     # TODO: Refactor.
-    def delete_access_policy(self, ip_mask: str) -> bool:
-        """Delete IP access policy.
+    async def delete_access_policy(self, ip_mask: str) -> bool:
+        """Delete an IP access policy.
 
         :param ip_mask:
             IP mask of the access policy to be deleted.
@@ -467,6 +526,11 @@ class WebAdminAdapter:
             _set_postfields(c, postfields)
 
             try:
+                # TODO: wat?
+                await self._post(
+                    url=self._access_policy_url,
+                    headers=headers,
+                )
                 self._perform(self._access_policy_url, curl_obj=c, headers=headers)
             except Exception as e:
                 logger.error(e, exc_info=True)
@@ -495,8 +559,9 @@ class WebAdminAdapter:
             url_extra_str += f'"%"3F{key}"%"3D{value}'
 
         headers = self._make_auth_headers()
-        headers["Accept"] = ("text/html,application/xhtml+xml,"
-                             "application/xml;q=0.9,image/webp,*/*;q=0.8")
+        headers["Accept"] = (
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+        )
 
         resp = self._perform(self._change_map_url, headers=headers)
         mutator_group_count = self._rparser.parse_mutator_group_count(resp)
@@ -513,8 +578,7 @@ class WebAdminAdapter:
         }
 
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-        self._perform(self._change_map_url, headers=headers,
-                      postfields=postfields)
+        self._perform(self._change_map_url, headers=headers, postfields=postfields)
 
     def get_maps(self) -> dict:
         headers = self._make_auth_headers()
@@ -522,8 +586,9 @@ class WebAdminAdapter:
         game_type_options = self._rparser.parse_game_type_options(resp)
 
         headers = self._make_auth_headers()
-        headers["Accept"] = ("text/html,application/xhtml+xml,"
-                             "application/xml;q=0.9,image/webp,*/*;q=0.8")
+        headers["Accept"] = (
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+        )
         headers["Content-Type"] = "application/x-www-form-urlencoded"
 
         maps = {}
@@ -533,19 +598,17 @@ class WebAdminAdapter:
                 "gametype": gto,
             }
             resp = self._perform(
-                self._change_map_data_url, headers=headers,
-                postfields=postfields)
+                self._change_map_data_url, headers=headers, postfields=postfields
+            )
             maps[gto] = self._rparser.parse_map_options(resp)
 
         return maps
 
     def get_maps_list(self) -> List[str]:
-        """Return list of all maps of all game modes
+        """Return the list of all maps of all game modes
         currently installed on the server.
         """
-        return list(
-            itertools.chain(*self.get_maps().values())
-        )
+        return list(itertools.chain(*self.get_maps().values()))
 
     def get_players(self) -> List[PlayerWrapper]:
         headers = self._make_auth_headers()
@@ -554,12 +617,15 @@ class WebAdminAdapter:
         logger.info("got {lp} players from server", lp=len(players))
         return players
 
-    def kick_player(self, player: Union[models.Player, PlayerWrapper],
-                    reason: str, notify_players: bool = False):
+    def kick_player(
+        self,
+        player: Union[models.Player, PlayerWrapper],
+        reason: str,
+        notify_players: bool = False,
+    ):
         headers = self._make_auth_headers()
         players_resp = self._perform(self._players_url, headers=headers)
-        player_id, player_key = self._rparser.parse_player_id_key(
-            players_resp, player)
+        player_id, player_key = self._rparser.parse_player_id_key(players_resp, player)
 
         postfields = {
             "action": "kick",
@@ -574,12 +640,15 @@ class WebAdminAdapter:
             "__ExpNumber": "",
             "__ExpUnit": "Never",
         }
-        self._perform(self._players_url, headers=headers,
-                      postfields=postfields)
+        self._perform(self._players_url, headers=headers, postfields=postfields)
 
-    def ban_player(self, player: Union[models.Player, PlayerWrapper],
-                   reason: str, duration: Optional[str] = None,
-                   notify_players: bool = False):
+    def ban_player(
+        self,
+        player: Union[models.Player, PlayerWrapper],
+        reason: str,
+        duration: Optional[str] = None,
+        notify_players: bool = False,
+    ):
         steam_id = player.steam_id.as_64
 
         name = player.persona_name
@@ -609,11 +678,14 @@ class WebAdminAdapter:
 
         headers = self._make_auth_headers()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-        self._perform(
-            self._bans_url, headers=headers, postfields=postfields)
+        self._perform(self._bans_url, headers=headers, postfields=postfields)
 
-    def session_ban_player(self, player: Union[models.Player, PlayerWrapper],
-                           reason: str, notify_players: bool = False):
+    def session_ban_player(
+        self,
+        player: Union[models.Player, PlayerWrapper],
+        reason: str,
+        notify_players: bool = False,
+    ):
         raise NotImplementedError
 
     def revoke_player_ban(self, player: Union[models.Player, PlayerWrapper]):
@@ -634,13 +706,15 @@ class WebAdminAdapter:
                 "maplistidx": mli,
             }
             resp = self._perform(
-                self._map_list_url, headers=headers,
-                postfields=postfields)
+                self._map_list_url, headers=headers, postfields=postfields
+            )
             maps = self._rparser.parse_map_cycle(resp)
-            map_cycles.append(models.MapCycle(
-                active=is_active,
-                maps=maps,
-            ))
+            map_cycles.append(
+                models.MapCycle(
+                    active=is_active,
+                    maps=maps,
+                )
+            )
 
         return map_cycles
 
@@ -661,8 +735,7 @@ class WebAdminAdapter:
                 "action": "save",
             }
 
-            self._perform(
-                self._map_list_url, headers=headers, postfields=postfields)
+            self._perform(self._map_list_url, headers=headers, postfields=postfields)
 
     def get_squads(self) -> List[SquadWrapper]:
         headers = self._make_auth_headers()
@@ -675,32 +748,32 @@ class WebAdminAdapter:
             parse_func=self._rparser.parse_tracking,
         )
 
-    def get_members(self) -> List[MemberWrapper]:
-        return self._get_multi_page_content(
+    async def get_members(self) -> List[MemberWrapper]:
+        return await self._get_multi_page_content(
             url=self._members_url,
             parse_func=self._rparser.parse_members,
         )
 
-    def get_banned_players(self) -> List[BanWrapper]:
-        return self._get_multi_page_content(
+    async def get_banned_players(self) -> List[BanWrapper]:
+        return await self._get_multi_page_content(
             url=self._bans_url,
             parse_func=self._rparser.parse_bans,
         )
 
-    def get_session_banned_players(self) -> List[SessionBanWrapper]:
-        return self._get_multi_page_content(
+    async def get_session_banned_players(self) -> List[SessionBanWrapper]:
+        return await self._get_multi_page_content(
             url=self._session_bans_url,
             parse_func=self._rparser.parse_session_bans,
         )
 
-    def _get_multi_page_content(
-            self,
-            url: str,
-            parse_func: Callable[[bytes, WebAdminAdapter], List[Any]],
+    async def _get_multi_page_content(
+        self,
+        url: str,
+        parse_func: Callable[[bytes, WebAdminAdapter], List[Any]],
     ) -> List[Any]:
         headers = self._make_auth_headers()
 
-        resp = self._perform(url, headers=headers)
+        resp = await self._get(url, headers=headers)
 
         content = parse_func(resp, self)
         has_next_page = self._rparser.parse_has_next_page(resp)
@@ -708,11 +781,11 @@ class WebAdminAdapter:
         while has_next_page:
             fvri = self._rparser.parse_fvri(resp)
             logger.debug("first visible row index: {fvri}", fvri=fvri)
-            postfields = {
+            post_data = {
                 "action": "nextpage",
                 "__FirstVisibleRowIndex": fvri,
             }
-            resp = self._perform(url, headers=headers, postfields=postfields)
+            resp = await self._post(url, headers=headers, data=post_data)
             content.extend(parse_func(resp, self))
             has_next_page = self._rparser.parse_has_next_page(resp)
 
@@ -720,30 +793,83 @@ class WebAdminAdapter:
         # mutated during parsing.
         return list(set(content))
 
-    def _enqueue_chat_messages(self):
+    # TODO: make into async task!
+    async def _enqueue_chat_messages_task(self):
         while True and not self._stop_event.is_set():
-            self._chat_message_deque.extend(
-                self._get_chat_messages_from_server())
+            self._chat_message_deque.extend(self._get_chat_messages_from_server())
             self._stop_event.wait(timeout=2 - time.time() % 2)
 
-    def _get_chat_messages_from_server(self) -> Sequence[models.ChatMessage]:
+    async def _get_chat_messages_from_server(self) -> Sequence[models.ChatMessage]:
         headers = self._make_chat_headers()
-        postfields = {"ajax": 1}
-        resp = self._perform(self._chat_data_url, headers=headers,
-                             postfields=postfields)
+        post_data = {"ajax": 1}
+        resp = await self._post(
+            url=self._chat_data_url,
+            headers=headers,
+            data=post_data,
+        )
         chat_msgs = self._rparser.parse_chat_messages(resp)
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
         return chat_msgs
 
+    async def _get(
+        self,
+        url: str,
+        headers: dict | None = None,
+        skip_auth: bool = False,
+    ) -> bytes:
+        return await self._request(
+            url=url,
+            method="GET",
+            headers=headers,
+            skip_auth=skip_auth,
+        )
+
+    async def _post(
+        self,
+        url: str,
+        headers: dict | None = None,
+        data: dict | None = None,
+        skip_auth: bool = False,
+    ) -> bytes:
+        return await self._request(
+            url=url,
+            method="POST",
+            headers=headers,
+            data=data,
+            skip_auth=skip_auth,
+        )
+
     @retry(Exception)
-    def _perform(self, url: str, curl_obj: pycurl.Curl = None,
-                 headers: dict = None, postfields: dict = None,
-                 skip_auth=False) -> bytes:
+    async def _request(
+        self,
+        url: str,
+        method: str = "GET",
+        headers: dict | None = None,
+        data: dict | None = None,
+        skip_auth: bool = False,
+    ) -> bytes:
+        if not skip_auth:
+            await self._wait_authenticated()
+
+        resp = await self._http_client.request(
+            url=url,
+            method=method,
+            headers=headers,
+            data=data,
+        )
+        return resp.content
+
+    @retry(Exception)
+    def _perform(
+        self,
+        url: str,
+        method: str = "GET",
+        headers: dict | None = None,
+        postfields: dict | None = None,
+        skip_auth: bool = False,
+    ) -> bytes:
         if not skip_auth:
             self._wait_authenticated()
-
-        if not curl_obj:
-            curl_obj = pycurl.Curl()
 
         if postfields:
             postfields_dict = urlencode(postfields)
@@ -792,8 +918,7 @@ class WebAdminAdapter:
                 logger.error("HTTP status error: {s}", s=status)
             except KeyError:
                 pass
-            raise HTTPError(url=url, msg=phrase,
-                            code=status, hdrs=hdrs, fp=None)
+            raise HTTPError(url=url, msg=phrase, code=status, hdrs=hdrs, fp=None)
 
         # Server changing maps will trigger sessionid change,
         # keep track of latest sessionid in response headers.
@@ -807,16 +932,20 @@ class WebAdminAdapter:
         if "connection" in self._headers:
             try:
                 if len(self._headers["connection"]) > HEADERS_MAX_LEN:
-                    logger.debug("Headers 'connection' values max length ({le}) exceeded, "
-                                 "resetting headers (preserving latest entries)",
-                                 le=HEADERS_MAX_LEN)
+                    logger.debug(
+                        "Headers 'connection' values max length ({le}) exceeded, "
+                        "resetting headers (preserving latest entries)",
+                        le=HEADERS_MAX_LEN,
+                    )
                     new_headers = {}
                     for k, v in self._headers.items():
                         new_headers[k] = v[-1]
                     self._headers = new_headers
-                    logger.debug("Headers 'connection' {t} new length={le}",
-                                 t=type(self._headers["connection"]),
-                                 le=len(self._headers["connection"]))
+                    logger.debug(
+                        "Headers 'connection' {t} new length={le}",
+                        t=type(self._headers["connection"]),
+                        le=len(self._headers["connection"]),
+                    )
             except (KeyError, IndexError) as e:
                 logger.exception(e)
 
@@ -857,17 +986,21 @@ class WebAdminAdapter:
         try:
             if type(self._headers["set-cookie"]) == str:
                 logger.debug("type(self._headers['set-cookie']) == str")
-                r = re.search(r'sessionid="(.*?)"', self._headers["set-cookie"]).group(1)
+                r = re.search(r'sessionid="(.*?)"', self._headers["set-cookie"]).group(
+                    1
+                )
             elif type(self._headers["set-cookie"]) == list:
                 logger.debug("type(self._headers['set-cookie']) == list")
                 sessionid_match = [
-                    i for i in self._headers["set-cookie"]
-                    if i.startswith("sessionid=")][-1]
+                    i for i in self._headers["set-cookie"] if i.startswith("sessionid=")
+                ][-1]
                 logger.debug("sessionid_match: {si}", si=sessionid_match)
                 r = re.search(r'sessionid="(.*?)"', sessionid_match).group(1)
             else:
                 logger.error(
-                    "type(_headers['set-cookie']) == {t}", t=type(self._headers["set-cookie"]))
+                    "type(_headers['set-cookie']) == {t}",
+                    t=type(self._headers["set-cookie"]),
+                )
                 logger.error("cannot get sessionid from headers")
                 return r
         except AttributeError as ae:
@@ -880,8 +1013,9 @@ class WebAdminAdapter:
         logger.debug("got sessionid: {si}, from headers", si=r)
         return f'sessionid="{r}";'
 
-    def _post_login(self, sessionid: str, token: str,
-                    remember=REMEMBER_LOGIN_1M) -> bytes:
+    def _post_login(
+        self, sessionid: str, token: str, remember=REMEMBER_LOGIN_1M
+    ) -> bytes:
         headers = self.BASE_HEADERS.copy()
         headers["Cookie"] = sessionid
         headers["Content-Type"] = "application/x-www-form-urlencoded"
@@ -904,23 +1038,23 @@ class WebAdminAdapter:
         }
 
         return self._perform(
-            self._webadmin_url, postfields=postfields,
-            headers=headers, skip_auth=True,
+            self._webadmin_url,
+            postfields=postfields,
+            headers=headers,
+            skip_auth=True,
         )
 
-    def _authenticate(self):
-        resp = self._perform(self._webadmin_url, skip_auth=True)
+    async def _authenticate(self):
+        resp = await self._get(self._webadmin_url, skip_auth=True)
         if not resp:
-            logger.error("no response content from url={url}",
-                         url=self._webadmin_url)
+            logger.error("no response content from url={url}", url=self._webadmin_url)
             return
 
         parsed_html = self._rparser.parse_html(resp)
         token = ""
         # TODO: Move to parsing.py.
         try:
-            token = parsed_html.find(
-                "input", attrs={"name": "token"}).get("value")
+            token = parsed_html.find("input", attrs={"name": "token"}).get("value")
             logger.debug("token: {token}", token=token)
         except AttributeError as ae:
             logger.error("unable to get token: {e}", e=ae)
@@ -931,35 +1065,33 @@ class WebAdminAdapter:
 
         try:
             authcred = [
-                i for i in self._headers["set-cookie"]
-                if i.startswith("authcred=")][-1]
+                i for i in self._headers["set-cookie"] if i.startswith("authcred=")
+            ][-1]
             authtimeout = [
-                i for i in self._headers["set-cookie"]
-                if i.startswith("authtimeout=")][-1]
+                i for i in self._headers["set-cookie"] if i.startswith("authtimeout=")
+            ][-1]
         except IndexError as ie:
             logger.error("unable to get auth data from headers: {e}", e=ie)
             raise ValueError("unable to authenticate")
 
-        authtimeout_value = int(re.search(r'authtimeout="(.*?)"',
-                                          authtimeout).group(1))
+        authtimeout_value = int(re.search(r'authtimeout="(.*?)"', authtimeout).group(1))
 
         logger.debug("authcred: {ac}", ac=authcred)
         logger.debug("authtimeout: {ato}", ato=authtimeout)
-        logger.debug("authtimeout_value: {ato_value}",
-                     ato_value=authtimeout_value)
+        logger.debug("authtimeout_value: {ato_value}", ato_value=authtimeout_value)
 
         self._auth_data = AuthData(
             timeout=authtimeout_value,
             authcred=authcred,
             sessionid=sessionid,
             timeout_start=time.time(),
-            authtimeout=authtimeout
+            authtimeout=authtimeout,
         )
 
-    def _wait_authenticated(self):
+    async def _wait_authenticated(self):
         try:
             if self._auth_data.timed_out():
-                self._authenticate()
+                await self._authenticate()
         except AttributeError as ae:
             logger.exception(ae)
 
@@ -978,8 +1110,8 @@ class WebAdminAdapter:
         headers["Accept"] = "*/*"
         return headers
 
-    def _set_password_hash(self, username: str, password: str):
-        resp = self._perform(self._webadmin_url, skip_auth=True)
+    async def _set_password_hash(self, username: str, password: str):
+        resp = await self._get(self._webadmin_url, skip_auth=True)
         self._hash_alg = self._rparser.parse_hash_alg(resp)
         logger.debug("using hash algorithm: '{a}'", a=self._hash_alg)
         if self._hash_alg:
@@ -997,9 +1129,9 @@ class WebAdminAdapter:
                 encoding = match.group(1)
                 logger.debug("encoding is {enc}", enc=encoding)
         if encoding is None:
-            # Default encoding for HTML is iso-8859-1.
+            # The default encoding for HTML is iso-8859-1.
             # Other content types may have different default encoding,
-            # or in case of binary data, may have no encoding at all.
+            # or in the case of binary data, may have no encoding at all.
             encoding = "iso-8859-1"
             logger.debug("assuming encoding is {enc}", enc=encoding)
         return encoding
@@ -1011,19 +1143,20 @@ class WebAdminAdapter:
         """
         try:
             hash_alg = getattr(hashlib, self._hash_alg)
-            return hash_alg(bytearray(password, "utf-8")
-                            + bytearray(username, "utf-8")
-                            ).hexdigest().encode("utf-8")
+            return (
+                hash_alg(bytearray(password, "utf-8") + bytearray(username, "utf-8"))
+                .hexdigest()
+                .encode("utf-8")
+            )
         except AttributeError as ae:
             logger.debug(ae, exc_info=True)
-            logger.error("hash algorithm '{ha}' is not supported",
-                         ha=self._hash_alg)
+            logger.error("hash algorithm '{ha}' is not supported", ha=self._hash_alg)
             raise
 
     @staticmethod
     def _headers_to_list(headers: dict) -> List[str]:
         """
-        Convert headers dictionary to list for PycURL.
+        Convert the header dictionary to a list for PycURL.
         """
         return [f"{key}: {value}" for key, value in headers.items()]
 
@@ -1034,15 +1167,15 @@ class WebAdminAdapter:
             m = re.match(BAN_EXP_PATTERN, duration)
             ban_duration = int(m.group(1))
             # Clamp.
-            ban_duration = max(min(BAN_EXP_NUMBERS),
-                               min(ban_duration, max(BAN_EXP_NUMBERS)))
+            ban_duration = max(
+                min(BAN_EXP_NUMBERS), min(ban_duration, max(BAN_EXP_NUMBERS))
+            )
             duration_unit = m.group(2)
             logger.debug("duration_unit: {du}", du=duration_unit)
             duration_unit = duration_unit[0].upper() + duration_unit[1:]
             return str(ban_duration), duration_unit
         except Exception as e:
-            logger.debug("error parsing ban duration string: {e}",
-                         e=e, exc_info=True)
+            logger.debug("error parsing ban duration string: {e}", e=e, exc_info=True)
             opt_info = f"{e}" if isinstance(e, ValueError) else ""
             raise ValueError(f"error parsing ban duration string {opt_info}")
 
@@ -1106,18 +1239,18 @@ class PlayerWrapper(ModelWrapper):
         """Notes attached to player."""
         raise NotImplementedError
 
-    def ban(self, reason: str, duration: Optional[str] = None,
-            notify_players: bool = False):
-        self._adapter.ban_player(self.player, reason=reason, duration=duration,
-                                 notify_players=notify_players)
+    def ban(
+        self, reason: str, duration: Optional[str] = None, notify_players: bool = False
+    ):
+        self._adapter.ban_player(
+            self.player, reason=reason, duration=duration, notify_players=notify_players
+        )
 
     def kick(self, reason: str, notify_players: bool = False):
-        self._adapter.kick_player(self.player, reason,
-                                  notify_players)
+        self._adapter.kick_player(self.player, reason, notify_players)
 
     def session_ban(self, reason: str, notify_players: bool = False):
-        self._adapter.session_ban_player(self.player, reason,
-                                         notify_players)
+        self._adapter.session_ban_player(self.player, reason, notify_players)
 
     def revoke_ban(self):
         self._adapter.revoke_player_ban(self)
@@ -1221,8 +1354,9 @@ class SessionBanWrapper(BanWrapper):
 class TrackingWrapper(PlayerWrapper):
     # TODO: Should we store parsed dates?
 
-    def __init__(self, player: models.Player, tracking_data: dict,
-                 adapter: WebAdminAdapter):
+    def __init__(
+        self, player: models.Player, tracking_data: dict, adapter: WebAdminAdapter
+    ):
         super().__init__(player, adapter)
         self._tracking = tracking_data
 
@@ -1257,19 +1391,16 @@ class TrackingWrapper(PlayerWrapper):
     @property
     def created(self) -> datetime.datetime:
         """Creation date of tracking entry."""
-        return datetime.datetime.strptime(
-            self.tracking["Created"], "")
+        return datetime.datetime.strptime(self.tracking["Created"], "")
 
     @property
     def num_connects(self) -> datetime.datetime:
-        """The number of times player has connected."""
-        return datetime.datetime.strptime(
-            self.tracking["# Connects"], "")
+        """The number of times a player has connected."""
+        return datetime.datetime.strptime(self.tracking["# Connects"], "")
 
     @property
     def last_seen(self) -> datetime.datetime:
-        return datetime.datetime.strptime(
-            self.tracking["Last Seen"], "")
+        return datetime.datetime.strptime(self.tracking["Last Seen"], "")
 
     def track(self):
         """No effect on already tracked player."""
@@ -1277,8 +1408,9 @@ class TrackingWrapper(PlayerWrapper):
 
 
 class MemberWrapper(PlayerWrapper):
-    def __init__(self, player: models.Player, member_data: dict,
-                 adapter: WebAdminAdapter):
+    def __init__(
+        self, player: models.Player, member_data: dict, adapter: WebAdminAdapter
+    ):
         super().__init__(player, adapter)
         self._member_data = member_data
 

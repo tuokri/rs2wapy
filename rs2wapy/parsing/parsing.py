@@ -39,12 +39,12 @@ TEAM_INDEX_KEY = "\xa0"
 class RS2WebAdminResponseParser:
     # TODO: Refactor magic numbers.
 
-    def __init__(self, encoding: str = None):
+    def __init__(self, encoding: str | None = None):
         if not encoding:
             encoding = "iso-8859-1"
         self._encoding = encoding
 
-    def parse_html(self, resp: bytes, encoding: str = None) -> BeautifulSoup:
+    def parse_html(self, resp: bytes, encoding: str | None = None) -> BeautifulSoup:
         if not encoding:
             encoding = self._encoding
         return BeautifulSoup(resp.decode(encoding), features="html.parser")
@@ -726,13 +726,13 @@ class RS2WebAdminResponseParser:
         return session_ban_wrappers
 
     def parse_fvri(self, resp: bytes):
-        """Parse first visible row index from response."""
+        """Parse the first visible row index from the response."""
         parsed_html = self.parse_html(resp)
         return parsed_html.find(
             "input", attrs={"id": "__FirstVisibleRowIndex"}).get("value")
 
     def parse_has_next_page(self, resp: bytes):
-        """Return True if next page button is enabled."""
+        """Return True if the next page button is enabled."""
         parsed_html = self.parse_html(resp)
         np_button = parsed_html.find(
             "button", attrs={"id": "__NextPage"})

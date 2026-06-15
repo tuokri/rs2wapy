@@ -1,2 +1,0 @@
-include versioneer.py
-include rs2wapy/_version.py
