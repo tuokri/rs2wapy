@@ -4,20 +4,16 @@ Rising Storm 2: Vietnam WebAdmin.
 
 TODO: This module is growing fast. Needs refactoring.
 """
+
 from __future__ import annotations
 
 import re
 import sys
 from functools import lru_cache
-from typing import Dict
-from typing import List
-from typing import Sequence
-from typing import Tuple
-from typing import Union
+from typing import Dict, List, Sequence, Tuple, Union
 
 from bs4 import BeautifulSoup
-from logbook import Logger
-from logbook import StreamHandler
+from logbook import Logger, StreamHandler
 from steam.steamid import SteamID
 
 import rs2wapy.models as models
@@ -49,19 +45,20 @@ class RS2WebAdminResponseParser:
             encoding = self._encoding
         return BeautifulSoup(resp.decode(encoding), features="html.parser")
 
-    def parse_chat_messages(self, resp: bytes,
-                            encoding: str = None) -> Sequence[models.ChatMessage]:
+    def parse_chat_messages(
+        self,
+        resp: bytes,
+        encoding: str | None = None,
+    ) -> list[models.ChatMessage]:
         parsed_html = self.parse_html(resp, encoding)
-        chat_message_divs = parsed_html.find_all(
-            "div", attrs={"class": "chatmessage"})
+        chat_message_divs = parsed_html.find_all("div", attrs={"class": "chatmessage"})
         # parsed_html.find_all("div", attrs={"class": "chatnotice"})
         cm = []
         for div in chat_message_divs:
             cm.append(self.parse_chat_message(div))
         return cm
 
-    def parse_access_policy(self, resp: bytes,
-                            encoding: str = None) -> List[str]:
+    def parse_access_policy(self, resp: bytes, encoding: str = None) -> List[str]:
         parsed_html = self.parse_html(resp, encoding)
         policy_table = parsed_html.find("table", attrs={"id": "policies"})
         trs = policy_table.find_all("tr")
@@ -70,8 +67,7 @@ class RS2WebAdminResponseParser:
             ip_mask = tr.find("input", attrs={"name": "ipmask"})
             policy = tr.find("option", attrs={"selected": "selected"})
             if ip_mask and policy:
-                policies.append(
-                    f"{ip_mask.get('value')}: {policy.text.upper()}")
+                policies.append(f"{ip_mask.get('value')}: {policy.text.upper()}")
         return policies
 
     def parse_current_game(self, resp: bytes) -> models.CurrentGame:
@@ -84,17 +80,14 @@ class RS2WebAdminResponseParser:
         t_scores = {}
 
         logger.info("parsing Ranked status")
-        ranked = parsed_html.find(
-            "span", attrs={"class": "ranked"}).text
+        ranked = parsed_html.find("span", attrs={"class": "ranked"}).text
         ranked = True if ranked.lower() == "ranked: yes" else False
         info["Ranked"] = ranked
 
         logger.info("parsing player scoreboard")
-        player_scoreboard_table = parsed_html.find(
-            "table", attrs={"id": "players"})
+        player_scoreboard_table = parsed_html.find("table", attrs={"id": "players"})
         player_scoreboard_thead = player_scoreboard_table.find("thead")
-        p_thead = player_scoreboard_thead.find_all(
-            "a", attrs={"class": "sortable"})
+        p_thead = player_scoreboard_thead.find_all("a", attrs={"class": "sortable"})
         p_headers = ["Team"]
         p_headers.extend([h.text.strip() for h in p_thead])
         p_headers.extend(["Admin", "Spectator"])
@@ -108,8 +101,7 @@ class RS2WebAdminResponseParser:
         player_scoreboard = models.PlayerScoreboard(stats=p_scores)
 
         logger.info("parsing team scoreboard")
-        team_scoreboard_table = parsed_html.find(
-            "table", attrs={"id": "teams"})
+        team_scoreboard_table = parsed_html.find("table", attrs={"id": "teams"})
         t_thead = team_scoreboard_table.find("thead")
         t_headers = t_thead.find_all("th")
         t_headers = [h.text.strip() for h in t_headers]
@@ -150,14 +142,16 @@ class RS2WebAdminResponseParser:
             logger.warning(
                 "possible missing info data: len_info_dts({lidts}) "
                 "!= len_info_dds({lidds})",
-                lidts=len_info_dts, lidds=len_info_dds,
+                lidts=len_info_dts,
+                lidds=len_info_dds,
             )
 
         if len_info_dts != len_info_dds:
             logger.warning(
                 "possible missing rules data: len_rules_dts({lrdts}) "
                 "!= len_rules_dds({lrdds})",
-                lrdts=len_rules_dts, lrdds=len_rules_dds,
+                lrdts=len_rules_dts,
+                lrdds=len_rules_dds,
             )
 
         logger.info("parsing Map and Game Type")
@@ -190,8 +184,7 @@ class RS2WebAdminResponseParser:
         rules["Time Limit"] = f"{limit} ({remaining} {remainder.strip()})"
 
         cmpgn_active = info["MP Campaign Active"]
-        info["MP Campaign Active"] = (
-            True if cmpgn_active.startswith("Yes") else False)
+        info["MP Campaign Active"] = True if cmpgn_active.startswith("Yes") else False
 
         info["Server Name"] = info["Server Name"].split("\r")[0]
 
@@ -204,29 +197,29 @@ class RS2WebAdminResponseParser:
 
     def parse_mutator_group_count(self, resp: bytes) -> int:
         parsed_html = self.parse_html(resp)
-        mutator_group_count = int(parsed_html.find(
-            "input", attrs={"name": "mutatorGroupCount"}).get("value"))
+        mutator_group_count = int(
+            parsed_html.find("input", attrs={"name": "mutatorGroupCount"}).get("value")
+        )
         return mutator_group_count
 
     def parse_game_type_options(self, resp: bytes) -> List[str]:
         parsed_html = self.parse_html(resp)
-        options = parsed_html.find(
-            "select", attrs={"id": "gametype"}).find_all("option")
+        options = parsed_html.find("select", attrs={"id": "gametype"}).find_all(
+            "option"
+        )
         return [o.get("value").strip() for o in options]
 
     def parse_map_options(self, resp: bytes) -> List[str]:
         parsed_html = self.parse_html(resp)
-        options = parsed_html.find(
-            "select", attrs={"id": "map"}).find_all("option")
+        options = parsed_html.find("select", attrs={"id": "map"}).find_all("option")
         return [o.get("value").strip() for o in options]
 
-    def parse_players(self, resp: bytes, adapter: adapters.WebAdminAdapter
-                      ) -> List[adapters.PlayerWrapper]:
+    def parse_players(
+        self, resp: bytes, adapter: adapters.WebAdminAdapter
+    ) -> List[adapters.PlayerWrapper]:
         parsed_html = self.parse_html(resp)
         if not parsed_html:
-            logger.error(
-                "unable to parse players; no response"
-                " data to parse")
+            logger.error("unable to parse players; no response data to parse")
             return []
 
         player_table = parsed_html.find("table", attrs={"id": "players"})
@@ -248,8 +241,7 @@ class RS2WebAdminResponseParser:
             return []
 
         if not all(len(p) for p in player_table):
-            logger.error(
-                "player rows in player table differ in length")
+            logger.error("player rows in player table differ in length")
             return []
 
         if not len(player_table[0]) == len(player_headers):
@@ -279,8 +271,8 @@ class RS2WebAdminResponseParser:
                 continue
 
             stats = {
-                key: value for key, value in zip(
-                    player_headers, player_row)
+                key: value
+                for key, value in zip(player_headers, player_row)
                 if key.lower() != "actions"
             }
 
@@ -293,9 +285,7 @@ class RS2WebAdminResponseParser:
                 egs_ids.append(egs_id)
                 id_to_stats[egs_id] = stats
 
-        persona_names = SteamWebAPI().get_persona_names(
-            steam_ids=steam_ids
-        )
+        persona_names = SteamWebAPI().get_persona_names(steam_ids=steam_ids)
 
         for steam_id in steam_ids:
             persona_name = ""
@@ -303,27 +293,33 @@ class RS2WebAdminResponseParser:
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
                 logger.error(
-                    "error getting persona name for Steam ID: {sid}",
-                    sid=steam_id)
+                    "error getting persona name for Steam ID: {sid}", sid=steam_id
+                )
                 logger.exception(ke)
 
             p_stats = id_to_stats[steam_id]
-            player = models.Player(ident=steam_id, stats=p_stats, persona_name=persona_name)
+            player = models.Player(
+                ident=steam_id, stats=p_stats, persona_name=persona_name
+            )
 
-            players.append(adapters.PlayerWrapper(
-                player=player,
-                adapter=adapter,
-            ))
+            players.append(
+                adapters.PlayerWrapper(
+                    player=player,
+                    adapter=adapter,
+                )
+            )
 
         for egs_id in egs_ids:
             p_stats = id_to_stats[egs_id]
 
             player = models.Player(ident=egs_id, stats=p_stats)
 
-            players.append(adapters.PlayerWrapper(
-                player=player,
-                adapter=adapter,
-            ))
+            players.append(
+                adapters.PlayerWrapper(
+                    player=player,
+                    adapter=adapter,
+                )
+            )
 
         return players
 
@@ -338,8 +334,7 @@ class RS2WebAdminResponseParser:
 
     def parse_map_list_indices(self, resp) -> dict:
         parsed_html = self.parse_html(resp)
-        map_list_idxs = parsed_html.find(
-            "select", attrs={"id": "maplistidx"})
+        map_list_idxs = parsed_html.find("select", attrs={"id": "maplistidx"})
         map_list_idxs = map_list_idxs.find_all("option")
 
         valid_idxs = {}
@@ -350,8 +345,7 @@ class RS2WebAdminResponseParser:
                     is_active = "active" in mli.text.lower()
                     valid_idxs[idx] = is_active
             except ValueError as ve:
-                logger.warning("{ve} during map list index conversion to int",
-                               ve=ve)
+                logger.warning("{ve} during map list index conversion to int", ve=ve)
 
         return valid_idxs
 
@@ -360,9 +354,7 @@ class RS2WebAdminResponseParser:
         Return list of tuples (map name, round limit).
         """
         parsed_html = self.parse_html(resp)
-        maps = parsed_html.find(
-            "textarea", attrs={"id": "mapcycle"}
-        ).text
+        maps = parsed_html.find("textarea", attrs={"id": "mapcycle"}).text
         maps = maps.split("\n")
 
         round_limits = []
@@ -376,13 +368,15 @@ class RS2WebAdminResponseParser:
         if len(round_limits) != len(maps):
             logger.error("round limit list and map list length mismatch")
 
-        maps = [(re.sub(ROUND_LIMIT_SUB_PATTERN, "", m), rl)
-                for m, rl in zip(maps, round_limits)]
+        maps = [
+            (re.sub(ROUND_LIMIT_SUB_PATTERN, "", m), rl)
+            for m, rl in zip(maps, round_limits)
+        ]
         return maps
 
-    def parse_squads(self, resp: bytes,
-                     adapter: adapters.WebAdminAdapter
-                     ) -> List[adapters.SquadWrapper]:
+    def parse_squads(
+        self, resp: bytes, adapter: adapters.WebAdminAdapter
+    ) -> List[adapters.SquadWrapper]:
         parsed_html = self.parse_html(resp)
         parsed_html = parsed_html.find("table", attrs={"id": "squads"})
 
@@ -411,24 +405,27 @@ class RS2WebAdminResponseParser:
             except Exception as e:
                 logger.error("unable to parse squad name: {e}", e=e)
 
-            squads.append(models.Squad(
-                team=team,
-                number=number,
-                name=name,
-            ))
+            squads.append(
+                models.Squad(
+                    team=team,
+                    number=number,
+                    name=name,
+                )
+            )
 
         squad_wrappers = [
             adapters.SquadWrapper(
                 squad=squad,
                 adapter=adapter,
-            ) for squad in squads
+            )
+            for squad in squads
         ]
 
         return squad_wrappers
 
-    def parse_tracking(self, resp: bytes,
-                       adapter: adapters.WebAdminAdapter
-                       ) -> List[adapters.TrackingWrapper]:
+    def parse_tracking(
+        self, resp: bytes, adapter: adapters.WebAdminAdapter
+    ) -> List[adapters.TrackingWrapper]:
 
         parsed_html = self.parse_html(resp)
         tracking_table = parsed_html.find("table", attrs={"id": "tracking"})
@@ -457,8 +454,8 @@ class RS2WebAdminResponseParser:
                 continue
 
             tracking_data = {
-                key: value for key, value in zip(
-                    tracking_headers, row)
+                key: value
+                for key, value in zip(tracking_headers, row)
                 if key.lower() != "actions"
             }
 
@@ -471,9 +468,7 @@ class RS2WebAdminResponseParser:
                 egs_ids.append(egs_id)
                 id_to_tracking_data[egs_id] = tracking_data
 
-        persona_names = SteamWebAPI().get_persona_names(
-            steam_ids=steam_ids
-        )
+        persona_names = SteamWebAPI().get_persona_names(steam_ids=steam_ids)
 
         tracking_wrappers = []
 
@@ -483,35 +478,39 @@ class RS2WebAdminResponseParser:
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
                 logger.error(
-                    "error getting persona name for Steam ID: {sid}",
-                    sid=steam_id)
+                    "error getting persona name for Steam ID: {sid}", sid=steam_id
+                )
                 logger.exception(ke)
 
             tracking_data = id_to_tracking_data[steam_id]
             player = models.Player(ident=steam_id, persona_name=persona_name)
 
-            tracking_wrappers.append(adapters.TrackingWrapper(
-                player=player,
-                tracking_data=tracking_data,
-                adapter=adapter,
-            ))
+            tracking_wrappers.append(
+                adapters.TrackingWrapper(
+                    player=player,
+                    tracking_data=tracking_data,
+                    adapter=adapter,
+                )
+            )
 
         for egs_id in egs_ids:
             tracking_data = id_to_tracking_data[egs_id]
 
             player = models.Player(ident=egs_id)
 
-            tracking_wrappers.append(adapters.TrackingWrapper(
-                player=player,
-                tracking_data=tracking_data,
-                adapter=adapter,
-            ))
+            tracking_wrappers.append(
+                adapters.TrackingWrapper(
+                    player=player,
+                    tracking_data=tracking_data,
+                    adapter=adapter,
+                )
+            )
 
         return tracking_wrappers
 
-    def parse_bans(self, resp: bytes,
-                   adapter: adapters.WebAdminAdapter
-                   ) -> List[adapters.BanWrapper]:
+    def parse_bans(
+        self, resp: bytes, adapter: adapters.WebAdminAdapter
+    ) -> List[adapters.BanWrapper]:
 
         parsed_html = self.parse_html(resp)
         ban_table = parsed_html.find("table", attrs={"class": "grid"})
@@ -547,8 +546,8 @@ class RS2WebAdminResponseParser:
                 continue
 
             extra_data = {
-                key: value for key, value in zip(
-                    ban_headers, row)
+                key: value
+                for key, value in zip(ban_headers, row)
                 if key.lower() != "actions"
             }
 
@@ -561,9 +560,7 @@ class RS2WebAdminResponseParser:
                 egs_ids.append(egs_id)
                 id_to_extra_data[egs_id] = extra_data
 
-        persona_names = SteamWebAPI().get_persona_names(
-            steam_ids=steam_ids
-        )
+        persona_names = SteamWebAPI().get_persona_names(steam_ids=steam_ids)
 
         ban_wrappers = []
 
@@ -573,14 +570,15 @@ class RS2WebAdminResponseParser:
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
                 logger.error(
-                    "error getting persona name for Steam ID: {sid}",
-                    sid=steam_id)
+                    "error getting persona name for Steam ID: {sid}", sid=steam_id
+                )
                 logger.exception(ke)
 
             extra_data = id_to_extra_data[steam_id]
             player_stats = {"Player Name": extra_data["Player Name"]}
-            player = models.Player(ident=steam_id, persona_name=persona_name,
-                                   stats=player_stats)
+            player = models.Player(
+                ident=steam_id, persona_name=persona_name, stats=player_stats
+            )
 
             ban = models.Ban(
                 player=player,
@@ -590,10 +588,12 @@ class RS2WebAdminResponseParser:
                 when=extra_data["When"],
             )
 
-            ban_wrappers.append(adapters.BanWrapper(
-                ban=ban,
-                adapter=adapter,
-            ))
+            ban_wrappers.append(
+                adapters.BanWrapper(
+                    ban=ban,
+                    adapter=adapter,
+                )
+            )
 
         for egs_id in egs_ids:
             extra_data = id_to_extra_data[egs_id]
@@ -609,16 +609,18 @@ class RS2WebAdminResponseParser:
                 when=extra_data["When"],
             )
 
-            ban_wrappers.append(adapters.BanWrapper(
-                ban=ban,
-                adapter=adapter,
-            ))
+            ban_wrappers.append(
+                adapters.BanWrapper(
+                    ban=ban,
+                    adapter=adapter,
+                )
+            )
 
         return ban_wrappers
 
-    def parse_session_bans(self, resp: bytes,
-                           adapter: adapters.WebAdminAdapter
-                           ) -> List[adapters.SessionBanWrapper]:
+    def parse_session_bans(
+        self, resp: bytes, adapter: adapters.WebAdminAdapter
+    ) -> List[adapters.SessionBanWrapper]:
 
         parsed_html = self.parse_html(resp)
         ban_table = parsed_html.find("table", attrs={"class": "grid"})
@@ -659,8 +661,8 @@ class RS2WebAdminResponseParser:
                 continue
 
             extra_data = {
-                key: value for key, value in zip(
-                    ban_headers, row)
+                key: value
+                for key, value in zip(ban_headers, row)
                 if key.lower() != "actions"
             }
 
@@ -673,9 +675,7 @@ class RS2WebAdminResponseParser:
                 egs_ids.append(egs_id)
                 id_to_extra_data[egs_id] = extra_data
 
-        persona_names = SteamWebAPI().get_persona_names(
-            steam_ids=steam_ids
-        )
+        persona_names = SteamWebAPI().get_persona_names(steam_ids=steam_ids)
 
         session_ban_wrappers = []
 
@@ -686,12 +686,15 @@ class RS2WebAdminResponseParser:
             except KeyError as ke:
                 logger.debug(
                     "error getting persona name for Steam ID: {sid}",
-                    sid=steam_id, exc_info=ke)
+                    sid=steam_id,
+                    exc_info=ke,
+                )
 
             extra_data = id_to_extra_data[steam_id]
             player_stats = {"Player Name": extra_data["Player Name"]}
-            player = models.Player(ident=steam_id, persona_name=persona_name,
-                                   stats=player_stats)
+            player = models.Player(
+                ident=steam_id, persona_name=persona_name, stats=player_stats
+            )
 
             ban = models.SessionBan(
                 player=player,
@@ -700,10 +703,12 @@ class RS2WebAdminResponseParser:
                 when=extra_data["When"],
             )
 
-            session_ban_wrappers.append(adapters.SessionBanWrapper(
-                ban=ban,
-                adapter=adapter,
-            ))
+            session_ban_wrappers.append(
+                adapters.SessionBanWrapper(
+                    ban=ban,
+                    adapter=adapter,
+                )
+            )
 
         for egs_id in egs_ids:
             extra_data = id_to_extra_data[egs_id]
@@ -718,32 +723,33 @@ class RS2WebAdminResponseParser:
                 when=extra_data["When"],
             )
 
-            session_ban_wrappers.append(adapters.SessionBanWrapper(
-                ban=ban,
-                adapter=adapter,
-            ))
+            session_ban_wrappers.append(
+                adapters.SessionBanWrapper(
+                    ban=ban,
+                    adapter=adapter,
+                )
+            )
 
         return session_ban_wrappers
 
     def parse_fvri(self, resp: bytes):
         """Parse the first visible row index from the response."""
         parsed_html = self.parse_html(resp)
-        return parsed_html.find(
-            "input", attrs={"id": "__FirstVisibleRowIndex"}).get("value")
+        return parsed_html.find("input", attrs={"id": "__FirstVisibleRowIndex"}).get(
+            "value"
+        )
 
     def parse_has_next_page(self, resp: bytes):
         """Return True if the next page button is enabled."""
         parsed_html = self.parse_html(resp)
-        np_button = parsed_html.find(
-            "button", attrs={"id": "__NextPage"})
+        np_button = parsed_html.find("button", attrs={"id": "__NextPage"})
         if not np_button:
             return False
         button_disabled = np_button.has_attr("disabled")
         return not button_disabled
 
     def parse_player_id_key(
-            self, resp: bytes,
-            player: Union[models.Player, adapters.PlayerWrapper]
+        self, resp: bytes, player: Union[models.Player, adapters.PlayerWrapper]
     ) -> Tuple[int, str]:
         """Parse "hidden" player key and ID from players table."""
         parsed_html = self.parse_html(resp)
@@ -758,10 +764,12 @@ class RS2WebAdminResponseParser:
 
             # Find x from <input id = "__PlayerId_x">.
             x = div.find("input").get("id").split("_")[-1]
-            div_player_key = div.find(
-                "input", attrs={"id": f"__PlayerKey_{x}"}).get("value")
-            div_player_name = div.find(
-                "input", attrs={"id": f"__PlayerName_{x}"}).get("value")
+            div_player_key = div.find("input", attrs={"id": f"__PlayerKey_{x}"}).get(
+                "value"
+            )
+            div_player_name = div.find("input", attrs={"id": f"__PlayerName_{x}"}).get(
+                "value"
+            )
 
             div_player_steam_id = div_player_key.split("_")[1].strip().lower()
             steam_id = player.steam_id.as_64
@@ -769,18 +777,18 @@ class RS2WebAdminResponseParser:
             steam_id = f"{steam_id:#0{len(div_player_steam_id)}x}"
             steam_id = steam_id.strip().lower()
 
-            if (steam_id == div_player_steam_id
-                    and (div_player_name == player.name)):
-                player_id = int(div.find(
-                    "input", attrs={"id": f"__PlayerId_{x}"}).get("value"))
+            if steam_id == div_player_steam_id and (div_player_name == player.name):
+                player_id = int(
+                    div.find("input", attrs={"id": f"__PlayerId_{x}"}).get("value")
+                )
                 player_key = div_player_key
                 break
 
         return player_id, player_key
 
-    def parse_members(self, resp: bytes,
-                      adapter: adapters.WebAdminAdapter
-                      ) -> List[adapters.MemberWrapper]:
+    def parse_members(
+        self, resp: bytes, adapter: adapters.WebAdminAdapter
+    ) -> List[adapters.MemberWrapper]:
         parsed_html = self.parse_html(resp)
         members_table = parsed_html.find("table", attrs={"id": "members"})
         members_headers = [th.text for th in members_table.find_all("th")]
@@ -806,8 +814,8 @@ class RS2WebAdminResponseParser:
                 continue
 
             tracking_data = {
-                key: value for key, value in zip(
-                    members_headers, row)
+                key: value
+                for key, value in zip(members_headers, row)
                 if key.lower() != "actions"
             }
 
@@ -820,9 +828,7 @@ class RS2WebAdminResponseParser:
                 egs_ids.append(egs_id)
                 id_to_extra_data[egs_id] = tracking_data
 
-        persona_names = SteamWebAPI().get_persona_names(
-            steam_ids=steam_ids
-        )
+        persona_names = SteamWebAPI().get_persona_names(steam_ids=steam_ids)
 
         member_wrappers = []
 
@@ -832,39 +838,41 @@ class RS2WebAdminResponseParser:
                 persona_name = persona_names[steam_id]
             except KeyError as ke:
                 logger.error(
-                    "error getting persona name for Steam ID: {sid}",
-                    sid=steam_id)
+                    "error getting persona name for Steam ID: {sid}", sid=steam_id
+                )
                 logger.exception(ke)
 
             extra_data = id_to_extra_data[steam_id]
             player = models.Player(ident=steam_id, persona_name=persona_name)
 
-            member_wrappers.append(adapters.MemberWrapper(
-                player=player,
-                member_data=extra_data,
-                adapter=adapter,
-            ))
+            member_wrappers.append(
+                adapters.MemberWrapper(
+                    player=player,
+                    member_data=extra_data,
+                    adapter=adapter,
+                )
+            )
 
         for egs_id in egs_ids:
             extra_data = id_to_extra_data[egs_id]
 
             player = models.Player(ident=egs_id)
 
-            member_wrappers.append(adapters.MemberWrapper(
-                player=player,
-                member_data=extra_data,
-                adapter=adapter,
-            ))
+            member_wrappers.append(
+                adapters.MemberWrapper(
+                    player=player,
+                    member_data=extra_data,
+                    adapter=adapter,
+                )
+            )
 
         return member_wrappers
 
     @staticmethod
     def parse_chat_message(div: BeautifulSoup) -> models.ChatMessage:
-        teamcolor = str(div.find(
-            "span", attrs={"class": "teamcolor"}).get("style"))
+        teamcolor = str(div.find("span", attrs={"class": "teamcolor"}).get("style"))
         if not teamcolor:
-            logger.error(
-                "no teamcolor in chat message div={div}", div=div)
+            logger.error("no teamcolor in chat message div={div}", div=div)
         else:
             try:
                 match = re.match(TEAMCOLOR_PATTERN, teamcolor)
@@ -889,7 +897,7 @@ class RS2WebAdminResponseParser:
             sender=name,
             text=msg,
             team=models.Team.from_hex_color(str(teamcolor)),
-            channel=models.ChatChannel.from_teamnotice(teamnotice)
+            channel=models.ChatChannel.from_teamnotice(teamnotice),
         )
 
     @staticmethod
@@ -915,8 +923,7 @@ class RS2WebAdminResponseParser:
             try:
                 unique_id = int(unique_id, 16)
             except ValueError:
-                raise ValueError(f"unable to convert Unique ID "
-                                 f"'{unique_id}' to int")
+                raise ValueError(f"unable to convert Unique ID '{unique_id}' to int")
 
         # Very likely a Steam ID.
         return len(str(unique_id)) == 17

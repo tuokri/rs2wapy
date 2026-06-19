@@ -377,8 +377,8 @@ class WebAdminAdapter:
     async def get_chat_messages(self) -> Awaitable[list[models.ChatMessage]]:
         """When the Adapter instance is created, it begins polling the
         RS2 WebAdmin server for chat messages, appending them to an internal
-        queue. Calling this method pops and returns the messages from
-        the internal queue.
+        deque. Calling this method pops and returns the messages from
+        the internal deque.
         """
         chat_msgs = []
         while True:
@@ -769,8 +769,8 @@ class WebAdminAdapter:
     async def _get_multi_page_content(
         self,
         url: str,
-        parse_func: Callable[[bytes, WebAdminAdapter], List[Any]],
-    ) -> List[Any]:
+        parse_func: Callable[[bytes, WebAdminAdapter], list[Any]],
+    ) -> list[Any]:
         headers = self._make_auth_headers()
 
         resp = await self._get(url, headers=headers)
@@ -799,7 +799,7 @@ class WebAdminAdapter:
             self._chat_message_deque.extend(self._get_chat_messages_from_server())
             self._stop_event.wait(timeout=2 - time.time() % 2)
 
-    async def _get_chat_messages_from_server(self) -> Sequence[models.ChatMessage]:
+    async def _get_chat_messages_from_server(self) -> list[models.ChatMessage]:
         headers = self._make_chat_headers()
         post_data = {"ajax": 1}
         resp = await self._post(
@@ -851,12 +851,25 @@ class WebAdminAdapter:
         if not skip_auth:
             await self._wait_authenticated()
 
-        resp = await self._http_client.request(
-            url=url,
-            method=method,
-            headers=headers,
-            data=data,
-        )
+        logger.debug("url={url}, headers={headers}", url=url, headers=headers)
+        if not headers:
+            headers = self.BASE_HEADERS.copy()
+
+        try:
+            resp = await self._http_client.request(
+                url=url,
+                method=method,
+                headers=headers,
+                data=data,
+            )
+        except Exception as e:
+            logger.debug(e, exc_info=True)
+            raise
+
+        sessionid = self._find_sessionid()
+        if sessionid and self._auth_data:
+            self._auth_data.sessionid = sessionid
+
         return resp.content
 
     @retry(Exception)
@@ -920,7 +933,7 @@ class WebAdminAdapter:
                 pass
             raise HTTPError(url=url, msg=phrase, code=status, hdrs=hdrs, fp=None)
 
-        # Server changing maps will trigger sessionid change,
+        # The server changing maps will trigger sessionid change,
         # keep track of latest sessionid in response headers.
         sessionid = self._find_sessionid()
         if sessionid and self._auth_data:
@@ -980,11 +993,11 @@ class WebAdminAdapter:
             self._headers[name] = value
 
     def _find_sessionid(self) -> str:
-        """Find latest session ID in headers."""
+        """Find the latest session ID in headers."""
         # 'sessionid="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
         r = ""
         try:
-            if type(self._headers["set-cookie"]) == str:
+            if type(self._headers["set-cookie"]) is str:
                 logger.debug("type(self._headers['set-cookie']) == str")
                 r = re.search(r'sessionid="(.*?)"', self._headers["set-cookie"]).group(
                     1
@@ -1013,8 +1026,11 @@ class WebAdminAdapter:
         logger.debug("got sessionid: {si}, from headers", si=r)
         return f'sessionid="{r}";'
 
-    def _post_login(
-        self, sessionid: str, token: str, remember=REMEMBER_LOGIN_1M
+    async def _post_login(
+        self,
+        sessionid: str,
+        token: str,
+        remember=REMEMBER_LOGIN_1M,
     ) -> bytes:
         headers = self.BASE_HEADERS.copy()
         headers["Cookie"] = sessionid
@@ -1029,7 +1045,7 @@ class WebAdminAdapter:
         else:
             pw = pw_hash_str
 
-        postfields = {
+        post_data = {
             "token": token,
             "password_hash": pw_hash,
             "username": self._username,
@@ -1037,12 +1053,13 @@ class WebAdminAdapter:
             "remember": remember,
         }
 
-        return self._perform(
+        resp = await self._post(
             self._webadmin_url,
-            postfields=postfields,
+            data=post_data,
             headers=headers,
             skip_auth=True,
         )
+        return resp.content
 
     async def _authenticate(self):
         resp = await self._get(self._webadmin_url, skip_auth=True)
@@ -1061,7 +1078,7 @@ class WebAdminAdapter:
 
         sessionid = self._find_sessionid()
 
-        self._post_login(sessionid=sessionid, token=token)
+        await self._post_login(sessionid=sessionid, token=token)
 
         try:
             authcred = [
@@ -1153,12 +1170,12 @@ class WebAdminAdapter:
             logger.error("hash algorithm '{ha}' is not supported", ha=self._hash_alg)
             raise
 
-    @staticmethod
-    def _headers_to_list(headers: dict) -> List[str]:
-        """
-        Convert the header dictionary to a list for PycURL.
-        """
-        return [f"{key}: {value}" for key, value in headers.items()]
+    # @staticmethod
+    # def _headers_to_list(headers: dict) -> List[str]:
+    #     """
+    #     Convert the header dictionary to a list for PycURL.
+    #     """
+    #     return [f"{key}: {value}" for key, value in headers.items()]
 
     @staticmethod
     def _parse_ban_duration(duration: str) -> Tuple[str, str]:
