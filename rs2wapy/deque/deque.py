@@ -21,8 +21,12 @@
 """Simple async queue/deque implementation."""
 
 import asyncio
+import threading
 from collections import deque
-from typing import Callable, Deque, Generic, TypeVar
+from typing import Callable
+from typing import Deque
+from typing import Generic
+from typing import TypeVar
 
 T = TypeVar("T")
 
@@ -33,8 +37,10 @@ class AsyncDeque(Generic[T]):
     def __init__(self, maxsize: int = 0):
         self._maxsize: int = maxsize
         self._queue: Deque[T] = deque()
-        self._getters: Deque[asyncio.Future] = deque()
-        self._putters: Deque[asyncio.Future] = deque()
+        self._getters: Deque[asyncio.Future[None]] = deque()
+        self._putters: Deque[asyncio.Future[None]] = deque()
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._loop_lock = threading.Lock()
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} qsize={self.qsize()} maxsize={self.maxsize}>"
@@ -54,7 +60,24 @@ class AsyncDeque(Generic[T]):
             return False
         return len(self._queue) >= self._maxsize
 
-    def _wakeup_next(self, waiters: Deque[asyncio.Future]) -> None:
+    def _check_loop(self) -> None:
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            with self._loop_lock:
+                if self._loop is not None:
+                    raise RuntimeError(
+                        "AsyncDeque must be used from its bound event loop"
+                    ) from None
+            return
+
+        with self._loop_lock:
+            if self._loop is None:
+                self._loop = loop
+            elif self._loop is not loop:
+                raise RuntimeError("AsyncDeque must be used from its bound event loop")
+
+    def _wakeup_next(self, waiters: Deque[asyncio.Future[None]]) -> None:
         """Wake up the first non-canceled future in the waiters queue."""
         while waiters:
             waiter = waiters.popleft()
@@ -63,7 +86,7 @@ class AsyncDeque(Generic[T]):
                 break
 
     async def _wait_for(
-        self, condition: Callable[[], bool], waiters: Deque[asyncio.Future]
+        self, condition: Callable[[], bool], waiters: Deque[asyncio.Future[None]]
     ) -> None:
         """Helper to manage the boilerplate of awaiting queue capacity or items."""
         while condition():
@@ -77,7 +100,7 @@ class AsyncDeque(Generic[T]):
                     waiters.remove(waiter)
                 except ValueError:
                     pass
-                # Pass the baton if we were awoken but aborted before consuming
+                # Pass the baton if we were awoken but aborted before consuming.
                 if not condition() and not waiter.cancelled():
                     self._wakeup_next(waiters)
                 raise
@@ -85,18 +108,21 @@ class AsyncDeque(Generic[T]):
     # --- Non-Blocking API (Synchronous) ---
 
     def append_nowait(self, item: T) -> None:
+        self._check_loop()
         if self.full():
             raise asyncio.QueueFull
         self._queue.append(item)
         self._wakeup_next(self._getters)
 
     def appendleft_nowait(self, item: T) -> None:
+        self._check_loop()
         if self.full():
             raise asyncio.QueueFull
         self._queue.appendleft(item)
         self._wakeup_next(self._getters)
 
     def pop_nowait(self) -> T:
+        self._check_loop()
         if self.empty():
             raise asyncio.QueueEmpty
         item = self._queue.pop()
@@ -104,6 +130,7 @@ class AsyncDeque(Generic[T]):
         return item
 
     def popleft_nowait(self) -> T:
+        self._check_loop()
         if self.empty():
             raise asyncio.QueueEmpty
         item = self._queue.popleft()
@@ -114,20 +141,24 @@ class AsyncDeque(Generic[T]):
 
     async def append(self, item: T) -> None:
         """Append an item to the right. Block if the queue is full."""
+        self._check_loop()
         await self._wait_for(self.full, self._putters)
         self.append_nowait(item)
 
     async def appendleft(self, item: T) -> None:
         """Append an item to the left. Block if the queue is full."""
+        self._check_loop()
         await self._wait_for(self.full, self._putters)
         self.appendleft_nowait(item)
 
     async def pop(self) -> T:
         """Remove and return an item from the right. Block if empty."""
+        self._check_loop()
         await self._wait_for(self.empty, self._getters)
         return self.pop_nowait()
 
     async def popleft(self) -> T:
         """Remove and return an item from the left. Block if empty."""
+        self._check_loop()
         await self._wait_for(self.empty, self._getters)
         return self.popleft_nowait()
