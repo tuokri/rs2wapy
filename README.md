@@ -1,5 +1,9 @@
 # rs2wapy
 
+[![Coverage Status](https://tuokri.github.io/rs2wapy/coverage-badge.svg)](https://tuokri.github.io/rs2wapy/cov_html/index.html)
+
+---
+
 ### Rising Storm 2: Vietnam WebAdmin Python Interface
 
 Provides a Python interface for performing RS2 WebAdmin
