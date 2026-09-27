@@ -27,6 +27,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Mark workspace as safe for git
+        shell: bash
         run: |
           echo ${{ github.workspace }}
           echo $GITHUB_WORKSPACE
