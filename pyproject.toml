@@ -11,9 +11,11 @@ authors = [
 ]
 
 dependencies = [
-    "httpx2>=2.4.0",
+    "bs4>=0.0.2",
+    "cachetools>=7.2.0",
+    "httpx2>=2.13.1",
     "loguru>=0.7.3",
-    "regex>=2026.5.9",
+    "regex>=2026.9.10",
 ]
 
 [build-system]
