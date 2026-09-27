@@ -8,7 +8,7 @@ permissions:
 
 on:
   push:
-    # TODO: remove make-async-and-modernize before final PR!
+    # TODO: remove make-async-and-modernize before the final PR!
     branches: [ "master", "make-async-and-modernize" ]
   pull_request:
     branches: [ "master" ]
@@ -150,6 +150,8 @@ jobs:
         run: uv cache prune --ci
 
   publish-gh-pages:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # TODO: remove make-async-and-modernize before the final PR!
+    if: github.event_name == 'push' && (
+      github.ref == 'refs/heads/master' || github.ref == 'refs/heads/make-async-and-modernize')
     needs: [ build ]
     uses: ./.github/workflows/publish-gh-pages.yml
