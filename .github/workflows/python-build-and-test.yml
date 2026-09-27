@@ -26,16 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Mark workspace as safe for git
-        shell: bash
-        run: |
-          echo ${{ github.workspace }}
-          echo $GITHUB_WORKSPACE
-          git config --global --add safe.directory ${{ github.workspace }}
-          git config --global --add safe.directory ${{ github.workspace }}/*
-          git config --global --add safe.directory ${{ github.workspace }}/**
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
