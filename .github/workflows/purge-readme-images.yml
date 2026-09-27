@@ -14,7 +14,7 @@ jobs:
 
     env:
       REPO_URL: https://github.com/${{ github.repository }}
-      FULL_URL: ${{ env.REPO_URL }}/tree/${{ github.ref_name }}
+      FULL_URL: $REPO_URL/tree/${{ github.ref_name }}
 
     steps:
       - name: Log env
