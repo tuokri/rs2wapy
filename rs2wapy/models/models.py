@@ -1,3 +1,23 @@
+# Copyright (c) 2026 Tuomo Kriikkula
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """TODO: Use dataclasses."""
 
 from __future__ import annotations
@@ -16,18 +36,13 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from logbook import Logger
-from logbook import StreamHandler
-from steam.steamid import SteamID
-
 from rs2wapy.adapters import adapters
 from rs2wapy.epicgamesstore import EGSID
+from rs2wapy.logger import logger
+from rs2wapy.steam import SteamID
 from rs2wapy.steam import SteamWebAPI
 
 BAN_DATE_FMT = "%Y/%m/%d %H:%M:%S"
-
-StreamHandler(sys.stdout, level="WARNING").push_application()
-logger = Logger(__name__)
 
 
 class Model(abc.ABC):
@@ -104,11 +119,14 @@ TEAM_TO_TEAM_INDEX: Dict[Type[Team], int] = {
 
 # TODO: SteamPlayer and EGSPlayer classes?
 class Player(Model):
-
     # TODO: Given int or str ID, determine Steam / EGS ID?
-    def __init__(self, ident: Union[SteamID, int, str, EGSID] = None,
-                 stats: dict = None, persona_name: str = None,
-                 id_intstr_base: int = 16):
+    def __init__(
+        self,
+        ident: Union[SteamID, int, str, EGSID] = None,
+        stats: dict = None,
+        persona_name: str = None,
+        id_intstr_base: int = 16,
+    ):
         super().__init__()
 
         self._steam_id = SteamID(0)
@@ -129,7 +147,8 @@ class Player(Model):
         else:
             raise ValueError(
                 f"invalid steam_id type: {type(ident)}, expected "
-                f"{Union[SteamID, int, str]}")
+                f"{Union[SteamID, int, str]}"
+            )
 
         self._persona_name = persona_name
 
@@ -173,9 +192,11 @@ class Player(Model):
 
     def __str__(self) -> str:
         if self.is_steam_player:
-            ident = (self._steam_id.as_64
-                     if isinstance(self._steam_id, SteamID)
-                     else self._steam_id)
+            ident = (
+                self._steam_id.as_64
+                if isinstance(self._steam_id, SteamID)
+                else self._steam_id
+            )
             s = f"SteamID64={ident}"
         else:
             ident = self.egs_id.ident
@@ -232,10 +253,13 @@ CHAT_CHANNEL_TO_STR = {
 
 
 class ChatMessage(Model):
-    def __init__(self,
-                 sender: Union[Player, adapters.PlayerWrapper, str],
-                 text: str,
-                 team: Type[Team], channel: Type[ChatChannel]):
+    def __init__(
+        self,
+        sender: Union[Player, adapters.PlayerWrapper, str],
+        text: str,
+        team: Type[Team],
+        channel: Type[ChatChannel],
+    ):
         super().__init__()
         self._sender = sender
         self._text = text
@@ -307,9 +331,13 @@ class TeamScoreboard(Scoreboard):
 
 
 class CurrentGame(Model):
-    def __init__(self, player_scoreboard: PlayerScoreboard,
-                 team_scoreboard: TeamScoreboard,
-                 info: dict, rules: dict):
+    def __init__(
+        self,
+        player_scoreboard: PlayerScoreboard,
+        team_scoreboard: TeamScoreboard,
+        info: dict,
+        rules: dict,
+    ):
         super().__init__()
         self._player_scoreboard = player_scoreboard
         self._team_scoreboard = team_scoreboard
@@ -425,9 +453,14 @@ class Squad(Model):
 
 # TODO: Refactor attributes etc.
 class Ban(Model):
-    def __init__(self, player: Player, reason: str,
-                 when: str, admin: str,
-                 until: Union[str, datetime.datetime] = None):
+    def __init__(
+        self,
+        player: Player,
+        reason: str,
+        when: str,
+        admin: str,
+        until: Union[str, datetime.datetime] = None,
+    ):
         super().__init__()
         self._player = player
         self._reason = reason
@@ -476,16 +509,16 @@ class Ban(Model):
             return None
 
     def __str__(self) -> str:
-        return (f"player={self.player}, reason={self.reason}, "
-                f"when={self.when}, admin={self.admin}, until={self.until}")
+        return (
+            f"player={self.player}, reason={self.reason}, "
+            f"when={self.when}, admin={self.admin}, until={self.until}"
+        )
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.__str__()})"
 
 
 class SessionBan(Ban):
-    def __init__(self, player: Player, when: str,
-                 reason: str, admin: str):
-        super().__init__(player, reason=reason,
-                         when=when, admin=admin, until=None)
+    def __init__(self, player: Player, when: str, reason: str, admin: str):
+        super().__init__(player, reason=reason, when=when, admin=admin, until=None)
         self._until = None

@@ -22,27 +22,27 @@
 
 from __future__ import annotations
 
-from typing import List, Sequence, Type, Union
+from typing import List
+from typing import Sequence
+from typing import Type
+from typing import Union
 
-from rs2wapy.adapters import PlayerWrapper, WebAdminAdapter
-from rs2wapy.adapters.adapters import (
-    BanWrapper,
-    MemberWrapper,
-    SessionBanWrapper,
-    SquadWrapper,
-    TrackingWrapper,
-)
-from rs2wapy.models import (
-    AccessPolicy,
-    AllTeam,
-    ChatMessage,
-    CurrentGame,
-    MapCycle,
-    Player,
-    PlayerScoreboard,
-    Team,
-    TeamScoreboard,
-)
+from rs2wapy.adapters import PlayerWrapper
+from rs2wapy.adapters import WebAdminAdapter
+from rs2wapy.adapters.adapters import BanWrapper
+from rs2wapy.adapters.adapters import MemberWrapper
+from rs2wapy.adapters.adapters import SessionBanWrapper
+from rs2wapy.adapters.adapters import SquadWrapper
+from rs2wapy.adapters.adapters import TrackingWrapper
+from rs2wapy.models import AccessPolicy
+from rs2wapy.models import AllTeam
+from rs2wapy.models import ChatMessage
+from rs2wapy.models import CurrentGame
+from rs2wapy.models import MapCycle
+from rs2wapy.models import Player
+from rs2wapy.models import PlayerScoreboard
+from rs2wapy.models import Team
+from rs2wapy.models import TeamScoreboard
 
 
 class RS2WebAdmin:

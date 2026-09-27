@@ -1,3 +1,23 @@
+# Copyright (c) 2026 Tuomo Kriikkula
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Provides utilities for parsing responses from
 Rising Storm 2: Vietnam WebAdmin.
@@ -8,21 +28,21 @@ TODO: This module is growing fast. Needs refactoring.
 from __future__ import annotations
 
 import re
-import sys
 from functools import lru_cache
-from typing import Dict, List, Sequence, Tuple, Union
+from typing import Dict
+from typing import List
+from typing import Sequence
+from typing import Tuple
+from typing import Union
 
 from bs4 import BeautifulSoup
-from logbook import Logger, StreamHandler
-from steam.steamid import SteamID
 
 import rs2wapy.models as models
 from rs2wapy.adapters import adapters
 from rs2wapy.epicgamesstore import EGSID
+from rs2wapy.logger import logger
+from rs2wapy.steam import SteamID
 from rs2wapy.steam import SteamWebAPI
-
-StreamHandler(sys.stdout, level="WARNING").push_application()
-logger = Logger(__name__)
 
 TEAMCOLOR_PATTERN = re.compile(r"background: (.*);")
 ROUND_LIMIT_SUB_PATTERN = re.compile(r"\?RoundLimit=([0-9]*)")
