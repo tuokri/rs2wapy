@@ -8,7 +8,8 @@ permissions:
 
 on:
   push:
-    branches: [ "master" ]
+    # TODO: remove make-async-and-modernize before final PR!
+    branches: [ "master", "make-async-and-modernize" ]
   pull_request:
     branches: [ "master" ]
 

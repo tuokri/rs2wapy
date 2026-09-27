@@ -18,13 +18,13 @@ jobs:
       - name: Download badge artifacts
         uses: actions/download-artifact@v8
         with:
-          name: badges-ubuntu_latest-python-3.13
+          name: badges-ubuntu-latest-python-3.13
           path: build
 
       - name: Download report artifacts
         uses: actions/download-artifact@v8
         with:
-          name: pytest-coverage-html-ubuntu_latest-python-3.13
+          name: pytest-coverage-html-ubuntu-latest-python-3.13
           path: build
 
       - name: Copy index.html

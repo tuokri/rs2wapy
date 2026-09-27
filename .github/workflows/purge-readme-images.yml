@@ -7,12 +7,24 @@ permissions:
 
 jobs:
   purge-readme-images:
+    # TODO: consider if we actually need this step?
     if: github.repository_owner == 'tuokri'
 
     runs-on: ubuntu-latest
 
+    env:
+      REPO_URL: https://github.com/${{ github.repository }}
+      FULL_URL: /tree/${{ github.ref_name }}
+
     steps:
+      - name: Log env
+        shell: bash
+        run: |
+          echo "REPO_URL: $REPO_URL"
+          echo "FULL_URL: $FULL_URL"
+
       - name: Purge all cached camo images
+        shell: bash
         run: |
           urls=$(curl -sLk https://github.com/tuokri/rs2wapy/tree/master | grep -Eo "(http|https)://camo.githubusercontent.com[a-zA-Z0-9./?=_%:-]*")
 
