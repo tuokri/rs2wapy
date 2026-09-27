@@ -14,7 +14,7 @@ jobs:
 
     env:
       REPO_URL: https://github.com/${{ github.repository }}
-      FULL_URL: /tree/${{ github.ref_name }}
+      FULL_URL: ${{ env.REPO_URL }}/tree/${{ github.ref_name }}
 
     steps:
       - name: Log env
@@ -26,6 +26,6 @@ jobs:
       - name: Purge all cached camo images
         shell: bash
         run: |
-          urls=$(curl -sLk https://github.com/tuokri/rs2wapy/tree/master | grep -Eo "(http|https)://camo.githubusercontent.com[a-zA-Z0-9./?=_%:-]*")
+          urls=$(curl -sLk ${{ env.FULL_URL }} | grep -Eo "(http|https)://camo.githubusercontent.com[a-zA-Z0-9./?=_%:-]*")
 
           while IFS= read -r line; do curl -X PURGE $line ; done <<< $urls
