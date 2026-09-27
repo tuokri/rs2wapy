@@ -5,12 +5,11 @@ from .models import models
 from .parsing import parsing
 from .rs2wapy import RS2WebAdmin
 
-__version__ = __version__
-
 __all__ = [
+    "RS2WebAdmin",
+    "__version__",
     "adapters",
+    "epicgamesstore",
     "models",
     "parsing",
-    "RS2WebAdmin",
-    "epicgamesstore",
 ]

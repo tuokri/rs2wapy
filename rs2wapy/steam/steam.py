@@ -60,7 +60,7 @@ class Singleton(type):
             instance = super().__call__(*args, dummy=True, **kwargs)
             cls._instances[cls] = instance
         except httpx2.HTTPError as e:
-            logger.debug(e.__name__, exc_info=True)
+            logger.debug(type(e).__name__, exc_info=True)
             logger.warning(
                 "unable to initialize Steam Web API, some features are not available"
             )

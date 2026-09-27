@@ -53,6 +53,8 @@ from enum import IntEnum
 from enum import IntFlag
 from typing import Any
 
+from rs2wapy import __version__
+
 
 class EUniverse(IntEnum):
     Invalid = 0
@@ -567,7 +569,7 @@ def steam64_from_url(url: str, http_timeout: int = 30) -> int | None:
     try:
         req = urllib.request.Request(
             match.group("clean_url"),
-            headers={"User-Agent": "rs2wapy/SteamID"},
+            headers={"User-Agent": f"rs2wapy/{__version__}/SteamID"},
         )
         with urllib.request.urlopen(req, timeout=http_timeout) as resp:
             text = resp.read().decode("utf-8", errors="replace")

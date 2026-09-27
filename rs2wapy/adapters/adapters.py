@@ -35,7 +35,6 @@ from http import HTTPStatus
 from io import BytesIO
 from pathlib import Path
 from typing import Any
-from typing import Awaitable
 from typing import Callable
 from typing import Optional
 from typing import Sequence
@@ -425,24 +424,27 @@ class WebAdminAdapter:
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
         self._chat_message_deque.extend(chat_msgs)
 
-    def get_access_policy(self) -> list[str]:
+    async def get_access_policy(self) -> list[str]:
         # sessionid = self._auth_data.sessionid
         # authcred = self._auth_data.authcred
         # authtimeout = self._auth_data.authtimeout
         #
-        # headers = self.BASE_HEADERS.copy()
         # headers["Cookie"] = f"{sessionid}; {authcred}; {authtimeout}"
-        # headers["Cache-Control"] = "no-cache"
-        #
-        # # Prevent caching with randomized parameter.
-        # url = f"{self._access_policy_url}?$(date +%s)"
-        #
-        # resp = self._perform(url, headers=headers)
-        # return self._rparser.parse_access_policy(resp)
+
+        # TODO: finish this implementation!
         raise NotImplementedError
 
+        headers = self.BASE_HEADERS.copy()
+        headers["Cache-Control"] = "no-cache"
+
+        # Prevent caching with randomized parameter.
+        url = f"{self._access_policy_url}?$(date +%s)"
+
+        resp = self._perform(url, headers=headers)
+        return self._rparser.parse_access_policy(resp)
+
     # TODO: Refactor.
-    def add_access_policy(self, ip_mask: str, policy: str) -> bool:
+    async def add_access_policy(self, ip_mask: str, policy: str) -> bool:
         """Add an IP access policy.
 
         :param ip_mask:
@@ -452,7 +454,7 @@ class WebAdminAdapter:
         :return:
             True if the policy is added, else False.
         """
-        policies = self.get_access_policy()
+        policies = await self.get_access_policy()
         if _in(ip_mask, policies):
             logger.info("{ip} already in policies", ip=ip_mask)
             return False
@@ -487,7 +489,7 @@ class WebAdminAdapter:
                     self._access_policy_url, headers=headers, postfields=postfields
                 )
             except Exception as e:
-                logger.error(e, exc_info=True)
+                logger.error(type(e).__name__, exc_info=True)
 
             policies = self.get_access_policy()
             retries += 1
@@ -995,7 +997,7 @@ class WebAdminAdapter:
         name = name.strip()
         value = value.strip()
 
-        # Header names are case insensitive.
+        # Header names are case-insensitive.
         # Lowercase name here.
         name = name.lower()
 
@@ -1193,7 +1195,7 @@ class WebAdminAdapter:
     #     return [f"{key}: {value}" for key, value in headers.items()]
 
     @staticmethod
-    def _parse_ban_duration(duration: str) -> Tuple[str, str]:
+    def _parse_ban_duration(duration: str) -> tuple[str, str]:
         try:
             duration = duration.lower().strip()
             m = re.match(BAN_EXP_PATTERN, duration)

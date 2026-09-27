@@ -78,7 +78,11 @@ class RS2WebAdminResponseParser:
             cm.append(self.parse_chat_message(div))
         return cm
 
-    def parse_access_policy(self, resp: bytes, encoding: str = None) -> List[str]:
+    def parse_access_policy(
+        self,
+        resp: bytes,
+        encoding: str | None = None,
+    ) -> list[str]:
         parsed_html = self.parse_html(resp, encoding)
         policy_table = parsed_html.find("table", attrs={"id": "policies"})
         trs = policy_table.find_all("tr")
