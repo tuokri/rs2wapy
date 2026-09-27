@@ -415,7 +415,7 @@ class WebAdminAdapter:
             "teamsay": team_code,
         }
 
-        resp = await self._post(self._chat_url, postfields=postfields, headers=headers)
+        resp = await self._post(self._chat_url, data=postfields, headers=headers)
         resp = self._perform(
             self._chat_data_url, postfields=postfields, headers=headers
         )
@@ -561,8 +561,9 @@ class WebAdminAdapter:
         raise NotImplementedError
 
     async def change_map(self, new_map: str, url_extra: dict | None = None):
-        if new_map.lower() not in [m.lower() for m in self.get_maps_list()]:
-            logger.warning("{nm} not in server map list", nm=new_map)
+        maps_list = await self.get_maps_list()
+        if new_map.lower() not in [m.lower() for m in maps_list]:
+            logger.warning("{} not in server map list", new_map)
 
         if url_extra is None:
             url_extra = {}
@@ -1003,6 +1004,7 @@ class WebAdminAdapter:
 
         if name in self._headers:
             if isinstance(self._headers[name], list):
+                # noinspection unresolved-references
                 self._headers[name].append(value)
             else:
                 self._headers[name] = [self._headers[name], value]
@@ -1019,7 +1021,7 @@ class WebAdminAdapter:
                 r = re.search(r'sessionid="(.*?)"', self._headers["set-cookie"]).group(
                     1
                 )
-            elif type(self._headers["set-cookie"]) == list:
+            elif type(self._headers["set-cookie"]) is list:
                 logger.debug("type(self._headers['set-cookie']) == list")
                 sessionid_match = [
                     i for i in self._headers["set-cookie"] if i.startswith("sessionid=")
@@ -1034,13 +1036,13 @@ class WebAdminAdapter:
                 logger.error("cannot get sessionid from headers")
                 return r
         except AttributeError as ae:
-            logger.debug(ae, exc_info=True)
+            logger.debug(type(ae).__name__, exc_info=True)
             return r
         except Exception as e:
-            logger.debug(e, exc_info=True)
+            logger.debug(type(e).__name__, exc_info=True)
             return r
 
-        logger.debug("got sessionid: {si}, from headers", si=r)
+        logger.debug("got sessionid: {}, from headers", r)
         return f'sessionid="{r}";'
 
     async def _post_login(
