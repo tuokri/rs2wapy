@@ -1,6 +1,7 @@
 name: Python package builds and tests
 
-# TODO: set up a separate workflow for Windows?
+# TODO: only generate coverage badge once, if all steps pass!
+# TODO: do we more dynamic keys for ruff, mypy and pytest caches?
 
 permissions:
   contents: write
@@ -14,47 +15,14 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        container: [ "ubuntu:latest" ]
+        os: [ "ubuntu-latest", "windows-latest" ]
         python-version: [ "3.12", "3.13", "3.14" ]
 
-    env:
-      # Hostname equals the service name below.
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/
-      MATRIX_CONTAINER: unknown
-
-    services:
-      postgres:
-        image: timescale/timescaledb:latest-pg17
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_PORT: 5432
-          PGDATA: /var/lib/postgresql/data/pgdata
-        volumes:
-          - pg_data:/var/lib/postgresql/data/pgdata
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-      - name: Set up container
-        run: |
-          apt update
-          apt install -y --no-install-recommends \
-            ca-certificates \
-            git \
-            jq \
-            sqlite3
-          rm -rf /var/lib/apt/lists/*
-
       - uses: actions/checkout@v7
 
       - name: Mark workspace as safe for git
@@ -75,44 +43,36 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-          cache-dependency-glob: ./chatgpt_proxy/uv.lock
+          cache-dependency-glob: ./uv.lock
 
       - name: Install the project
-        working-directory: ./chatgpt_proxy
         run: |
           uv sync --all-extras --dev --frozen
 
       - name: Build project
-        working-directory: ./chatgpt_proxy
         run: |
           uv build
-
-      - name: Sanitize container name
-        shell: bash
-        run: |
-          export MATRIX_CONTAINER=${{ matrix.container }}
-          echo "MATRIX_CONTAINER=${MATRIX_CONTAINER/:/_}" >> $GITHUB_ENV
 
       - name: Store/restore mypy cache
         uses: actions/cache@v6
         with:
-          path: ./chatgpt_proxy/.mypy_cache
-          key: mypy-cache-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          path: ./.mypy_cache
+          key: mypy-cache-${{ matrix.os }}-python-${{ matrix.python-version }}
 
       - name: Store/restore ruff cache
         uses: actions/cache@v6
         with:
-          path: ./chatgpt_proxy/.ruff_cache
-          key: ruff-cache-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          path: ./.ruff_cache
+          key: ruff-cache-${{ matrix.os }}-python-${{ matrix.python-version }}
 
       - name: Store/restore pytest cache
         uses: actions/cache@v6
         with:
-          path: ./chatgpt_proxy/.pytest_cache
-          key: pytest-cache-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          path: ./.pytest_cache
+          key: pytest-cache-${{ matrix.os }}-python-${{ matrix.python-version }}
 
       - name: Run mypy
-        working-directory: ./chatgpt_proxy
+        shell: bash
         continue-on-error: true
         run: |
           uv run mypy . --output=json | jq -r '"::error title=Mypy issue,file=\(.file),line=\(.line),col=\(.column)::\(.message)"'
@@ -121,12 +81,11 @@ jobs:
         uses: astral-sh/ruff-action@v3
         continue-on-error: true
         with:
-          src: ./chatgpt_proxy
+          src: .
 
       - name: Run pytest
-        working-directory: ./chatgpt_proxy
         run: >
-          uv run pytest -s --cov=chatgpt_proxy
+          uv run pytest -s --cov=rs2wapy -vv
           --cov-report html:cov_html
           --cov-report xml:coverage.xml
 
@@ -134,28 +93,27 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: pytest-coverage-html-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          name: pytest-coverage-html-${{ matrix.os }}-python-${{ matrix.python-version }}
           path: |
-            chatgpt_proxy/cov_html
-            chatgpt_proxy/coverage.xml
+            cov_html
+            coverage.xml
 
       - name: Generate coverage badge
-        working-directory: ./chatgpt_proxy
         run: >
           uv run genbadge coverage 
           --output-file=coverage-badge.svg 
           --input-file=coverage.xml
-          --name='chatgpt__proxy coverage' 
+          --name='rs2wapy coverage' 
 
       - name: Store generated badges
         uses: actions/upload-artifact@v7
         with:
-          name: badges-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          name: badges-${{ matrix.os }}-python-${{ matrix.python-version }}
           path: |
-            chatgpt_proxy/coverage-badge.svg
+            coverage-badge.svg
 
       - name: Generate build metadata
-        working-directory: ./chatgpt_proxy/dist
+        working-directory: ./dist
         shell: bash
         run: |
           mkdir -p .
@@ -179,7 +137,7 @@ jobs:
             echo "runner_os=${RUNNER_OS}"
             echo "runner_arch=${RUNNER_ARCH}"
 
-            echo "matrix_container=${{ matrix.container }}"
+            echo "matrix_os=${{ matrix.os }}"
             echo "matrix_python=${{ matrix.python-version }}"
 
             echo "repo_url=https://github.com/${GITHUB_REPOSITORY}"
@@ -193,11 +151,10 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: chatgpt_proxy-dist-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
-          path: chatgpt_proxy/dist
+          name: rs2wapy-dist-${{ matrix.os }}-python-${{ matrix.python-version }}
+          path: dist
 
       - name: Minimize uv cache
-        working-directory: ./chatgpt_proxy
         run: uv cache prune --ci
 
   publish-gh-pages:
