@@ -1,0 +1,206 @@
+name: Python package builds and tests
+
+# TODO: set up a separate workflow for Windows?
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [ "ubuntu:latest" ]
+        python-version: [ "3.12", "3.13", "3.14" ]
+
+    env:
+      # Hostname equals the service name below.
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/
+      MATRIX_CONTAINER: unknown
+
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_PORT: 5432
+          PGDATA: /var/lib/postgresql/data/pgdata
+        volumes:
+          - pg_data:/var/lib/postgresql/data/pgdata
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Set up container
+        run: |
+          apt update
+          apt install -y --no-install-recommends \
+            ca-certificates \
+            git \
+            jq \
+            sqlite3
+          rm -rf /var/lib/apt/lists/*
+
+      - uses: actions/checkout@v7
+
+      - name: Mark workspace as safe for git
+        run: |
+          echo ${{ github.workspace }}
+          echo $GITHUB_WORKSPACE
+          git config --global --add safe.directory ${{ github.workspace }}
+          git config --global --add safe.directory ${{ github.workspace }}/*
+          git config --global --add safe.directory ${{ github.workspace }}/**
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: ./chatgpt_proxy/uv.lock
+
+      - name: Install the project
+        working-directory: ./chatgpt_proxy
+        run: |
+          uv sync --all-extras --dev --frozen
+
+      - name: Build project
+        working-directory: ./chatgpt_proxy
+        run: |
+          uv build
+
+      - name: Sanitize container name
+        shell: bash
+        run: |
+          export MATRIX_CONTAINER=${{ matrix.container }}
+          echo "MATRIX_CONTAINER=${MATRIX_CONTAINER/:/_}" >> $GITHUB_ENV
+
+      - name: Store/restore mypy cache
+        uses: actions/cache@v6
+        with:
+          path: ./chatgpt_proxy/.mypy_cache
+          key: mypy-cache-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+
+      - name: Store/restore ruff cache
+        uses: actions/cache@v6
+        with:
+          path: ./chatgpt_proxy/.ruff_cache
+          key: ruff-cache-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+
+      - name: Store/restore pytest cache
+        uses: actions/cache@v6
+        with:
+          path: ./chatgpt_proxy/.pytest_cache
+          key: pytest-cache-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+
+      - name: Run mypy
+        working-directory: ./chatgpt_proxy
+        continue-on-error: true
+        run: |
+          uv run mypy . --output=json | jq -r '"::error title=Mypy issue,file=\(.file),line=\(.line),col=\(.column)::\(.message)"'
+
+      - name: Run Ruff
+        uses: astral-sh/ruff-action@v3
+        continue-on-error: true
+        with:
+          src: ./chatgpt_proxy
+
+      - name: Run pytest
+        working-directory: ./chatgpt_proxy
+        run: >
+          uv run pytest -s --cov=chatgpt_proxy
+          --cov-report html:cov_html
+          --cov-report xml:coverage.xml
+
+      - name: Store test reports
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: pytest-coverage-html-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          path: |
+            chatgpt_proxy/cov_html
+            chatgpt_proxy/coverage.xml
+
+      - name: Generate coverage badge
+        working-directory: ./chatgpt_proxy
+        run: >
+          uv run genbadge coverage 
+          --output-file=coverage-badge.svg 
+          --input-file=coverage.xml
+          --name='chatgpt__proxy coverage' 
+
+      - name: Store generated badges
+        uses: actions/upload-artifact@v7
+        with:
+          name: badges-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          path: |
+            chatgpt_proxy/coverage-badge.svg
+
+      - name: Generate build metadata
+        working-directory: ./chatgpt_proxy/dist
+        shell: bash
+        run: |
+          mkdir -p .
+
+          {
+            echo "build_timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            echo "git_commit=${GITHUB_SHA}"
+            echo "git_ref=${GITHUB_REF}"
+            echo "git_ref_name=${GITHUB_REF_NAME}"
+            echo "git_head_ref=${GITHUB_HEAD_REF}"
+            echo "git_base_ref=${GITHUB_BASE_REF}"
+            echo "git_repository=${GITHUB_REPOSITORY}"
+            echo "git_event=${GITHUB_EVENT_NAME}"
+
+            echo "workflow=${GITHUB_WORKFLOW}"
+            echo "workflow_run_id=${GITHUB_RUN_ID}"
+            echo "workflow_run_number=${GITHUB_RUN_NUMBER}"
+            echo "workflow_attempt=${GITHUB_RUN_ATTEMPT}"
+
+            echo "actor=${GITHUB_ACTOR}"
+            echo "runner_os=${RUNNER_OS}"
+            echo "runner_arch=${RUNNER_ARCH}"
+
+            echo "matrix_container=${{ matrix.container }}"
+            echo "matrix_python=${{ matrix.python-version }}"
+
+            echo "repo_url=https://github.com/${GITHUB_REPOSITORY}"
+            echo "commit_url=https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+            echo "run_url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > build_metadata.txt
+
+          cat build_metadata.txt
+
+      - name: Store built Python packages
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: chatgpt_proxy-dist-${{ env.MATRIX_CONTAINER }}-python-${{ matrix.python-version }}
+          path: chatgpt_proxy/dist
+
+      - name: Minimize uv cache
+        working-directory: ./chatgpt_proxy
+        run: uv cache prune --ci
+
+  publish-gh-pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [ build ]
+    uses: ./.github/workflows/publish-gh-pages.yml

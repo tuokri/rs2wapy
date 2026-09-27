@@ -1,0 +1,26 @@
+name: Purge cached README images
+
+on: [ workflow_call ]
+
+permissions:
+  contents: read
+
+jobs:
+  purge-readme-images:
+    env:
+      REPO_OWNER: tuokri
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check running on repo owner
+        uses: actions/github-script@v9
+        if: ${{ github.repository_owner != env.REPO_OWNER }}
+        with:
+          script: core.setFailed('action is not running on repository owner!')
+
+      - name: Purge all cached camo images
+        run: |
+          urls=$(curl -sLk https://github.com/tuokri/rs2wapy/tree/master | grep -Eo "(http|https)://camo.githubusercontent.com[a-zA-Z0-9./?=_%:-]*")
+
+          while IFS= read -r line; do curl -X PURGE $line ; done <<< $urls
