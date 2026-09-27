@@ -27,7 +27,6 @@ import functools
 import hashlib
 import http.client
 import itertools
-import sys
 import threading
 import time
 from collections import deque
@@ -38,13 +37,9 @@ from pathlib import Path
 from typing import Any
 from typing import Awaitable
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Sequence
-from typing import Tuple
 from typing import Type
-from typing import Union
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.parse import urlparse
@@ -110,7 +105,7 @@ WEB_ADMIN_SESSION_BANS_PATH = WEB_ADMIN_POLICY_PATH / Path("session/")
 
 
 def retry(
-    on_exc: Union[Type[Exception], Tuple[Exception, ...]],
+    on_exc: Type[Exception] | tuple[Exception, ...],
     tries: int = 10,
     delay: int = 3,
     backoff: int = 2,
@@ -157,7 +152,7 @@ def _in(el: object, seq: Sequence[Sequence]) -> bool:
 #     curl_obj.setopt(pycurl.POSTFIELDSIZE_LARGE, postfieldsize)
 
 
-def _policies_to_delete_argstr(policies: List[str], to_delete: str) -> str:
+def _policies_to_delete_argstr(policies: list[str], to_delete: str) -> str:
     del_index = [idx for idx, s in enumerate(policies) if to_delete in s][0]
     policies_split = [p.split(":") for p in policies]
     policies = [
@@ -216,7 +211,7 @@ class WebAdminAdapter:
     }
 
     def __init__(self, username: str, password: str, webadmin_url: str):
-        self._headers: Dict[str, str] = {}
+        self._headers: dict[str, str] = {}
         self._chat_message_deque: deque = deque(maxlen=512)
         self._auth_data: Optional[AuthData] = None
 
@@ -391,7 +386,7 @@ class WebAdminAdapter:
         resp = await self._get(self._current_game_url, headers=headers)
         return self._rparser.parse_current_game(resp)
 
-    async def get_chat_messages(self) -> Awaitable[list[models.ChatMessage]]:
+    async def get_chat_messages(self) -> list[models.ChatMessage]:
         """When the Adapter instance is created, it begins polling the
         RS2 WebAdmin server for chat messages, appending them to an internal
         deque. Calling this method pops and returns the messages from
@@ -405,7 +400,7 @@ class WebAdminAdapter:
                 break
         return chat_msgs
 
-    def post_chat_message(self, message: str, team: Type[models.Team]):
+    async def post_chat_message(self, message: str, team: Type[models.Team]):
         """Post a chat message to RS2 WebAdmin server."""
         headers = self._make_chat_headers()
         # noinspection PyTypeChecker
@@ -421,7 +416,7 @@ class WebAdminAdapter:
             "teamsay": team_code,
         }
 
-        resp = self._post(self._chat_url, postfields=postfields, headers=headers)
+        resp = await self._post(self._chat_url, postfields=postfields, headers=headers)
         resp = self._perform(
             self._chat_data_url, postfields=postfields, headers=headers
         )
@@ -430,7 +425,7 @@ class WebAdminAdapter:
         logger.debug("got {clen} chat messages", clen=len(chat_msgs))
         self._chat_message_deque.extend(chat_msgs)
 
-    def get_access_policy(self) -> List[str]:
+    def get_access_policy(self) -> list[str]:
         # sessionid = self._auth_data.sessionid
         # authcred = self._auth_data.authcred
         # authtimeout = self._auth_data.authtimeout
@@ -563,7 +558,7 @@ class WebAdminAdapter:
     def modify_access_policy(self, ip_mask: str, policy: str) -> bool:
         raise NotImplementedError
 
-    def change_map(self, new_map: str, url_extra: dict = None):
+    async def change_map(self, new_map: str, url_extra: dict | None = None):
         if new_map.lower() not in [m.lower() for m in self.get_maps_list()]:
             logger.warning("{nm} not in server map list", nm=new_map)
 
@@ -597,7 +592,7 @@ class WebAdminAdapter:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         self._perform(self._change_map_url, headers=headers, postfields=postfields)
 
-    def get_maps(self) -> dict:
+    async def get_maps(self) -> dict[str, list[str]]:
         headers = self._make_auth_headers()
         resp = self._perform(self._change_map_url, headers=headers)
         game_type_options = self._rparser.parse_game_type_options(resp)
@@ -621,22 +616,23 @@ class WebAdminAdapter:
 
         return maps
 
-    def get_maps_list(self) -> List[str]:
+    async def get_maps_list(self) -> list[str]:
         """Return the list of all maps of all game modes
         currently installed on the server.
         """
-        return list(itertools.chain(*self.get_maps().values()))
+        maps = (await self.get_maps()).values()
+        return list(itertools.chain(*maps))
 
-    def get_players(self) -> List[PlayerWrapper]:
+    async def get_players(self) -> list[PlayerWrapper]:
         headers = self._make_auth_headers()
         resp = self._perform(self._players_url, headers=headers)
         players = self._rparser.parse_players(resp, adapter=self)
         logger.info("got {lp} players from server", lp=len(players))
         return players
 
-    def kick_player(
+    async def kick_player(
         self,
-        player: Union[models.Player, PlayerWrapper],
+        player: models.Player | PlayerWrapper,
         reason: str,
         notify_players: bool = False,
     ):
@@ -659,9 +655,9 @@ class WebAdminAdapter:
         }
         self._perform(self._players_url, headers=headers, postfields=postfields)
 
-    def ban_player(
+    async def ban_player(
         self,
-        player: Union[models.Player, PlayerWrapper],
+        player: models.Player | PlayerWrapper,
         reason: str,
         duration: Optional[str] = None,
         notify_players: bool = False,
@@ -697,22 +693,22 @@ class WebAdminAdapter:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         self._perform(self._bans_url, headers=headers, postfields=postfields)
 
-    def session_ban_player(
+    async def session_ban_player(
         self,
-        player: Union[models.Player, PlayerWrapper],
+        player: models.Player | PlayerWrapper,
         reason: str,
         notify_players: bool = False,
     ):
         raise NotImplementedError
 
-    def revoke_player_ban(self, player: Union[models.Player, PlayerWrapper]):
+    def revoke_player_ban(self, player: models.Player | PlayerWrapper):
         # action=revoke&uniqueid=0x01100001013F76D0&playername=&__Submitter=
         raise NotImplementedError
 
-    def revoke_session_ban(self, player: Union[models.Player, PlayerWrapper]):
+    def revoke_session_ban(self, player: models.Player | PlayerWrapper):
         raise NotImplementedError
 
-    def get_map_cycles(self) -> List[models.MapCycle]:
+    async def get_map_cycles(self) -> list[models.MapCycle]:
         headers = self._make_auth_headers()
         resp = self._perform(self._map_list_url, headers=headers)
         map_list_indices = self._rparser.parse_map_list_indices(resp)
@@ -735,7 +731,7 @@ class WebAdminAdapter:
 
         return map_cycles
 
-    def set_map_cycles(self, map_cycles: List[models.MapCycle]):
+    async def set_map_cycles(self, map_cycles: list[models.MapCycle]):
         headers = self._make_auth_headers()
         headers["Content-Type"] = "application/x-www-form-urlencoded"
         active_count = 0
@@ -754,30 +750,30 @@ class WebAdminAdapter:
 
             self._perform(self._map_list_url, headers=headers, postfields=postfields)
 
-    def get_squads(self) -> List[SquadWrapper]:
+    async def get_squads(self) -> list[SquadWrapper]:
         headers = self._make_auth_headers()
         resp = self._perform(self._squads_url, headers=headers)
         return self._rparser.parse_squads(resp, adapter=self)
 
-    def get_tracked_players(self) -> List[TrackingWrapper]:
-        return self._get_multi_page_content(
+    async def get_tracked_players(self) -> list[TrackingWrapper]:
+        return await self._get_multi_page_content(
             url=self._tracking_url,
             parse_func=self._rparser.parse_tracking,
         )
 
-    async def get_members(self) -> List[MemberWrapper]:
+    async def get_members(self) -> list[MemberWrapper]:
         return await self._get_multi_page_content(
             url=self._members_url,
             parse_func=self._rparser.parse_members,
         )
 
-    async def get_banned_players(self) -> List[BanWrapper]:
+    async def get_banned_players(self) -> list[BanWrapper]:
         return await self._get_multi_page_content(
             url=self._bans_url,
             parse_func=self._rparser.parse_bans,
         )
 
-    async def get_session_banned_players(self) -> List[SessionBanWrapper]:
+    async def get_session_banned_players(self) -> list[SessionBanWrapper]:
         return await self._get_multi_page_content(
             url=self._session_bans_url,
             parse_func=self._rparser.parse_session_bans,
@@ -813,7 +809,7 @@ class WebAdminAdapter:
     # TODO: make into async task!
     async def _enqueue_chat_messages_task(self):
         while True and not self._stop_event.is_set():
-            self._chat_message_deque.extend(self._get_chat_messages_from_server())
+            self._chat_message_deque.extend(await self._get_chat_messages_from_server())
             self._stop_event.wait(timeout=2 - time.time() % 2)
 
     async def _get_chat_messages_from_server(self) -> list[models.ChatMessage]:
@@ -898,6 +894,8 @@ class WebAdminAdapter:
         postfields: dict | None = None,
         skip_auth: bool = False,
     ) -> bytes:
+        raise NotImplementedError
+
         if not skip_auth:
             self._wait_authenticated()
 

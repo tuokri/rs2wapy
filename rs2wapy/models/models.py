@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import abc
 import datetime
-import sys
 from collections.abc import MutableMapping
 from typing import Any
 from typing import Dict
@@ -38,7 +37,6 @@ from typing import Union
 
 from rs2wapy.adapters import adapters
 from rs2wapy.epicgamesstore import EGSID
-from rs2wapy.logger import logger
 from rs2wapy.steam import SteamID
 from rs2wapy.steam import SteamWebAPI
 
@@ -177,15 +175,19 @@ class Player(Model):
         """Player's name as stored in RS2 WebAdmin."""
         try:
             return self.stats["Player Name"]
-        except KeyError as ke:
+        except KeyError:
             # logger.debug(ke, exc_info=True)
-            # logger.warn(f"unable to get player name for Steam ID {self.steam_id}")
+            # logger.warning(f"unable to get player name for Steam ID {self.steam_id}")
             self.stats["Player Name"] = ""
             return ""
 
     @property
     def persona_name(self) -> Optional[str]:
         """Player's Steam persona (profile) name."""
+
+        # TODO: this might require some thinking, since persona_name
+        #   requires an async Steam Web API call!
+
         if self._persona_name is None and self.is_steam_player:
             self._persona_name = SteamWebAPI().get_persona_name(self.steam_id)
         return self._persona_name

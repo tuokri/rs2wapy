@@ -18,12 +18,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
 import sys
 from pathlib import Path
 from typing import TypeAlias
 
-import loguru
 from loguru import logger
 
 LogLevel: TypeAlias = str | int
@@ -55,6 +53,7 @@ log_file_handler_id = logger.add(
     enqueue=True,
 )
 
+
 def _normalize_level(level: LogLevel) -> str | int:
     if isinstance(level, bool):
         raise TypeError("level must be str or int")
@@ -70,11 +69,12 @@ def _normalize_level(level: LogLevel) -> str | int:
         return int(value)
 
     name = value.upper()
-    logger.level(name) # Standard loguru validation.
+    logger.level(name)  # Standard loguru validation.
     return name
 
+
 def configure_logging(
-        level: LogLevel = "INFO",
-        # log_file_config
+    level: LogLevel = "INFO",
+    # log_file_config
 ) -> None:
     pass

@@ -22,10 +22,7 @@
 
 from __future__ import annotations
 
-from typing import List
-from typing import Sequence
 from typing import Type
-from typing import Union
 
 from rs2wapy.adapters import PlayerWrapper
 from rs2wapy.adapters import WebAdminAdapter
@@ -58,7 +55,7 @@ class RS2WebAdmin:
         """
         self._adapter = WebAdminAdapter(username, password, webadmin_url)
 
-    async def get_chat_messages(self) -> Sequence[ChatMessage]:
+    async def get_chat_messages(self) -> list[ChatMessage]:
         """Return new chat messages since the last time this method
         was called and after the creation of this RS2WebAdmin instance.
         """
@@ -72,7 +69,7 @@ class RS2WebAdmin:
         :param team:
             The team the message is visible to.
         """
-        self._adapter.post_chat_message(message, team)
+        await self._adapter.post_chat_message(message, team)
 
     async def get_current_game(self) -> CurrentGame:
         """Return the object representing current game information."""
@@ -100,7 +97,7 @@ class RS2WebAdmin:
             url_extra = {}
         await self._adapter.change_map(new_map, url_extra)
 
-    async def get_maps(self) -> dict:
+    async def get_maps(self) -> dict[str, list[str]]:
         """Return maps currently installed on the server.
         Return value is a dictionary with game mode names
         as keys and map name lists as values:
@@ -113,13 +110,13 @@ class RS2WebAdmin:
         """
         return await self._adapter.get_maps()
 
-    async def get_maps_list(self) -> List[str]:
-        """Return list of all maps of all game modes
+    async def get_maps_list(self) -> list[str]:
+        """Return the list of all maps of all game modes
         currently installed on the server.
         """
         return await self._adapter.get_maps_list()
 
-    async def get_players(self) -> List[PlayerWrapper]:
+    async def get_players(self) -> list[PlayerWrapper]:
         """Return players currently online on the server.
         Return value is a list of adapters.PlayerWrapper objects
         representing the players on the server at the time of
@@ -132,25 +129,25 @@ class RS2WebAdmin:
         does not store player IDs because deducing them
         from WebAdmin is unreliable.
         """
-        return await self._adapter.get_current_game().player_scoreboard
+        return (await self._adapter.get_current_game()).player_scoreboard
 
     async def get_team_scoreboard(self) -> TeamScoreboard:
         """Return the current team scoreboard."""
-        return await self._adapter.get_current_game().team_scoreboard
+        return (await self._adapter.get_current_game()).team_scoreboard
 
-    async def get_squads(self) -> List[SquadWrapper]:
+    async def get_squads(self) -> list[SquadWrapper]:
         """Return current squads."""
         return await self._adapter.get_squads()
 
-    async def get_banned_players(self) -> List[BanWrapper]:
+    async def get_banned_players(self) -> list[BanWrapper]:
         """Return banned players."""
         return await self._adapter.get_banned_players()
 
-    async def get_session_banned_players(self) -> List[SessionBanWrapper]:
+    async def get_session_banned_players(self) -> list[SessionBanWrapper]:
         """Return session banned players."""
         return await self._adapter.get_session_banned_players()
 
-    async def get_tracked_players(self) -> List[TrackingWrapper]:
+    async def get_tracked_players(self) -> list[TrackingWrapper]:
         """Return tracked players.
 
         WARNING: This method is extremely slow for servers
@@ -161,7 +158,7 @@ class RS2WebAdmin:
         """
         return await self._adapter.get_tracked_players()
 
-    async def get_access_policies(self) -> List[AccessPolicy]:
+    async def get_access_policies(self) -> list[AccessPolicy]:
         """Return access policies."""
         raise NotImplementedError
         # return self._adapter.get_access_policies()
@@ -172,7 +169,7 @@ class RS2WebAdmin:
 
     async def ban_player(
         self,
-        player: Union[Player, PlayerWrapper],
+        player: Player | PlayerWrapper,
         reason: str,
         duration: str | None = None,
         notify_players: bool = False,
@@ -211,7 +208,7 @@ class RS2WebAdmin:
 
     async def kick_player(
         self,
-        player: Union[Player, PlayerWrapper],
+        player: Player | PlayerWrapper,
         reason: str,
         notify_players: bool = False,
     ):
@@ -228,7 +225,7 @@ class RS2WebAdmin:
 
     async def session_ban_player(
         self,
-        player: Union[Player, PlayerWrapper],
+        player: Player | PlayerWrapper,
         reason: str,
         notify_players: bool = False,
     ):
@@ -244,18 +241,18 @@ class RS2WebAdmin:
         """
         await self._adapter.session_ban_player(player, reason, notify_players)
 
-    async def get_map_cycles(self) -> List[MapCycle]:
+    async def get_map_cycles(self) -> list[MapCycle]:
         """Return map cycles."""
         return await self._adapter.get_map_cycles()
 
-    async def set_map_cycles(self, map_cycles: List[MapCycle]):
+    async def set_map_cycles(self, map_cycles: list[MapCycle]):
         """Set map cycles."""
         await self._adapter.set_map_cycles(map_cycles)
 
-    async def get_advertisement_messages(self) -> List[str]:
+    async def get_advertisement_messages(self) -> list[str]:
         raise NotImplementedError
 
-    async def set_advertisement_messages(self, ad_msgs: List[str]):
+    async def set_advertisement_messages(self, ad_msgs: list[str]):
         raise NotImplementedError
 
     async def get_advertisement_interval(self) -> int:
@@ -264,5 +261,5 @@ class RS2WebAdmin:
     async def set_advertisement_interval(self, ad_interval: int):
         raise NotImplementedError
 
-    async def get_members(self) -> List[MemberWrapper]:
+    async def get_members(self) -> list[MemberWrapper]:
         return await self._adapter.get_members()

@@ -13,7 +13,6 @@ from .models import RedTeam
 from .models import Squad
 from .models import Team
 from .models import TeamScoreboard
-from .models import logger
 
 __all__ = [
     "AccessPolicy",
@@ -31,5 +30,4 @@ __all__ = [
     "Squad",
     "Team",
     "TeamScoreboard",
-    "logger",
 ]
