@@ -15,14 +15,12 @@ The library uses PycURL internally to communicate with RS2 WebAdmin.
 
 ### Brief Usage Examples
 
-This section contains some brief usage examples.
-For more comprehensive tutorials, check out the
-[examples repository](https://github.com/tuokri/rs2wapy-examples).
+TODO: re-write this entire doc!
 
 ##### Installation
 
 ```bash
-# Requires Python=>3.9
+# Requires Python=>3.12
 pip install rs2wapy
 ```
 
