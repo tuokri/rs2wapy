@@ -11,7 +11,7 @@ authors = [
 ]
 
 dependencies = [
-    "bs4>=0.0.2",
+    "beautifulsoup4>=4.15.0",
     "cachetools>=7.2.0",
     "httpx2>=2.13.1",
     "loguru>=0.7.3",
