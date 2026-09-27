@@ -51,6 +51,15 @@ exclude = [
     "rs2wapy/tests"
 ]
 
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.mypy-rs2wapy._version]
+ignore_errors = true
+
+[tool.mypy-rs2wapy.utils.caching]
+ignore_errors = true
+
 [[tool.mypy.overrides]]
 module = [
     "pytest_loguru.*",
