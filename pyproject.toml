@@ -43,6 +43,7 @@ dev = [
     "pytest-timeout>=2.4.0",
     "pytest>=9.0.3",
     "ruff>=0.15.5",
+    "sanic-testing>=24.6.0",
     "uv-dynamic-versioning>=0.13.0",
     "webadmin-api-docs",
     "webadmin-mock-server",
@@ -64,7 +65,7 @@ exclude = [
 
 [tool.hatch.build]
 exclude = [
-    "/tools/webadmin-api-docs",
+    "/.uv-python",
 ]
 skip-excluded-dirs = true
 

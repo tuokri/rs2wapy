@@ -1,10 +1,15 @@
 # Preliminary Mock Architecture
 
-**Status:** Preliminary architecture choice  
-**Date:** 2026-09-30 (UTC)
+**Status:** Preliminary architecture choice; boilerplate implemented
+**Date:** 2026-10-01 (UTC)
 
 The future RS2 WebAdmin mock will use **Sanic** as its web framework and
 **Jinja** for rendering WebAdmin-compatible HTML and HTML fragments.
+
+The initial standalone implementation lives in the sibling
+[`webadmin-mock-server`](../webadmin-mock-server/) package. Its
+[`ARCHITECTURE.md`](../webadmin-mock-server/ARCHITECTURE.md) records the
+implemented boilerplate boundary and deferred behavior.
 
 The mock is a deterministic, in-memory test server. A test seeds its runtime
 state before startup; restarting the mock discards that state. It does not
@@ -38,6 +43,10 @@ may use HTMX and modern UI/design practices freely.
 The debug panel may expose test-oriented controls and views for seeded players,
 chat, bans, policies, sessions, and recent mock requests. It must not alter the
 semantics or response shapes of the WebAdmin-compatible routes.
+
+The boilerplate implements an opt-in dashboard, player table, safe state
+inspector, request inspector, and HTMX no-op feedback controls. It does not yet
+implement debug mutations or WebAdmin-compatible state changes.
 
 ## Deliberate exclusions
 

@@ -1,7 +1,37 @@
 [project]
-name = "webadmin_mock_server"
+name = "webadmin-mock-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Seeded in-memory Rising Storm 2 WebAdmin mock server"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "click>=8.5.0",
+    "jinja2>=3.1.6",
+    "loguru>=0.7.3",
+    "sanic>=25.12.1,<26",
+]
+
+[project.scripts]
+webadmin-mock-server = "webadmin_mock_server.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.9,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pytest>=9.0.2",
+    "ruff>=0.16.9",
+    "sanic-testing>=24.6.0",
+]
+
+[tool.mypy]
+python_version = "3.14"
+files = ["src", "tests"]
+exclude = ["^\\.venv/"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+extend-exclude = [".venv"]

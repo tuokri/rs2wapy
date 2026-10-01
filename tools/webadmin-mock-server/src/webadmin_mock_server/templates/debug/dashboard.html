@@ -1,0 +1,22 @@
+{% extends "debug/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <p class="eyebrow">Runtime overview</p>
+    <h1>{{ server.name }}</h1>
+    <p>{{ server.map_name }} · {{ server.game_type }}</p>
+  </section>
+  <section class="metrics" aria-label="Mock state summary">
+    <article class="metric"><span>Players</span><strong>{{ players | length }}</strong></article>
+    <article class="metric incomplete"><span>Chats</span><strong>Not modelled</strong></article>
+    <article class="metric incomplete"><span>Bans</span><strong>Not modelled</strong></article>
+    <article class="metric incomplete"><span>Sessions</span><strong>Not modelled</strong></article>
+  </section>
+  <section class="panel">
+    <h2>Boilerplate boundary</h2>
+    <p>
+      This panel renders seeded runtime state. WebAdmin routes and debug controls remain
+      deliberately unimplemented until their live-verified behavior is added.
+    </p>
+  </section>
+{% endblock %}

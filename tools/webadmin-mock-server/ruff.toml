@@ -1,0 +1,9 @@
+extend-exclude = ["tools"]
+
+[lint]
+extend-select = ["I"]
+
+[lint.isort]
+force-single-line = true
+
+known-first-party = ["rs2wapy"]

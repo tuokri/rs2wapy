@@ -1,0 +1,26 @@
+{% extends "debug/base.html" %}
+{% block title %}State{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <p class="eyebrow">Read-only projection</p>
+    <h1>Modelled state</h1>
+    <p>Secrets, cookies, headers, query values, and request bodies are intentionally absent.</p>
+  </section>
+  <section class="panel state-grid">
+    <dl>
+      <dt>Server name</dt><dd>{{ state_view.server_name }}</dd>
+      <dt>Map</dt><dd>{{ state_view.map_name }}</dd>
+      <dt>Game type</dt><dd>{{ state_view.game_type }}</dd>
+    </dl>
+  </section>
+  <section class="panel">
+    <h2>Players</h2>
+    <ul class="state-list">
+      {% for player in state_view.players %}
+        <li><code>{{ player.player_id }}</code> · {{ player.name }} · {{ player.team }}</li>
+      {% else %}
+        <li>No player state is modelled</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}

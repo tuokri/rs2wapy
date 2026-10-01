@@ -1,0 +1,38 @@
+{% extends "debug/base.html" %}
+{% block title %}Players{% endblock %}
+{% block content %}
+  <section class="page-heading page-heading-row">
+    <div>
+      <p class="eyebrow">Runtime players</p>
+      <h1>Player control</h1>
+      <p>Seeded players are visible; every mutation control is a no-op draft.</p>
+    </div>
+    <button class="button primary" hx-post="{{ debug_base_path }}actions/add-player" hx-target="#action-feedback" hx-swap="innerHTML">Add player</button>
+  </section>
+  <div id="action-feedback" aria-live="polite"></div>
+  <section class="panel table-panel">
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Player ID</th><th>Team</th><th>Flags</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for player in players %}
+          <tr>
+            <td>{{ player.name }}</td>
+            <td><code>{{ player.player_id }}</code></td>
+            <td>{{ player.team }}</td>
+            <td>{% if player.is_admin %}<span class="tag">admin</span>{% endif %}{% if player.is_bot %}<span class="tag">bot</span>{% endif %}</td>
+            <td><span class="status {{ "online" if player.connected else "offline" }}">{{ "connected" if player.connected else "disconnected" }}</span></td>
+            <td class="actions">
+              <button hx-post="{{ debug_base_path }}actions/edit-player" hx-target="#action-feedback" hx-swap="innerHTML">Edit</button>
+              <button hx-post="{{ debug_base_path }}actions/move-team" hx-target="#action-feedback" hx-swap="innerHTML">Move team</button>
+              <button class="danger" hx-post="{{ debug_base_path }}actions/remove-player" hx-target="#action-feedback" hx-swap="innerHTML">Remove</button>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="empty">No players were provided by this mock seed</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "debug/base.html" %}
+{% block title %}Requests{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <p class="eyebrow">Sanitized telemetry</p>
+    <h1>Recent requests</h1>
+    <p>Only endpoint identity, method, response status, and duration are retained.</p>
+  </section>
+  <section class="panel table-panel">
+    <table>
+      <thead><tr><th>Endpoint</th><th>Method</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        {% for record in request_records %}
+          <tr><td><code>{{ record.endpoint_id }}</code></td><td>{{ record.method }}</td><td>{{ record.status }}</td><td>{{ record.duration_ms }} ms</td></tr>
+        {% else %}
+          <tr><td colspan="4" class="empty">No mock requests have been recorded</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endblock %}

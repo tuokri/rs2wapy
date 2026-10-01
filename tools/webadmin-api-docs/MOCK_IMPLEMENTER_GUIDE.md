@@ -31,6 +31,11 @@ they do not override the live server's observed behavior.
 Use the agreed **Sanic + Jinja** architecture described in
 [MOCK_ARCHITECTURE.md](MOCK_ARCHITECTURE.md).
 
+The standalone mock boilerplate now exists at
+[`../webadmin-mock-server/`](../webadmin-mock-server/). Read its README and
+ARCHITECTURE.md before extending it; its seeded runtime state, route-stub
+boundary, and optional debug panel are intentional starting points.
+
 1. Model a seeded, in-memory server state and discard it on restart
 2. Implement the base path, login/logout, cookie/session behavior, common
    messages, and shared HTML shell
@@ -38,8 +43,9 @@ Use the agreed **Sanic + Jinja** architecture described in
    documented HTML, fragments, XML, redirects, and content types
 4. Implement endpoint families in `contract.yaml` priority order, translating
    form input into documented in-memory state transitions
-5. Add a separate optional `/__debug__/` panel only after compatibility routes
-   work; it may use modern UI techniques but must never change WebAdmin routes
+5. Extend the existing optional `/__debug__/` panel when it makes test setup or
+   state inspection clearer; it may use modern UI techniques but must never
+   change WebAdmin routes
 
 The mock can be developed solely from this repository's documentation and
 fixtures. Optional source data improves template and source exploration but is

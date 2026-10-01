@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Debug panel{% endblock %} · RS2 WebAdmin mock</title>
+    <link rel="stylesheet" href="{{ debug_base_path }}static/css/debug.css">
+    <script src="{{ debug_base_path }}static/vendor/htmx/htmx.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="{{ debug_base_path }}">RS2 WebAdmin mock</a>
+      <span class="badge">development debug panel</span>
+    </header>
+    <div class="app-layout">
+      <nav aria-label="Debug sections">
+        <a href="{{ debug_base_path }}" {% if active_page == "dashboard" %}aria-current="page"{% endif %}>Dashboard</a>
+        <a href="{{ debug_base_path }}players" {% if active_page == "players" %}aria-current="page"{% endif %}>Players</a>
+        <a href="{{ debug_base_path }}state" {% if active_page == "state" %}aria-current="page"{% endif %}>State</a>
+        <a href="{{ debug_base_path }}requests" {% if active_page == "requests" %}aria-current="page"{% endif %}>Requests</a>
+      </nav>
+      <main>{% block content %}{% endblock %}</main>
+    </div>
+  </body>
+</html>

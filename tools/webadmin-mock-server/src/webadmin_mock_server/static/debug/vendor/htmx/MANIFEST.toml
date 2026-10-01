@@ -1,0 +1,5 @@
+version = "4.0.0"
+source_url = "https://unpkg.com/htmx.org@4.0.0/dist/htmx.js"
+license_url = "https://raw.githubusercontent.com/bigskysoftware/htmx/v4.0.0/LICENSE"
+htmx_sha256 = "5d0833e3b435d357221955566f46fa378cb653c4f119c0a8533b4bb4098cf9ad"
+license_sha256 = "d3d2456f76414f2456104660ebd65aff1c04cd7966b942bdabd63f3cdb316a38"

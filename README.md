@@ -38,7 +38,10 @@ uv sync --all-groups --python 3.14
 ```
 
 This creates the rs2wapy development environment and makes changes under
-`tools/webadmin-api-docs` immediately available to it.
+`tools/webadmin-api-docs` and `tools/webadmin-mock-server` immediately
+available to it. Both are development-only dependencies. They are excluded
+from the rs2wapy wheel, while the source distribution includes them so its
+development dependency declarations remain usable.
 
 The documentation package also has its own standalone project environment:
 
@@ -50,6 +53,14 @@ uv sync --all-groups --python 3.14
 
 Use the standalone environment when working only on WebAdmin documentation and
 discovery tooling. Both projects keep their own `uv.lock` and `.venv`.
+
+The mock server can likewise be developed standalone:
+
+```bash
+cd tools/webadmin-mock-server
+uv python install 3.14
+uv sync --all-groups --python 3.14
+```
 
 ##### Steam Web API key (optional)
 
