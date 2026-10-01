@@ -1,10 +1,9 @@
-<div id="player-runtime" aria-live="polite">
-  <div id="action-feedback">
-    {% if action_message %}
-      <div class="notice {{ action_state }}" role="status">{{ action_message }}</div>
-    {% endif %}
-  </div>
-  <section class="panel table-panel" aria-label="Seeded runtime players">
+<div id="action-feedback" aria-live="polite"{% if oob_response %} hx-swap-oob="innerHTML"{% endif %}>
+  {% if action_message %}
+    <div class="notice {{ action_state }}" role="status">{{ action_message }}</div>
+  {% endif %}
+</div>
+<section id="player-table" class="panel table-panel player-table-panel" aria-label="Seeded runtime players">
     <table>
       <thead>
         <tr><th>Name</th><th>Player ID</th><th>Platform</th><th>Team</th><th>Flags</th><th>Status</th><th>Actions</th></tr>
@@ -29,5 +28,4 @@
         {% endfor %}
       </tbody>
     </table>
-  </section>
-</div>
+</section>

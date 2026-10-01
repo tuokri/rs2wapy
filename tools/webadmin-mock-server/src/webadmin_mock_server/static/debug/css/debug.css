@@ -365,6 +365,27 @@ main {
     padding: 0;
 }
 
+.player-table-panel {
+    overflow-x: auto;
+}
+
+.player-table-panel table {
+    min-width: 56rem;
+}
+
+.player-table-panel th,
+.player-table-panel td {
+    padding: 0.58rem 0.65rem;
+}
+
+.player-table-panel td:nth-child(2) {
+    white-space: nowrap;
+}
+
+.player-table-panel .actions button {
+    padding: 0.38rem 0.48rem;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -636,6 +657,22 @@ button:hover,
     inline-size: 1rem;
 }
 
+.generation-control.is-overridden {
+    color: var(--muted);
+}
+
+.generation-override {
+    color: var(--signal);
+    display: block;
+    font-size: 0.66rem;
+    font-weight: 650;
+    margin-top: 0.2rem;
+}
+
+.generation-override[hidden] {
+    display: none;
+}
+
 .player-form button {
     justify-self: start;
 }
@@ -721,8 +758,28 @@ dd:last-child {
 }
 
 .response-status {
+    border-color: var(--line);
+    color: var(--muted-strong);
+}
+
+.response-status-2xx {
     border-color: rgba(146, 199, 123, 0.55);
     color: var(--success);
+}
+
+.response-status-3xx {
+    border-color: rgba(80, 160, 240, 0.58);
+    color: #a9d5ff;
+}
+
+.response-status-4xx {
+    border-color: rgba(226, 173, 54, 0.62);
+    color: #ffd678;
+}
+
+.response-status-5xx {
+    border-color: rgba(240, 140, 123, 0.68);
+    color: var(--danger);
 }
 
 :focus-visible {
@@ -809,6 +866,10 @@ dd:last-child {
         border: 0;
         box-shadow: none;
         overflow: visible;
+    }
+
+    .player-table-panel table {
+        min-width: 0;
     }
 
     .table-panel table,

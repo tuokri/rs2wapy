@@ -119,6 +119,8 @@ async def test_debug_add_player_creates_runtime_player() -> None:
             "player_id": "76561198021283933",
             "name": "Debug player",
             "team": "South",
+            "generate_id": "on",
+            "generate_name": "on",
             "connected": "on",
             "is_admin": "on",
         },
@@ -217,14 +219,18 @@ def test_debug_controller_adds_runtime_players() -> None:
 async def test_request_inspector_uses_paths_without_query_data() -> None:
     server = create_mock_server(enable_debug_panel=True)
 
+    _, debug_response = await server.app.asgi_client.get("/__debug__/players")
     _, route_response = await server.app.asgi_client.get("/ServerAdmin/current?credential=private")
     _, inspector_response = await server.app.asgi_client.get("/__debug__/requests")
 
+    assert debug_response.status == 200
     assert route_response.status == 501
     assert inspector_response.status == 200
     assert "/ServerAdmin/current" in inspector_response.text
     assert "credential=private" not in inspector_response.text
-    assert server.debug.snapshot().request_records[0].path == "/ServerAdmin/current"
+    assert "response-status-2xx" in inspector_response.text
+    assert "response-status-5xx" in inspector_response.text
+    assert server.debug.snapshot().request_records[1].path == "/ServerAdmin/current"
 
 
 def test_seed_is_copied_into_independent_runtime_state() -> None:

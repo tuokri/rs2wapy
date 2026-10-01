@@ -10,13 +10,13 @@
   </section>
   <details class="add-player-panel">
     <summary class="button primary"><span>Add player</span><span class="button-caret" aria-hidden="true">▾</span></summary>
-    <form class="player-form" hx-post="{{ debug_base_path }}actions/add-player" hx-target="#player-runtime" hx-swap="outerHTML">
-      <label>Player ID<input name="player_id" inputmode="numeric" placeholder="Generated on submit"></label>
+    <form class="player-form" hx-post="{{ debug_base_path }}actions/add-player" hx-target="#player-table" hx-swap="outerHTML">
+      <label>Player ID<input name="player_id" inputmode="numeric" placeholder="Generated on submit" data-generation-input="generate_id"></label>
       <label>ID type<select name="identity_kind"><option value="steam">SteamID64</option><option value="egs">EGS ID</option></select></label>
-      <label>Player name<input name="name" placeholder="Generated on submit"></label>
+      <label>Player name<input name="name" placeholder="Generated on submit" data-generation-input="generate_name"></label>
       <label>Team<select name="team"><option>Spectator</option><option>North</option><option>South</option></select></label>
-      <label class="check-label"><input name="generate_id" type="checkbox" checked> Generate ID</label>
-      <label class="check-label"><input name="generate_name" type="checkbox" checked> Generate name</label>
+      <label class="check-label generation-control" data-generation-control="generate_id"><input name="generate_id" type="checkbox" checked><span>Generate ID<small class="generation-override" hidden>Ignored: manual ID entered</small></span></label>
+      <label class="check-label generation-control" data-generation-control="generate_name"><input name="generate_name" type="checkbox" checked><span>Generate name<small class="generation-override" hidden>Ignored: manual name entered</small></span></label>
       <label class="check-label"><input name="connected" type="checkbox" checked> Connected</label>
       <label class="check-label"><input name="is_admin" type="checkbox"> Administrator</label>
       <label class="check-label"><input name="is_bot" type="checkbox"> Bot (forces BOT prefix)</label>

@@ -106,9 +106,9 @@ def _added_player_from_request(request: Request, state: MockState) -> PlayerSeed
     name = _form_value(request, "name")
     team = _form_value(request, "team")
     identity_kind = _identity_kind_from_request(request)
-    if _form_has_value(request, "generate_id"):
+    if not player_id and _form_has_value(request, "generate_id"):
         player_id = generate_player_id(identity_kind, set(state.players))
-    if _form_has_value(request, "generate_name"):
+    if not name and _form_has_value(request, "generate_name"):
         name = generate_player_name()
     if not player_id or not name or not team:
         raise ValueError("Player ID, player name, and team are required")
@@ -245,6 +245,7 @@ def create_mock_server(
                         action_message=str(error),
                         action_state="error",
                         debug_base_path=DEBUG_BASE_PATH,
+                        oob_response=True,
                     )
                 else:
                     response = _render(
@@ -253,6 +254,7 @@ def create_mock_server(
                         action_message=f"Added player {player.name}",
                         action_state="success",
                         debug_base_path=DEBUG_BASE_PATH,
+                        oob_response=True,
                     )
                 return _record_response(request, response, started_at)
 
