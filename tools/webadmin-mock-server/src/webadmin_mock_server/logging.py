@@ -13,7 +13,20 @@ class _SanicAccessLogHandler(logging.Handler):
 
     def emit(self, record: logging.LogRecord) -> None:
         """Emit one Sanic access record through the configured Loguru logger."""
-        logger.log(record.levelname, record.getMessage())
+        host = getattr(record, "host", "-")
+        request = getattr(record, "request", "-")
+        status = getattr(record, "status", "-")
+        byte_count = getattr(record, "byte", "-")
+        duration = getattr(record, "duration", "-")
+        logger.log(
+            record.levelname,
+            "sanic access | {} | {} | {} | {} bytes | {}",
+            host,
+            request,
+            status,
+            byte_count,
+            duration,
+        )
 
 
 def configure_logging() -> None:
