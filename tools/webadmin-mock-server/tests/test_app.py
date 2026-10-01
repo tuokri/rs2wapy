@@ -60,7 +60,10 @@ async def test_debug_panel_is_opt_in() -> None:
 
     assert disabled_response.status == 404
     assert enabled_response.status == 200
-    assert "development debug panel" in enabled_response.text
+    assert "Mock Command" in enabled_response.text
+    assert "Development only" in enabled_response.text
+    assert "http://" not in enabled_response.text
+    assert "https://" not in enabled_response.text
 
     _, disabled_asset = await disabled.app.asgi_client.get("/__debug__/static/vendor/htmx/htmx.js")
     _, enabled_asset = await enabled.app.asgi_client.get("/__debug__/static/vendor/htmx/htmx.js")
@@ -94,6 +97,7 @@ async def test_debug_actions_are_noop_feedback_flows(action: str) -> None:
 
     assert response.status == 200
     assert "not implemented" in response.text
+    assert "Draft action" in response.text
     after = server.debug.snapshot()
     assert after.players == before.players
     assert after.players[0].name == "Test player"

@@ -8,16 +8,24 @@
     <script src="{{ debug_base_path }}static/vendor/htmx/htmx.js" defer></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="{{ debug_base_path }}">RS2 WebAdmin mock</a>
-      <span class="badge">development debug panel</span>
+    <header class="command-bar">
+      <a class="brand" href="{{ debug_base_path }}" aria-label="RS2 WebAdmin mock debug overview">
+        <span class="brand-kicker">Rising Storm 2</span>
+        <span class="brand-name">Mock Command</span>
+      </a>
+      <div class="command-bar-meta">
+        <span class="environment-badge"><span aria-hidden="true">●</span> Development only</span>
+        <span class="command-context">{{ server.map_name }} · {{ server.game_type }}</span>
+      </div>
     </header>
     <div class="app-layout">
       <nav aria-label="Debug sections">
-        <a href="{{ debug_base_path }}" {% if active_page == "dashboard" %}aria-current="page"{% endif %}>Dashboard</a>
+        <p class="nav-label">Operations</p>
+        <a href="{{ debug_base_path }}" {% if active_page == "dashboard" %}aria-current="page"{% endif %}>Overview</a>
         <a href="{{ debug_base_path }}players" {% if active_page == "players" %}aria-current="page"{% endif %}>Players</a>
-        <a href="{{ debug_base_path }}state" {% if active_page == "state" %}aria-current="page"{% endif %}>State</a>
-        <a href="{{ debug_base_path }}requests" {% if active_page == "requests" %}aria-current="page"{% endif %}>Requests</a>
+        <p class="nav-label">Inspection</p>
+        <a href="{{ debug_base_path }}state" {% if active_page == "state" %}aria-current="page"{% endif %}>Runtime state</a>
+        <a href="{{ debug_base_path }}requests" {% if active_page == "requests" %}aria-current="page"{% endif %}>Request log</a>
       </nav>
       <main>{% block content %}{% endblock %}</main>
     </div>

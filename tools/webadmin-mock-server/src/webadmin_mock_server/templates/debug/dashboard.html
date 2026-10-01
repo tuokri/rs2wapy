@@ -2,18 +2,21 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
   <section class="page-heading">
-    <p class="eyebrow">Runtime overview</p>
+    <p class="eyebrow">Runtime briefing</p>
     <h1>{{ server.name }}</h1>
-    <p>{{ server.map_name }} · {{ server.game_type }}</p>
+    <p>Seeded server state · {{ server.map_name }} · {{ server.game_type }}</p>
   </section>
   <section class="metrics" aria-label="Mock state summary">
-    <article class="metric"><span>Players</span><strong>{{ players | length }}</strong></article>
-    <article class="metric incomplete"><span>Chats</span><strong>Not modelled</strong></article>
-    <article class="metric incomplete"><span>Bans</span><strong>Not modelled</strong></article>
-    <article class="metric incomplete"><span>Sessions</span><strong>Not modelled</strong></article>
+    <article class="metric metric-ready"><span>Players</span><strong>{{ players | length }}</strong><small>Modelled</small></article>
+    <article class="metric incomplete"><span>Chats</span><strong>—</strong><small>Not modelled</small></article>
+    <article class="metric incomplete"><span>Bans</span><strong>—</strong><small>Not modelled</small></article>
+    <article class="metric incomplete"><span>Sessions</span><strong>—</strong><small>Not modelled</small></article>
   </section>
-  <section class="panel">
-    <h2>Boilerplate boundary</h2>
+  <section class="panel briefing-panel">
+    <div class="section-heading">
+      <p class="eyebrow">Read this first</p>
+      <h2>Boilerplate boundary</h2>
+    </div>
     <p>
       This panel renders seeded runtime state. WebAdmin routes and debug controls remain
       deliberately unimplemented until their live-verified behavior is added.

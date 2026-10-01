@@ -1,8 +1,8 @@
 # RS2 WebAdmin Mock Server
 
 This is a seeded, in-memory Sanic mock for rs2wapy development and tests. It
-is a development-only rs2wapy dependency and is not included in rs2wapy
-distributions.
+is a development-only rs2wapy dependency. It is excluded from the rs2wapy
+wheel and included in the rs2wapy source distribution.
 
 ## Development
 
@@ -16,6 +16,17 @@ uv run webadmin-mock-server --debug-panel
 
 The mock listens on `http://127.0.0.1:8081`. Its optional non-WebAdmin debug
 panel is available at `http://127.0.0.1:8081/__debug__/`.
+
+## Debug panel design
+
+The optional debug panel is a dark-only, CSS-only modern reinterpretation of
+RS2 WebAdmin's operations-console mood. It uses original styles rather than
+bundled RS2 art, logos, stylesheets, or remote font and asset requests. The
+debug panel is not a WebAdmin compatibility surface; its visual language and
+routes can evolve independently of `/ServerAdmin/` fidelity work.
+
+It remains intentionally visual-only: controls are labelled as drafts and
+return no-op feedback until the typed mock control plane is implemented.
 
 For rs2wapy tests, create a seeded app through `create_mock_server()` and pass
 `server.app` to a Sanic test client or test fixture. Starting another mock

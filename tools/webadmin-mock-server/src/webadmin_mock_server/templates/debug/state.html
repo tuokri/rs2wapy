@@ -14,7 +14,10 @@
     </dl>
   </section>
   <section class="panel">
-    <h2>Players</h2>
+    <div class="section-heading">
+      <p class="eyebrow">Runtime projection</p>
+      <h2>Players</h2>
+    </div>
     <ul class="state-list">
       {% for player in state_view.players %}
         <li><code>{{ player.player_id }}</code> · {{ player.name }} · {{ player.team }}</li>
