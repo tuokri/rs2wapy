@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "revoke",
+    "uniqueid": "{{UNIQUE_ID_2}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/bans"
+}

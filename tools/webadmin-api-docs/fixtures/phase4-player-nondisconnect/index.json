@@ -1,0 +1,155 @@
+{
+  "captures": [
+    {
+      "name": "player-nondisconnect-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-nondisconnect-login-page.request.json",
+      "response": "player-nondisconnect-login-page.html"
+    },
+    {
+      "name": "player-nondisconnect-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-nondisconnect-login-submit.request.json",
+      "response": "player-nondisconnect-login-submit.html"
+    },
+    {
+      "name": "player-nondisconnect-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-nondisconnect-before.request.json",
+      "response": "player-nondisconnect-before.html"
+    },
+    {
+      "name": "player-whisper",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-whisper.request.json",
+      "response": "player-whisper.html"
+    },
+    {
+      "name": "player-swapteam",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-swapteam.request.json",
+      "response": "player-swapteam.html"
+    },
+    {
+      "name": "player-swapteam-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-swapteam-restore.request.json",
+      "response": "player-swapteam-restore.html"
+    },
+    {
+      "name": "player-makemember",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-makemember.request.json",
+      "response": "player-makemember.html"
+    },
+    {
+      "name": "player-members-after-add",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-members-after-add.request.json",
+      "response": "player-members-after-add.html"
+    },
+    {
+      "name": "player-cancelmembership-cleanup",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-cancelmembership-cleanup.request.json",
+      "response": "player-cancelmembership-cleanup.html"
+    },
+    {
+      "name": "player-members-after-cleanup",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-members-after-cleanup.request.json",
+      "response": "player-members-after-cleanup.html"
+    },
+    {
+      "name": "player-nondisconnect-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-nondisconnect-logout.request.json",
+      "response": "player-nondisconnect-logout.html"
+    }
+  ],
+  "failures": [
+    {
+      "route": "player-nondisconnect",
+      "error": "temporary membership did not appear in the members page"
+    }
+  ]
+}

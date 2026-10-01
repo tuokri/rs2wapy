@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "update",
+    "gametype": "GreenMenMod.GMGameInfoSupremacy"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/change"
+}

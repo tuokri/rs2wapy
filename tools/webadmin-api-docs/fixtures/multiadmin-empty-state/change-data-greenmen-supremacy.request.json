@@ -1,0 +1,8 @@
+{
+  "form": {
+    "ajax": "1",
+    "gametype": "GreenMenMod.GMGameInfoSupremacy"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/change/data"
+}

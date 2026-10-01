@@ -1,0 +1,9 @@
+{
+  "form": {
+    "password": "{{REDACTED}}",
+    "password_hash": "{{REDACTED}}",
+    "username": "{{REDACTED}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/"
+}

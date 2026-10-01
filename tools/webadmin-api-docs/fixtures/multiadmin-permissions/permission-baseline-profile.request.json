@@ -1,0 +1,7 @@
+{
+  "form": {
+    "adminid": "{{ADMIN_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/multiadmin"
+}

@@ -1,0 +1,98 @@
+{
+  "captures": [
+    {
+      "name": "console-log-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-login-page.request.json",
+      "response": "console-log-login-page.html"
+    },
+    {
+      "name": "console-log-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-login-submit.request.json",
+      "response": "console-log-login-submit.html"
+    },
+    {
+      "name": "console-log-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-baseline.request.json",
+      "response": "console-log-baseline.html"
+    },
+    {
+      "name": "console-log-help",
+      "method": "POST",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-help.request.json",
+      "response": "console-log-help.html"
+    },
+    {
+      "name": "console-log-status",
+      "method": "POST",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-status.request.json",
+      "response": "console-log-status.html"
+    },
+    {
+      "name": "console-log-version",
+      "method": "POST",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-version.request.json",
+      "response": "console-log-version.html"
+    },
+    {
+      "name": "console-log-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "console-log-logout.request.json",
+      "response": "console-log-logout.html"
+    }
+  ],
+  "failures": []
+}

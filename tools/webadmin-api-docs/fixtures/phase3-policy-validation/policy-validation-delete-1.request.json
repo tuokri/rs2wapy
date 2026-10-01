@@ -1,0 +1,10 @@
+{
+  "form": {
+    "action": "modify",
+    "delete": "1",
+    "ipmask": "{{IP_ADDRESS_2}}",
+    "policy": "ALLOW"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy"
+}

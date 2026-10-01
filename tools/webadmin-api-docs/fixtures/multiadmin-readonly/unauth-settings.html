@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Login</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/general</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Login</h2>
+<p id="pageDescription">Log in using the administrator username and password. Cookies must be enabled for this site.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+<div id="content">
+<form id="loginform" method="post" action="/ServerAdmin/settings/general" autocomplete="off">
+<fieldset>
+<legend>Login</legend>
+<input type="hidden" name="token" value="{{REDACTED}}" />
+<input type="hidden" id="password_hash" name="password_hash" value="{{REDACTED}}" />
+<dl>
+	<dt><label for="username">Username</label></dt>
+	<dd><input type="text" id="username" name="username" value="{{REDACTED}}" /></dd>
+	<dt><label for="password">Password</label></dt>
+	<dd><input type="password" id="password" name="password" value="{{REDACTED}}" /></dd>
+	<dt><label for="remember" title="Duration of inactivity before you need to log in again.">Remember</label></dt>
+	<dd><select name="remember">
+		<option value="0">Until next map load</option>
+		<option value="-1" selected="selected">Session</option>
+		<!-- Number of seconds -->
+		<option value="1800">30 minutes</option>
+		<option value="3600">1 hour</option>
+		<option value="86400">1 day</option>
+		<option value="604800">1 week</option>
+		<option value="2678400">1 month</option>
+	</select></dd>
+	<dd><button type="submit">login</button></dd>
+</dl>
+</fieldset>
+</form>
+</div>
+<script type="text/javascript" src="/images/sha1.js?gzip"></script>
+<script type="text/javascript">
+// <![CDATA[
+var hashAlg = "sha1";
+$(document).ready(function(){
+	if (hashAlg != "sha1") {
+		return;
+	}
+	$('#loginform').submit(function(){
+		var hashme = $('#password').val()+$('#username').val();
+		$('#password_hash').val("$sha1$"+hex_sha1(hashme));
+		$('#password').val("");
+		return true;
+	});
+});
+// ]]>
+</script>
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

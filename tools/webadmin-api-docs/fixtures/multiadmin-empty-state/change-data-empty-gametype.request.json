@@ -1,0 +1,7 @@
+{
+  "form": {
+    "ajax": "1"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/change/data"
+}

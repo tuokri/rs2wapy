@@ -1,0 +1,150 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "form-membership-before-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-before-players.request.json",
+      "response": "form-membership-before-players.html"
+    },
+    {
+      "name": "form-membership-before-members",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-before-members.request.json",
+      "response": "form-membership-before-members.html"
+    },
+    {
+      "name": "form-membership-create",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-create.request.json",
+      "response": "form-membership-create.html"
+    },
+    {
+      "name": "form-membership-after-create-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-after-create-players.request.json",
+      "response": "form-membership-after-create-players.html"
+    },
+    {
+      "name": "form-membership-after-create-members",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-after-create-members.request.json",
+      "response": "form-membership-after-create-members.html"
+    },
+    {
+      "name": "form-membership-cancel",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-cancel.request.json",
+      "response": "form-membership-cancel.html"
+    },
+    {
+      "name": "form-membership-final-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-final-players.request.json",
+      "response": "form-membership-final-players.html"
+    },
+    {
+      "name": "form-membership-final-members",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-final-members.request.json",
+      "response": "form-membership-final-members.html"
+    },
+    {
+      "name": "form-membership-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-membership-logout.request.json",
+      "response": "form-membership-logout.html"
+    }
+  ],
+  "failures": []
+}

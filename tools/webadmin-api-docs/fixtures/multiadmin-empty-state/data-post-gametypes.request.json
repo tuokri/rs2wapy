@@ -1,0 +1,7 @@
+{
+  "form": {
+    "type": "gametypes"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/data"
+}

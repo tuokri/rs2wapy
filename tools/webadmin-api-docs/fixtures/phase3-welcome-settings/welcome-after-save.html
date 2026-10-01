@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Welcome Screen</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/general/welcome</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Welcome Screen</h2>
+<p id="pageDescription">Change the content of the screen shown when players join.</p>
+</div>
+
+<div id="messages">
+
+
+</div>
+
+
+<div id="content">
+
+<form method="post" action="/ServerAdmin/settings/general/welcome">
+<fieldset>
+<legend>Welcome Screen Settings</legend>
+
+<div id="WelcomePageSettings">
+
+<div title="Banner image" id="secBanner">
+    <label for="BannerLink">Banner Link:</label>
+    <input type="text" id="BannerLink" name="BannerLink" value="" size="60" /> <br />
+    <img src="" id="BannerLinkImg" alt="Banner shown on the welcome page." /> 
+</div>
+
+<div title="Clan motto" id="secMotto">
+    <label for="ClanMotto">Clan Motto:</label>
+    <textarea name="ClanMotto" id="ClanMotto" rows="6" cols="60" style="color: #FFFFFF;">Rising Storm 2: Vietnam Server</textarea>
+    <label for="ClanMottoColor">Clan Motto Color</label>
+    <input type="text" id="ClanMottoColor" name="ClanMottoColor" value="#FFFFFF" class="colorSetting"  size="7" />
+</div>
+
+<div title="Message of the day" id="secMotd">
+    <label for="ServerMOTD">MOTD:</label>
+    <textarea name="ServerMOTD" id="ServerMOTD" rows="6" cols="60" maxlength="1254" style="color: #FFFFFF;">mock-doc-20260926-welcome</textarea>
+    <label for="ServerMOTDColor">MOTD Color:</label>
+    <input type="text" id="ServerMOTDColor" name="ServerMOTDColor" value="#FFFFFF" class="colorSetting"  size="7" />
+</div>
+
+<div title="Web link" id="secWebLink">
+    <label for="WebLink">Web Link:</label>
+    <input type="text" id="WebLink" name="WebLink" value="https://discord.gg/rs2vietnam"  style="color: #FFFFFF;"  size="60" />
+    <label for="WebLinkColor">Link Color:</label>
+    <input type="text" id="WebLinkColor" name="WebLinkColor" value="#FFFFFF" class="colorSetting"  size="7" />
+</div>
+
+</div>
+
+<div title="Enable Welcome Screen Checkbox" id="secWelcomeScreenToggle">
+    <label for="tglWelcomeScreen">Enable Welcome Screen:</label>
+    <input type="checkbox" onClick="UpdateToggle()" id="tglWelcomeScreen" name="tglWelcomeScreen" value="1" checked=&quot;true&quot; />
+</div>
+
+<input type="hidden" name="TBVal" id="TBVal" value="0" />
+
+<input type="hidden" name="liveAdjust" value="1" id="liveAdjust" />
+
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
+</fieldset>
+</form>
+
+</div>
+
+<script type="text/javascript">
+// <![CDATA[
+
+$(document).ready(function() {
+    $('#BannerLink').change(function() {
+        $('#BannerLinkImg').attr('src', $('#BannerLink').val());
+    });
+    $('input.colorSetting').change(function() {
+        var id = this.id.replace(/(Color)$/, "");
+        $('#'+id).css('color', $(this).val());
+    });
+    $('input.colorSetting').hide();
+    $('input.colorSetting').each(function(idx, elm) {
+        var jelm = $(elm);
+        var selBtn = $('<div class="colorSelector"><div></div></div>');
+        jelm.before(selBtn);
+        var selBtnBg = $('div', selBtn);
+        selBtnBg.css('backgroundColor', jelm.val());
+        selBtn.ColorPicker({
+            onBeforeShow: function() {
+                selBtn.ColorPickerSetColor(jelm.val());
+            },
+            onChange: function (hsb, hex, rgb) {
+                jelm.val('#'+hex);
+                jelm.change();
+                selBtnBg.css('backgroundColor', jelm.val());
+            },
+            onSubmit: function(hsb, hex, rgb, el) {
+                jelm.val('#'+hex);
+                jelm.change();
+                selBtn.ColorPickerHide();
+            }
+        });
+    });
+
+    UpdateToggle();
+});
+
+function UpdateToggle()
+{
+    if(document.getElementById("tglWelcomeScreen").checked)
+    {
+        document.getElementById("TBVal").value = "1";
+    }
+    else
+    {
+        document.getElementById("TBVal").value = "0";
+    }
+}
+
+// ]]>
+</script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

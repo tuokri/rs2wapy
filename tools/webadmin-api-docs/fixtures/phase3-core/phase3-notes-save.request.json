@@ -1,0 +1,9 @@
+{
+  "form": {
+    "action": "save",
+    "ajax": "1",
+    "notes": "mock-doc-20260926-phase3"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/data"
+}

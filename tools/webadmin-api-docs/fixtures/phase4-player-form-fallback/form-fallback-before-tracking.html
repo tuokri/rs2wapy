@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Tracking</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/policy/tracking</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Tracking</h2>
+<p id="pageDescription">Overview of players being tracked.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+
+<div id="content">
+
+<fieldset>
+	<legend>Tracking</legend>
+	<div id="settingsWrapper">
+		<div id="Tab_0" class="SettingsGroup">
+			<h4>Overview</h4>
+			<dl>
+			<form method="post" action="/ServerAdmin/policy/tracking">
+	<input type="hidden" name="action" id="action" value="" />
+	<input type="hidden" name="details" id="details" value="" />
+	<input type="hidden" name="uniqueid" id="uniqueid" value="{{UNIQUE_ID_3}}" />
+	<input type="hidden" name="playername" id="playername" value="" />
+	<input type="hidden" name="noteid" id="noteid" value="" />
+	<input type="hidden" name="__CurrentTabIndex" id="__CurrentTabIndex" value="0" />
+	<input type="hidden" name="__Submitter" id="__Submitter" value="" />
+    <input type="hidden" name="__FirstVisibleRowIndex" id="__FirstVisibleRowIndex" value="" />
+</form>
+
+<table id="tracking" class="grid">
+	
+	<tbody>
+		<tr>
+			<th>#</th>
+			<th nowrap>Player name</th>
+			<th nowrap title="The unique ID for this game account.">Unique ID</th>
+			<th nowrap title="The Steam community ID.">Steam ID</th>
+			<th nowrap>Alias</th>
+			<th nowrap># K/S/B</th>
+			<th nowrap># Notes</th>
+			<th nowrap>Created</th>
+			<th nowrap># Connects</th>
+			<th nowrap>Last Seen</th>
+			<th colspan="2">Actions</th>
+		</tr>
+		<tr>
+    <input type="hidden" name="__UniqueId_1" id="__UniqueId_1" value="{{UNIQUE_ID_3}}" />
+    <input type="hidden" name="__PlayerName_1" id="__PlayerName_1" value="{{PLAYER_1}}" />
+	<td nowrap class="center">1</td>
+	<td nowrap>{{PLAYER_1}}</td>
+	<td nowrap class="center">{{UNIQUE_ID_1}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/23385/" target="_blank">23385</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/1/0</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/09/26<br />21:20</td>
+	<td nowrap class="center">4</td>
+	<td nowrap class="center">2026/09/30<br />19:20</td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_1" id="__Action_1">
+			<option value="showdetails">Details</option><option value="deleteentry">Delete Entry</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_1" value="1">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_2" id="__UniqueId_2" value="{{UNIQUE_ID_3}}" />
+    <input type="hidden" name="__PlayerName_2" id="__PlayerName_2" value="{{PLAYER_1}}" />
+	<td nowrap class="center">2</td>
+	<td nowrap>{{PLAYER_1}}</td>
+	<td nowrap class="center">{{UNIQUE_ID_2}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_4}}/" target="_blank">{{UNIQUE_ID_4}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/1/0</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/09/08<br />21:22</td>
+	<td nowrap class="center">4</td>
+	<td nowrap class="center">2026/09/08<br />21:42</td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_2" id="__Action_2">
+			<option value="showdetails">Details</option><option value="deleteentry">Delete Entry</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_2" value="2">go</button>
+	</td>
+</tr>
+
+	</tbody>
+</table>
+
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+	
+});
+
+function Submit(){
+	$($('input[name=__Submitter]')[0].form).submit();
+}
+
+function ShowConfirmDialog(msg, callback){
+	messageConfirm(msg, function(accept){
+		if (accept){
+			callback();
+		}
+	});
+}
+
+$('button[name=__Go]').click(function(){
+    var vIndex = $(this).val();
+	var vUniqueId = $('input[name=__UniqueId_'+vIndex+']').val();
+	var vPlayerName = $('input[name=__PlayerName_'+vIndex+']').val();
+	var vAction = $('select[name=__Action_'+vIndex+']').val();
+    $('input[name=action]').val(vAction);
+    $('input[name=uniqueid]').val(vUniqueId);
+    $('input[name=playername]').val(vPlayerName);
+
+	if ((vAction.length > 0) && (vUniqueId.length > 0)){
+		if (vAction == 'showdetails'){
+			Submit();
+		} else if (vAction == 'deleteentry'){
+			ShowConfirmDialog('Delete entry for player %s?'.replace('%s', vPlayerName), Submit);
+		} else if (vAction == 'attachalias'){
+			ShowInputDialog('Alias for player %s'.replace('%s', vPlayerName), '', Submit);
+		} else if (vAction == 'deletealias'){
+			ShowConfirmDialog('Delete alias for player %s?'.replace('%s', vPlayerName), Submit);
+		} else if (vAction == 'attachnote'){
+			ShowTextDialog('Note for player %s'.replace('%s', vPlayerName), '', Submit);
+		}
+	}
+});
+
+//]]>
+</script>
+
+<script type="text/javascript" src="/images/dialog_kick.js?gzip"></script>
+<script type="text/javascript" src="/images/dialog_picktemplate.js?gzip"></script>
+<script type="text/javascript" src="/images/dialog_input.js?gzip"></script>
+<script type="text/javascript" src="/images/dialog_text.js?gzip"></script>
+<script type="text/javascript" src="/images/paging.js?gzip"></script>
+
+			</dl>
+		</div>
+		<div id="Tab_1" class="SettingsGroup">
+			<h4>Settings</h4>
+			<dl>
+			
+			</dl>
+		</div>
+	</div>
+</fieldset>
+
+</div>
+
+<script type="text/javascript" src="/images/dynamictabs.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "add",
+    "ipmask": "{{IP_ADDRESS_2}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy"
+}

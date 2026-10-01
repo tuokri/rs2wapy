@@ -1,0 +1,334 @@
+{
+  "captures": [
+    {
+      "name": "empty-primary-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "empty-primary-login-page.request.json",
+      "response": "empty-primary-login-page.html"
+    },
+    {
+      "name": "empty-primary-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "empty-primary-login-submit.request.json",
+      "response": "empty-primary-login-submit.html"
+    },
+    {
+      "name": "change-data-skirmish",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-skirmish.request.json",
+      "response": "change-data-skirmish.html"
+    },
+    {
+      "name": "change-update-skirmish",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "change-update-skirmish.request.json",
+      "response": "change-update-skirmish.html"
+    },
+    {
+      "name": "change-data-greenmen-skirmish",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-greenmen-skirmish.request.json",
+      "response": "change-data-greenmen-skirmish.html"
+    },
+    {
+      "name": "change-update-greenmen-skirmish",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "change-update-greenmen-skirmish.request.json",
+      "response": "change-update-greenmen-skirmish.html"
+    },
+    {
+      "name": "change-data-supremacy",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-supremacy.request.json",
+      "response": "change-data-supremacy.html"
+    },
+    {
+      "name": "change-update-supremacy",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "change-update-supremacy.request.json",
+      "response": "change-update-supremacy.html"
+    },
+    {
+      "name": "change-data-greenmen-supremacy",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-greenmen-supremacy.request.json",
+      "response": "change-data-greenmen-supremacy.html"
+    },
+    {
+      "name": "change-update-greenmen-supremacy",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "change-update-greenmen-supremacy.request.json",
+      "response": "change-update-greenmen-supremacy.html"
+    },
+    {
+      "name": "change-data-territories",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-territories.request.json",
+      "response": "change-data-territories.html"
+    },
+    {
+      "name": "change-update-territories",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "change-update-territories.request.json",
+      "response": "change-update-territories.html"
+    },
+    {
+      "name": "change-data-greenmen-territories",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-greenmen-territories.request.json",
+      "response": "change-data-greenmen-territories.html"
+    },
+    {
+      "name": "change-update-greenmen-territories",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "change-update-greenmen-territories.request.json",
+      "response": "change-update-greenmen-territories.html"
+    },
+    {
+      "name": "change-data-empty-gametype",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "change-data-empty-gametype.request.json",
+      "response": "change-data-empty-gametype.html"
+    },
+    {
+      "name": "data-post-gametypes",
+      "method": "POST",
+      "url": "{{BASE_URL}}/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "data-post-gametypes.request.json",
+      "response": "data-post-gametypes.html"
+    },
+    {
+      "name": "current-sort-name",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current?sortby=name&reverse=",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "current-sort-name.request.json",
+      "response": "current-sort-name.html"
+    },
+    {
+      "name": "current-sort-name-reverse",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current?sortby=name&reverse=1",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "current-sort-name-reverse.request.json",
+      "response": "current-sort-name-reverse.html"
+    },
+    {
+      "name": "players-sort-ping",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players?sortby=ping&reverse=",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "players-sort-ping.request.json",
+      "response": "players-sort-ping.html"
+    },
+    {
+      "name": "empty-secondary-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "empty-secondary-login-page.request.json",
+      "response": "empty-secondary-login-page.html"
+    },
+    {
+      "name": "empty-secondary-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "empty-secondary-login-submit.request.json",
+      "response": "empty-secondary-login-submit.html"
+    },
+    {
+      "name": "chat-primary-poll",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "chat-primary-poll.request.json",
+      "response": "chat-primary-poll.txt"
+    },
+    {
+      "name": "chat-secondary-poll",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "chat-secondary-poll.request.json",
+      "response": "chat-secondary-poll.txt"
+    },
+    {
+      "name": "empty-primary-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "empty-primary-logout.request.json",
+      "response": "empty-primary-logout.html"
+    },
+    {
+      "name": "empty-secondary-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "empty-secondary-logout.request.json",
+      "response": "empty-secondary-logout.html"
+    }
+  ],
+  "failures": []
+}

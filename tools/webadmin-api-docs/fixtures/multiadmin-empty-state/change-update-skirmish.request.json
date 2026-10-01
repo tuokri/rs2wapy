@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "update",
+    "gametype": "ROGame.ROGameInfoSkirmish"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/change"
+}

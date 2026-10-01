@@ -1,0 +1,203 @@
+{
+  "captures": [
+    {
+      "name": "permission-primary-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-primary-login-page.request.json",
+      "response": "permission-primary-login-page.html"
+    },
+    {
+      "name": "permission-primary-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-primary-login-submit.request.json",
+      "response": "permission-primary-login-submit.html"
+    },
+    {
+      "name": "permission-baseline-profile",
+      "method": "POST",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-baseline-profile.request.json",
+      "response": "permission-baseline-profile.html"
+    },
+    {
+      "name": "permission-enable",
+      "method": "POST",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-enable.request.json",
+      "response": "permission-enable.html"
+    },
+    {
+      "name": "permission-restricted-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-restricted-login-page.request.json",
+      "response": "permission-restricted-login-page.html"
+    },
+    {
+      "name": "permission-restricted-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-restricted-login-submit.request.json",
+      "response": "permission-restricted-login-submit.html"
+    },
+    {
+      "name": "permission-allowed-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-allowed-current.request.json",
+      "response": "permission-allowed-current.html"
+    },
+    {
+      "name": "permission-allowed-session-bans",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-allowed-session-bans.request.json",
+      "response": "permission-allowed-session-bans.html"
+    },
+    {
+      "name": "permission-allowed-welcome",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-allowed-welcome.request.json",
+      "response": "permission-allowed-welcome.html"
+    },
+    {
+      "name": "permission-denied-gametypes",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 403,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-denied-gametypes.request.json",
+      "response": "permission-denied-gametypes.html"
+    },
+    {
+      "name": "permission-denied-multiadmin",
+      "method": "GET",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 403,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-denied-multiadmin.request.json",
+      "response": "permission-denied-multiadmin.html"
+    },
+    {
+      "name": "permission-disable",
+      "method": "POST",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-disable.request.json",
+      "response": "permission-disable.html"
+    },
+    {
+      "name": "permission-restricted-after-disable",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-restricted-after-disable.request.json",
+      "response": "permission-restricted-after-disable.html"
+    },
+    {
+      "name": "permission-restored-profile",
+      "method": "POST",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-restored-profile.request.json",
+      "response": "permission-restored-profile.html"
+    },
+    {
+      "name": "permission-primary-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permission-primary-logout.request.json",
+      "response": "permission-primary-logout.html"
+    }
+  ],
+  "failures": []
+}

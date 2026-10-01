@@ -1,0 +1,304 @@
+{
+  "captures": [
+    {
+      "name": "primary-sha1-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-sha1-login-page.request.json",
+      "response": "primary-sha1-login-page.html"
+    },
+    {
+      "name": "primary-sha1-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-sha1-login-submit.request.json",
+      "response": "primary-sha1-login-submit.html"
+    },
+    {
+      "name": "primary-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-current.request.json",
+      "response": "primary-current.html"
+    },
+    {
+      "name": "primary-multiadmin",
+      "method": "GET",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-multiadmin.request.json",
+      "response": "primary-multiadmin.html"
+    },
+    {
+      "name": "primary-select-secondary",
+      "method": "POST",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:11 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-select-secondary.request.json",
+      "response": "primary-select-secondary.html"
+    },
+    {
+      "name": "primary-select-disabled",
+      "method": "POST",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:12 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:12 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-select-disabled.request.json",
+      "response": "primary-select-disabled.html"
+    },
+    {
+      "name": "primary-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:12 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:12 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-logout.request.json",
+      "response": "primary-logout.html"
+    },
+    {
+      "name": "primary-after-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:13 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:01:13 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-after-logout.request.json",
+      "response": "primary-after-logout.html"
+    },
+    {
+      "name": "primary-plaintext-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-plaintext-login-page.request.json",
+      "response": "primary-plaintext-login-page.html"
+    },
+    {
+      "name": "primary-plaintext-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-plaintext-login-submit.request.json",
+      "response": "primary-plaintext-login-submit.html"
+    },
+    {
+      "name": "primary-plaintext-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "primary-plaintext-logout.request.json",
+      "response": "primary-plaintext-logout.html"
+    },
+    {
+      "name": "secondary-sha1-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-sha1-login-page.request.json",
+      "response": "secondary-sha1-login-page.html"
+    },
+    {
+      "name": "secondary-sha1-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-sha1-login-submit.request.json",
+      "response": "secondary-sha1-login-submit.html"
+    },
+    {
+      "name": "secondary-get-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-get-current.request.json",
+      "response": "secondary-get-current.html"
+    },
+    {
+      "name": "secondary-get-current/players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-get-current-players.request.json",
+      "response": "secondary-get-current-players.html"
+    },
+    {
+      "name": "secondary-get-policy",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-get-policy.request.json",
+      "response": "secondary-get-policy.html"
+    },
+    {
+      "name": "secondary-get-settings/general",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-get-settings-general.request.json",
+      "response": "secondary-get-settings-general.html"
+    },
+    {
+      "name": "secondary-get-console",
+      "method": "GET",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-get-console.request.json",
+      "response": "secondary-get-console.html"
+    },
+    {
+      "name": "secondary-get-multiadmin",
+      "method": "GET",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-get-multiadmin.request.json",
+      "response": "secondary-get-multiadmin.html"
+    },
+    {
+      "name": "secondary-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "secondary-logout.request.json",
+      "response": "secondary-logout.html"
+    },
+    {
+      "name": "disabled-sha1-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "disabled-sha1-login-page.request.json",
+      "response": "disabled-sha1-login-page.html"
+    },
+    {
+      "name": "disabled-sha1-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "disabled-sha1-login-submit.request.json",
+      "response": "disabled-sha1-login-submit.html"
+    }
+  ],
+  "failures": []
+}

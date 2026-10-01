@@ -1,0 +1,11 @@
+{
+  "form": {
+    "action": "change",
+    "gametype": "ROGame.ROGameInfoTerritories",
+    "map": "VNTE-CuChi",
+    "mutatorGroupCount": "4",
+    "urlextra": ""
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/change"
+}

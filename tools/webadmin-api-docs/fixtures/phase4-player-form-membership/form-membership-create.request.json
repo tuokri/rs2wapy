@@ -1,0 +1,11 @@
+{
+  "form": {
+    "__ExpNumber": "1",
+    "__ExpUnit": "Hour",
+    "__IsAdmin": "0",
+    "action": "makemember",
+    "playerkey": "{{PLAYER_KEY_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players"
+}

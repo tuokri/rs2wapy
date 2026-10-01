@@ -1,0 +1,306 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "{{REDACTED}}",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "initial-reconnect-poll-1",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "initial-reconnect-poll-1.request.json",
+      "response": "initial-reconnect-poll-1.html"
+    },
+    {
+      "name": "kick-ban-permanent-bans-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "kick-ban-permanent-bans-before.request.json",
+      "response": "kick-ban-permanent-bans-before.html"
+    },
+    {
+      "name": "player-kick",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-kick.request.json",
+      "response": "player-kick.html"
+    },
+    {
+      "name": "kick-disconnect-poll-1",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "kick-disconnect-poll-1.request.json",
+      "response": "kick-disconnect-poll-1.html"
+    },
+    {
+      "name": "kick-disconnect-poll-2",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "kick-disconnect-poll-2.request.json",
+      "response": "kick-disconnect-poll-2.html"
+    },
+    {
+      "name": "after-kick-reconnect-poll-1",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-kick-reconnect-poll-1.request.json",
+      "response": "after-kick-reconnect-poll-1.html"
+    },
+    {
+      "name": "after-kick-reconnect-poll-2",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-kick-reconnect-poll-2.request.json",
+      "response": "after-kick-reconnect-poll-2.html"
+    },
+    {
+      "name": "after-kick-reconnect-poll-3",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-kick-reconnect-poll-3.request.json",
+      "response": "after-kick-reconnect-poll-3.html"
+    },
+    {
+      "name": "after-kick-reconnect-poll-4",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-kick-reconnect-poll-4.request.json",
+      "response": "after-kick-reconnect-poll-4.html"
+    },
+    {
+      "name": "after-kick-reconnect-poll-5",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-kick-reconnect-poll-5.request.json",
+      "response": "after-kick-reconnect-poll-5.html"
+    },
+    {
+      "name": "player-banid-permanent",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-banid-permanent.request.json",
+      "response": "player-banid-permanent.html"
+    },
+    {
+      "name": "kick-ban-permanent-bans-after-action",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "kick-ban-permanent-bans-after-action.request.json",
+      "response": "kick-ban-permanent-bans-after-action.html"
+    },
+    {
+      "name": "permanent-ban-revoke",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permanent-ban-revoke.request.json",
+      "response": "permanent-ban-revoke.html"
+    },
+    {
+      "name": "permanent-bans-after-revoke",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permanent-bans-after-revoke.request.json",
+      "response": "permanent-bans-after-revoke.html"
+    },
+    {
+      "name": "after-permanent-ban-reconnect-poll-1",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-permanent-ban-reconnect-poll-1.request.json",
+      "response": "after-permanent-ban-reconnect-poll-1.html"
+    },
+    {
+      "name": "after-permanent-ban-reconnect-poll-2",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-permanent-ban-reconnect-poll-2.request.json",
+      "response": "after-permanent-ban-reconnect-poll-2.html"
+    },
+    {
+      "name": "after-permanent-ban-reconnect-poll-3",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-permanent-ban-reconnect-poll-3.request.json",
+      "response": "after-permanent-ban-reconnect-poll-3.html"
+    },
+    {
+      "name": "after-permanent-ban-reconnect-poll-4",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-permanent-ban-reconnect-poll-4.request.json",
+      "response": "after-permanent-ban-reconnect-poll-4.html"
+    },
+    {
+      "name": "after-permanent-ban-reconnect-poll-5",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-permanent-ban-reconnect-poll-5.request.json",
+      "response": "after-permanent-ban-reconnect-poll-5.html"
+    },
+    {
+      "name": "after-permanent-ban-reconnect-poll-6",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "after-permanent-ban-reconnect-poll-6.request.json",
+      "response": "after-permanent-ban-reconnect-poll-6.html"
+    },
+    {
+      "name": "logout-kick-ban-actions",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "{{REDACTED}}",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "logout-kick-ban-actions.request.json",
+      "response": "logout-kick-ban-actions.html"
+    }
+  ],
+  "failures": []
+}

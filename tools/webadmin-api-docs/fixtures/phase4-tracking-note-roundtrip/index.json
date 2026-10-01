@@ -1,0 +1,124 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "tracking-note-before-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-before-players.request.json",
+      "response": "tracking-note-before-players.html"
+    },
+    {
+      "name": "tracking-note-baseline-details",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-baseline-details.request.json",
+      "response": "tracking-note-baseline-details.html"
+    },
+    {
+      "name": "tracking-note-attach",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-attach.request.json",
+      "response": "tracking-note-attach.html"
+    },
+    {
+      "name": "tracking-note-after-attach",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-after-attach.request.json",
+      "response": "tracking-note-after-attach.html"
+    },
+    {
+      "name": "tracking-note-delete",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-delete.request.json",
+      "response": "tracking-note-delete.html"
+    },
+    {
+      "name": "tracking-note-final-details",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-final-details.request.json",
+      "response": "tracking-note-final-details.html"
+    },
+    {
+      "name": "tracking-note-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "tracking-note-logout.request.json",
+      "response": "tracking-note-logout.html"
+    }
+  ],
+  "failures": []
+}

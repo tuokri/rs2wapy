@@ -1,0 +1,12 @@
+{
+  "form": {
+    "__ExpNumber": "1",
+    "__ExpUnit": "Hour",
+    "__IdType": "0",
+    "__Reason": "mock-doc-20260926-phase3",
+    "__UniqueId": "{{UNIQUE_ID_3}}",
+    "action": "add"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/bans"
+}

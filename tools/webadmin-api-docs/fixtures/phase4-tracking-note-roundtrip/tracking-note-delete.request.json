@@ -1,0 +1,10 @@
+{
+  "form": {
+    "action": "deletenote",
+    "details": "1",
+    "noteid": "{{NOTE_ID_1}}",
+    "uniqueid": "{{UNIQUE_ID_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/tracking"
+}

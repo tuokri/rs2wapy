@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "showdetails",
+    "uniqueid": "{{UNIQUE_ID_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/tracking"
+}

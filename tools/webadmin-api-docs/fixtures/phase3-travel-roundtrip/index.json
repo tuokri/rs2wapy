@@ -1,0 +1,231 @@
+{
+  "captures": [
+    {
+      "name": "travel-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-login-page.request.json",
+      "response": "travel-login-page.html"
+    },
+    {
+      "name": "travel-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:42 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:42 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-login-submit.request.json",
+      "response": "travel-login-submit.html"
+    },
+    {
+      "name": "travel-current-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:42 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:42 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-current-baseline.request.json",
+      "response": "travel-current-baseline.html"
+    },
+    {
+      "name": "travel-change-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:42 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:42 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-change-baseline.request.json",
+      "response": "travel-change-baseline.html"
+    },
+    {
+      "name": "travel-to-alternate",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:43 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:43 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-to-alternate.request.json",
+      "response": "travel-to-alternate.html"
+    },
+    {
+      "name": "travel-alternate-check-1",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-alternate-check-1.request.json",
+      "response": "travel-alternate-check-1.txt"
+    },
+    {
+      "name": "travel-alternate-check-2",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-alternate-check-2.request.json",
+      "response": "travel-alternate-check-2.txt"
+    },
+    {
+      "name": "travel-alternate-check-3",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-alternate-check-3.request.json",
+      "response": "travel-alternate-check-3.txt"
+    },
+    {
+      "name": "travel-alternate-check-4",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-alternate-check-4.request.json",
+      "response": "travel-alternate-check-4.txt"
+    },
+    {
+      "name": "travel-alternate-check-5",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-alternate-check-5.request.json",
+      "response": "travel-alternate-check-5.txt"
+    },
+    {
+      "name": "travel-change-after-alternate",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:50 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:50 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-change-after-alternate.request.json",
+      "response": "travel-change-after-alternate.html"
+    },
+    {
+      "name": "travel-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:51 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:51 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-restore.request.json",
+      "response": "travel-restore.html"
+    },
+    {
+      "name": "travel-restore-check-1",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-restore-check-1.request.json",
+      "response": "travel-restore-check-1.txt"
+    },
+    {
+      "name": "travel-restore-check-2",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-restore-check-2.request.json",
+      "response": "travel-restore-check-2.txt"
+    },
+    {
+      "name": "travel-restore-check-3",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-restore-check-3.request.json",
+      "response": "travel-restore-check-3.txt"
+    },
+    {
+      "name": "travel-restore-check-4",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 503,
+      "headers": {},
+      "request": "travel-restore-check-4.request.json",
+      "response": "travel-restore-check-4.txt"
+    },
+    {
+      "name": "travel-restore-check-5",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-restore-check-5.request.json",
+      "response": "travel-restore-check-5.txt"
+    },
+    {
+      "name": "travel-change-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:59 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:30:59 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-change-after-restore.request.json",
+      "response": "travel-change-after-restore.html"
+    },
+    {
+      "name": "travel-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "authcred={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:31:00 GMT\"; max-age=1800\nauthtimeout={{REDACTED}}; path=/ServerAdmin/; expires=\"Sat, 26-Sep-2026 18:31:00 GMT\"; max-age=1800",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "travel-logout.request.json",
+      "response": "travel-logout.html"
+    }
+  ],
+  "failures": []
+}

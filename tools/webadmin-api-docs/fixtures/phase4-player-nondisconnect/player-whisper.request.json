@@ -1,0 +1,10 @@
+{
+  "form": {
+    "__Input": "mock-doc-20260926-player",
+    "action": "whisper",
+    "ajax": "1",
+    "playerkey": "{{PLAYER_KEY_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players/data"
+}

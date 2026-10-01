@@ -1,0 +1,9 @@
+{
+  "form": {
+    "ajax": "1",
+    "message": "RS2 WebAdmin documentation probe {{TIMESTAMP}}",
+    "teamsay": "-1"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/chat"
+}

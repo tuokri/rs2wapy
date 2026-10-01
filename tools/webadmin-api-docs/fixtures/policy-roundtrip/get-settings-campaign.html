@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Campaign</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/campaign</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Campaign</h2>
+<p id="pageDescription">Change the region configuration for the campaign mode.</p>
+</div>
+
+<div id="messages">
+
+
+</div>
+
+
+<form method="post" action="/ServerAdmin/settings/campaign">
+	<input type="hidden" name="__CurrentTabIndex" id="__CurrentTabIndex" value="0" />
+</form>
+
+<div id="content">
+
+<fieldset>
+	<div id="settingsWrapper">
+		<div id="Tab_0" class="SettingsGroup">
+			<h4>Settings</h4>
+			<dl>
+				<form method="post" action="/ServerAdmin/settings/campaign" id="campaignsettingsform">
+					<input type="hidden" name="__CurrentTabIndex" id="__CurrentTabIndex" value="Tab_0" />
+					<dl id="settingsWrapper">
+<dt title="Setting ID: bCampaignGame" id="settings_bCampaignGame_label" name="settings_bCampaignGame_label"><label for="settings_bCampaignGame" title="This is a MP Campaign game, or not">Campaign Game</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bCampaignGame" value="0" id="settings_bCampaignGame_0" checked="checked"  /><label for="settings_bCampaignGame_0">Disabled</label>
+<input type="radio" name="settings_bCampaignGame" value="1" id="settings_bCampaignGame_1"   /><label for="settings_bCampaignGame_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: CampaignLength" id="settings_CampaignLength_label" name="settings_CampaignLength_label"><label for="settings_CampaignLength" title="This determines the starting combat power to adjust the length of a campaign. If set as custom then the Starting Combat Power field setting is used. WARNING: Changing this setting will reset the current active Campaign!">Campaign Length - (WARNING: Forces Campaign Reset)</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_CampaignLength" value="0" id="settings_CampaignLength_0" checked="checked"  /><label for="settings_CampaignLength_0">Normal</label>
+<input type="radio" name="settings_CampaignLength" value="1" id="settings_CampaignLength_1"   /><label for="settings_CampaignLength_1">Long</label>
+
+  
+</dd>
+<dt title="Setting ID: CampaignRegionVoteTime" id="settings_CampaignRegionVoteTime_label" name="settings_CampaignRegionVoteTime_label"><label for="settings_CampaignRegionVoteTime" title="How long to wait for all players to vote before using current majority">Region Vote Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignRegionVoteTime" name="settings_CampaignRegionVoteTime" value="45.0000" title="Minimum: 5.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignRegionVoteTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 5.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: CampaignFirstRegionVoteTime" id="settings_CampaignFirstRegionVoteTime_label" name="settings_CampaignFirstRegionVoteTime_label"><label for="settings_CampaignFirstRegionVoteTime" title="How long to wait for all players to vote before using current majority when the server just started a campaign for the first time">First Region Vote Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignFirstRegionVoteTime" name="settings_CampaignFirstRegionVoteTime" value="45.0000" title="Minimum: 5.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignFirstRegionVoteTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 5.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: CampaignRegionMapVoteTime" id="settings_CampaignRegionMapVoteTime_label" name="settings_CampaignRegionMapVoteTime_label"><label for="settings_CampaignRegionMapVoteTime" title="How long to wait for all players to vote before using current majority">Region Map Vote Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignRegionMapVoteTime" name="settings_CampaignRegionMapVoteTime" value="15.0000" title="Minimum: 5.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignRegionMapVoteTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 5.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: CampaignSpecialAbilityVoteTime" id="settings_CampaignSpecialAbilityVoteTime_label" name="settings_CampaignSpecialAbilityVoteTime_label"><label for="settings_CampaignSpecialAbilityVoteTime" title="How long to wait for all players to vote before using current majority">Special Ability (HCMT or S&amp;D) Vote Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignSpecialAbilityVoteTime" name="settings_CampaignSpecialAbilityVoteTime" value="15.0000" title="Minimum: 5.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignSpecialAbilityVoteTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 5.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: CampaignFactionVoteTime" id="settings_CampaignFactionVoteTime_label" name="settings_CampaignFactionVoteTime_label"><label for="settings_CampaignFactionVoteTime" title="How long to wait for all players to vote before using current majority">Faction Vote Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignFactionVoteTime" name="settings_CampaignFactionVoteTime" value="15.0000" title="Minimum: 5.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignFactionVoteTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 5.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: CampaignVotingDelay" id="settings_CampaignVotingDelay_label" name="settings_CampaignVotingDelay_label"><label for="settings_CampaignVotingDelay" title="How long to wait after the map is won before starting the Attack/Defend or Region vote">Voting Delay</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignVotingDelay" name="settings_CampaignVotingDelay" value="30.0000" title="Minimum: 0.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignVotingDelay');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: CampaignAttackDefendVoteTime" id="settings_CampaignAttackDefendVoteTime_label" name="settings_CampaignAttackDefendVoteTime_label"><label for="settings_CampaignAttackDefendVoteTime" title="How long to wait for all players to vote before using current majority">Attack/Defend Vote Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_CampaignAttackDefendVoteTime" name="settings_CampaignAttackDefendVoteTime" value="15.0000" title="Minimum: 0.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_CampaignAttackDefendVoteTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+
+					<div id="actions1">
+					<button type="submit" name="save" value="save">Save Settings</button>
+					<button type="submit" name="resetcampaign" value="reset">Reset Campaign</button>
+					</div>
+				</form>
+			</dl>
+		</div>
+		<div id="Tab_1" class="SettingsGroup">
+			<h4>Region Maps</h4>
+			<dl>
+			<div id="TheaterSelection">
+				<h3>Current Campaign</h3>
+				<select id="TheaterSelectionDropDown" onChange="changeVisibleTheater(this.selectedIndex);">
+				  <option value="0">Vietnam Campaign</option>
+				</select>
+			</div>
+
+				<div id="vncampaignmap" class="campaignmap">
+					<h3 class="campaigntitle">Vietnam Region map</h3>
+
+					<img id="vncampaignmap_overlay" class="campaignmap_overlay" src="/images/blank.gif" usemap="#campaignmap_coords" width="350" height="350" />
+					<map id="campaignmap_coords" name="campaignmap_coords" class="campaignmap_coords">
+						<area shape="poly" coords="149,11,171,33,183,18,170,4" href="#vnregion_0" alt="QuangTri" title="QuangTri"   />
+						<area shape="poly" coords="195,70,223,51,184,17,170,31,177,53,177,54" href="#vnregion_1" alt="QuangNam" title="QuangNam"   />
+						<area shape="poly" coords="194,70,195,79,210,77,220,103,249,102,250,98,222,51" href="#vnregion_2" alt="QuangNgai" title="QuangNgai"   />
+						<area shape="poly" coords="194,79,182,119,191,177,231,196,240,149,209,78" href="#vnregion_3" alt="Pleiku" title="Pleiku"   />
+						<area shape="poly" coords="219,102,239,149,230,196,253,206,263,169,250,102" href="#vnregion_4" alt="PhuYen" title="PhuYen"   />
+						<area shape="poly" coords="190,178,170,199,211,248,252,206,191,177" href="#vnregion_5" alt="TuyenDoc" title="TuyenDoc"   />
+						<area shape="poly" coords="169,200,121,221,137,244,165,232,182,213,169,199" href="#vnregion_6" alt="BinhLong" title="BinhLong"   />
+						<area shape="poly" coords="138,245,153,273,171,268,165,232,137,245" href="#vnregion_7" alt="Saigon" title="Saigon"   />
+						<area shape="poly" coords="165,231,171,269,211,248,181,213,165,233" href="#vnregion_8" alt="LongKhanh" title="LongKhanh"   />
+						<area shape="poly" coords="136,245,94,248,152,272,137,246" href="#vnregion_9" alt="KienPhong" title="KienPhong"   />
+						<area shape="poly" coords="93,248,137,302,152,274,94,249" href="#vnregion_10" alt="VinhLong" title="VinhLong"   />
+						<area shape="poly" coords="92,249,68,266,82,338,137,303,93,248" href="#vnregion_11" alt="AnGiang" title="AnGiang"   />
+					</map>
+				</div>
+
+				<form method="post" action="/ServerAdmin/settings/campaign" id="campaigneditform">
+					<input type="hidden" name="__CurrentTabIndex" id="__CurrentTabIndex" value="Tab_1" />
+					<input type="hidden" name="campaignname" value="" />
+					<input type="hidden" name="regionCount" value="" />
+					<input type="hidden" id="currentTheater" name="currentTheater" value="" />
+					<input type="hidden" id="viewingTheater" name="viewingTheater" value= />
+
+					<div>
+						<fieldset id="allmapsSection">
+						<legend>Available Maps</legend>
+						<div>
+							<label for="gametype">Gametype</label>
+							<select id="gametype" name="gametype">
+							<option value=""></option>
+							
+							</select>
+							<button type="submit" id="btnselectgt">show available maps</button>
+						</div>
+
+						<textarea id="allmaps" rows="10" cols="20" readonly="readonly"></textarea>
+						</fieldset>
+
+						<div class="campaignRegions">
+							<div id="vn_regions">
+							<h3>Regions</h3>
+							
+							</div>
+						</div>
+					</div>
+
+					<div id="actions">
+					<button type="submit" name="save" value="save">Save Campaigns</button>
+					<!--
+					<button type="submit" name="delete" value="delete" <%deletable%> >delete campaign</button>
+					<button type="submit" name="activate" value="activate" <%activatable%> >make active</button>
+					-->
+					<button type="submit" name="reset" value="reset">Reset to Defaults</button>
+					</div>
+
+				</form>
+
+			</dl>
+		</div>
+	</div>
+</fieldset>
+
+
+</div>
+
+<script type="text/javascript" src="/images/campaign.js?gzip"></script>
+<script type="text/javascript" src="/images/dynamictabs.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

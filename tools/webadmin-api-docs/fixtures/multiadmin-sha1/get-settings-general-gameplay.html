@@ -1,0 +1,720 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Gameplay</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/general/gameplay</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Gameplay</h2>
+<p id="pageDescription">Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level.</p>
+</div>
+
+<div id="messages">
+
+
+</div>
+
+
+<div id="content">
+
+<form method="post" action="/ServerAdmin/settings/general/gameplay">
+<fieldset>
+<legend>Gameplay Settings</legend>
+
+<div id="settingsWrapper">
+<div id="SG_FriendlyFire" class="SettingsGroup">
+<h4>Friendly Fire</h4>
+<dl>
+<dt title="Setting ID: FriendlyFireArtilleryPunishScale" id="settings_FriendlyFireArtilleryPunishScale_label" name="settings_FriendlyFireArtilleryPunishScale_label"><label for="settings_FriendlyFireArtilleryPunishScale" title="Percentage of friendly artillery damage to apply to the artillery caller's Friendly Fire Damage limit">Artillery Punish Scale</label></dt>
+<dd class="" >
+  <input type="text" id="settings_FriendlyFireArtilleryPunishScale" name="settings_FriendlyFireArtilleryPunishScale" value="0.1000" title="Minimum: 0.0000; Maximum: 10.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireArtilleryPunishScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 10.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: FriendlyFireArtilleryScale" id="settings_FriendlyFireArtilleryScale_label" name="settings_FriendlyFireArtilleryScale_label"><label for="settings_FriendlyFireArtilleryScale" title="Percentage of friendly artillery damage to apply to the damaged friendly player">Artillery Scale</label></dt>
+<dd class=" limited ranked" >
+  <input type="text" id="settings_FriendlyFireArtilleryScale" name="settings_FriendlyFireArtilleryScale" value="1.0000" title="Minimum: 0.1000; Maximum: 1.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireArtilleryScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.1000, max: 1.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism limited"><span>This setting is limited in the current realism mode.<br />
+Original limits: 0.0000 to 10.0000 <br />
+Current limits: 0.1000 to 1.0000 </span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['FriendlyFireArtilleryScale'] = {
+  formName: "settings_FriendlyFireArtilleryScale",
+  min: 0.0000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: FriendlyFireDamageLimit" id="settings_FriendlyFireDamageLimit_label" name="settings_FriendlyFireDamageLimit_label"><label for="settings_FriendlyFireDamageLimit" title="Amount of damage given to friendly players that someone can do before they are punished">Damage Limit</label></dt>
+<dd class="" >
+  <input type="text" id="settings_FriendlyFireDamageLimit" name="settings_FriendlyFireDamageLimit" value="0.0000" title="Minimum: 0.0000; Maximum: 65536.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireDamageLimit');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 65536.0000, step: 1.0000, page: 1.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: FriendlyFireExplosivePunishScale" id="settings_FriendlyFireExplosivePunishScale_label" name="settings_FriendlyFireExplosivePunishScale_label"><label for="settings_FriendlyFireExplosivePunishScale" title="Percentage of friendly explosive damage to apply to the thrower's Friendly Fire Damage limit">Explosive Punish Scale</label></dt>
+<dd class="" >
+  <input type="text" id="settings_FriendlyFireExplosivePunishScale" name="settings_FriendlyFireExplosivePunishScale" value="0.5000" title="Minimum: 0.0000; Maximum: 10.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireExplosivePunishScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 10.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: FriendlyFireExplosiveScale" id="settings_FriendlyFireExplosiveScale_label" name="settings_FriendlyFireExplosiveScale_label"><label for="settings_FriendlyFireExplosiveScale" title="Percentage of friendly explosive damage to apply to the damaged friendly player">Explosive Scale</label></dt>
+<dd class=" limited ranked" >
+  <input type="text" id="settings_FriendlyFireExplosiveScale" name="settings_FriendlyFireExplosiveScale" value="1.0000" title="Minimum: 0.1000; Maximum: 1.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireExplosiveScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.1000, max: 1.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism limited"><span>This setting is limited in the current realism mode.<br />
+Original limits: 0.0000 to 10.0000 <br />
+Current limits: 0.1000 to 1.0000 </span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['FriendlyFireExplosiveScale'] = {
+  formName: "settings_FriendlyFireExplosiveScale",
+  min: 0.0000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: FriendlyFireKillLimit" id="settings_FriendlyFireKillLimit_label" name="settings_FriendlyFireKillLimit_label"><label for="settings_FriendlyFireKillLimit" title="Number of friendly players that someone must kill before they are punished">Kill Limit</label></dt>
+<dd class="" >
+  <input type="text" id="settings_FriendlyFireKillLimit" name="settings_FriendlyFireKillLimit" value="15" title="Minimum: 0; Maximum: 65536"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireKillLimit');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 65536, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: FriendlyFirePunishment" id="settings_FriendlyFirePunishment_label" name="settings_FriendlyFirePunishment_label"><label for="settings_FriendlyFirePunishment" title="The punishment to apply to a player when they exceed either FriendlyFireKillLimit or FriendlyFireDamageLimit(0 = Kick, 1 = Session Ban, 2 = Permanent Ban)">Punishment</label></dt>
+<dd class=" ranked" >
+  <input type="radio" name="settings_FriendlyFirePunishment" value="0" id="settings_FriendlyFirePunishment_0"   /><label for="settings_FriendlyFirePunishment_0">Kick</label>
+<input type="radio" name="settings_FriendlyFirePunishment" value="1" id="settings_FriendlyFirePunishment_1" checked="checked"  /><label for="settings_FriendlyFirePunishment_1">Session Ban</label>
+<input type="radio" name="settings_FriendlyFirePunishment" value="2" id="settings_FriendlyFirePunishment_2"   /><label for="settings_FriendlyFirePunishment_2">Permanent Ban</label>
+
+  <span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['FriendlyFirePunishment'] = {
+  formName: "settings_FriendlyFirePunishment",
+  set: ['0', '1']
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: FriendlyFireScale" id="settings_FriendlyFireScale_label" name="settings_FriendlyFireScale_label"><label for="settings_FriendlyFireScale" title="Percentage of friendly fire damage to apply to the damaged friendly player">Scale</label></dt>
+<dd class=" disabled ranked" >
+  <input type="text" id="settings_FriendlyFireScale" name="settings_FriendlyFireScale" value="1.0000" title="Minimum: 0.0000; Maximum: 10.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 10.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['FriendlyFireScale'] = {
+  formName: "settings_FriendlyFireScale",
+  min: 0.0000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: bEnableTeamKillForgiving" id="settings_bEnableTeamKillForgiving_label" name="settings_bEnableTeamKillForgiving_label"><label for="settings_bEnableTeamKillForgiving" title="If enabled, players that are killed by friendlies will be able to type &quot;np&quot; to forgive their killer(which may forgo their punishment)">Team Kill Forgiving</label></dt>
+<dd class=" ranked" >
+  <input type="radio" name="settings_bEnableTeamKillForgiving" value="0" id="settings_bEnableTeamKillForgiving_0"   /><label for="settings_bEnableTeamKillForgiving_0">Disabled</label>
+<input type="radio" name="settings_bEnableTeamKillForgiving" value="1" id="settings_bEnableTeamKillForgiving_1" checked="checked"  /><label for="settings_bEnableTeamKillForgiving_1">Enabled</label>
+
+  <span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['bEnableTeamKillForgiving'] = {
+  formName: "settings_bEnableTeamKillForgiving",
+  value: '1',
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: FriendlyFireHitVehiclePunishScale" id="settings_FriendlyFireHitVehiclePunishScale_label" name="settings_FriendlyFireHitVehiclePunishScale_label"><label for="settings_FriendlyFireHitVehiclePunishScale" title="Percentage of damage to a friendly vehicle to apply to the damager's Friendly Fire Damage limit">Vehicle Damage Punish Scale</label></dt>
+<dd class="" >
+  <input type="text" id="settings_FriendlyFireHitVehiclePunishScale" name="settings_FriendlyFireHitVehiclePunishScale" value="0.2000" title="Minimum: 0.0000; Maximum: 10.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_FriendlyFireHitVehiclePunishScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 10.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Clanmatch" class="SettingsGroup">
+<h4>Clan Match</h4>
+<dl>
+<dt title="Setting ID: OverrideMaxPlayerMapScaling" id="settings_OverrideMaxPlayerMapScaling_label" name="settings_OverrideMaxPlayerMapScaling_label"><label for="settings_OverrideMaxPlayerMapScaling" title="?INT?WebAdmin.GameplaySettings Tooltips.OverrideMaxPlayerMapScaling?">Override Max Player Scaling</label></dt>
+<dd class="" >
+  <select id="settings_OverrideMaxPlayerMapScaling" name="settings_OverrideMaxPlayerMapScaling"  >
+<option value="0" selected="selected">None</option>
+<option value="1" >16 player</option>
+<option value="2" >32 player</option>
+<option value="3" >64 player</option>
+
+</select>
+
+  
+</dd>
+<dt title="Setting ID: bDisablePeripheralActionIndicators" id="settings_bDisablePeripheralActionIndicators_label" name="settings_bDisablePeripheralActionIndicators_label"><label for="settings_bDisablePeripheralActionIndicators" title="If set, the Peripheral Actions HUD element will not be available to players">Peripheral Action Indicators</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bDisablePeripheralActionIndicators" value="0" id="settings_bDisablePeripheralActionIndicators_0" checked="checked" disabled="disabled" /><label for="settings_bDisablePeripheralActionIndicators_0">Enabled</label>
+<input type="radio" name="settings_bDisablePeripheralActionIndicators" value="1" id="settings_bDisablePeripheralActionIndicators_1"  disabled="disabled" /><label for="settings_bDisablePeripheralActionIndicators_1">Disabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bDisablePeripheralWhips" id="settings_bDisablePeripheralWhips_label" name="settings_bDisablePeripheralWhips_label"><label for="settings_bDisablePeripheralWhips" title="If set, the Peripheral Whips HUD element will not be available to players">Peripheral Whips</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bDisablePeripheralWhips" value="0" id="settings_bDisablePeripheralWhips_0" checked="checked" disabled="disabled" /><label for="settings_bDisablePeripheralWhips_0">Enabled</label>
+<input type="radio" name="settings_bDisablePeripheralWhips" value="1" id="settings_bDisablePeripheralWhips_1"  disabled="disabled" /><label for="settings_bDisablePeripheralWhips_1">Disabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bDisableSpawnOnSquadLeader" id="settings_bDisableSpawnOnSquadLeader_label" name="settings_bDisableSpawnOnSquadLeader_label"><label for="settings_bDisableSpawnOnSquadLeader" title="If set, players will not get the Spawn On Squad Leader option">Spawn On SquadLeader</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bDisableSpawnOnSquadLeader" value="0" id="settings_bDisableSpawnOnSquadLeader_0" checked="checked" disabled="disabled" /><label for="settings_bDisableSpawnOnSquadLeader_0">Enabled</label>
+<input type="radio" name="settings_bDisableSpawnOnSquadLeader" value="1" id="settings_bDisableSpawnOnSquadLeader_1"  disabled="disabled" /><label for="settings_bDisableSpawnOnSquadLeader_1">Disabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bDisableTeamDeathIcons" id="settings_bDisableTeamDeathIcons_label" name="settings_bDisableTeamDeathIcons_label"><label for="settings_bDisableTeamDeathIcons" title="If set, the Team Death icons will not show up on players Overhead Maps nor Compasses">Team Death Icons</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bDisableTeamDeathIcons" value="0" id="settings_bDisableTeamDeathIcons_0" checked="checked" disabled="disabled" /><label for="settings_bDisableTeamDeathIcons_0">Enabled</label>
+<input type="radio" name="settings_bDisableTeamDeathIcons" value="1" id="settings_bDisableTeamDeathIcons_1"  disabled="disabled" /><label for="settings_bDisableTeamDeathIcons_1">Disabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+
+</dl>
+</div>
+<div id="SG_Override" class="SettingsGroup">
+<h4>Gameplay Override</h4>
+<dl>
+<dt title="Setting ID: bAllowHeloAutoHover" id="settings_bAllowHeloAutoHover_label" name="settings_bAllowHeloAutoHover_label"><label for="settings_bAllowHeloAutoHover" title="Whether to let pilots use the Auto Hover functionality or not">Allow Helicopter Auto Hover</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAllowHeloAutoHover" value="0" id="settings_bAllowHeloAutoHover_0"   /><label for="settings_bAllowHeloAutoHover_0">Disabled</label>
+<input type="radio" name="settings_bAllowHeloAutoHover" value="1" id="settings_bAllowHeloAutoHover_1" checked="checked"  /><label for="settings_bAllowHeloAutoHover_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: ArtilleryDamageScale" id="settings_ArtilleryDamageScale_label" name="settings_ArtilleryDamageScale_label"><label for="settings_ArtilleryDamageScale" title="Damage Scale Applied to Artillery">Artillery Damage Scale</label></dt>
+<dd class=" disabled ranked" >
+  <input type="text" id="settings_ArtilleryDamageScale" name="settings_ArtilleryDamageScale" value="1.0000" title="Minimum: 0.1000; Maximum: 10.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ArtilleryDamageScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.1000, max: 10.0000, step: 0.5000, page: 0.5000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['ArtilleryDamageScale'] = {
+  formName: "settings_ArtilleryDamageScale",
+  min: 0.1000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: bDelayCannonAmmoSwitch" id="settings_bDelayCannonAmmoSwitch_label" name="settings_bDelayCannonAmmoSwitch_label"><label for="settings_bDelayCannonAmmoSwitch" title="Tank gunners must fire the currently loaded shell before a change of ammunition can take place">Delay Tank Ammo Switch</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bDelayCannonAmmoSwitch" value="0" id="settings_bDelayCannonAmmoSwitch_0" checked="checked"  /><label for="settings_bDelayCannonAmmoSwitch_0">Disabled</label>
+<input type="radio" name="settings_bDelayCannonAmmoSwitch" value="1" id="settings_bDelayCannonAmmoSwitch_1"   /><label for="settings_bDelayCannonAmmoSwitch_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: EnemySpottedMode" id="settings_EnemySpottedMode_label" name="settings_EnemySpottedMode_label"><label for="settings_EnemySpottedMode" title="Defines enemy spotted functionality (0 = full, 1 = tactical view and map only, 2 = map only)">Enemy Spotted Mode</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_EnemySpottedMode" value="0" id="settings_EnemySpottedMode_0" checked="checked" disabled="disabled" /><label for="settings_EnemySpottedMode_0">Full</label>
+<input type="radio" name="settings_EnemySpottedMode" value="1" id="settings_EnemySpottedMode_1"  disabled="disabled" /><label for="settings_EnemySpottedMode_1">Tactical View And Map Only</label>
+<input type="radio" name="settings_EnemySpottedMode" value="2" id="settings_EnemySpottedMode_2"  disabled="disabled" /><label for="settings_EnemySpottedMode_2">Map Only</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: ExplosivesDamageScale" id="settings_ExplosivesDamageScale_label" name="settings_ExplosivesDamageScale_label"><label for="settings_ExplosivesDamageScale" title="Damage Scale applied to grenades and satchels">Explosives Damage Scale</label></dt>
+<dd class=" disabled ranked" >
+  <input type="text" id="settings_ExplosivesDamageScale" name="settings_ExplosivesDamageScale" value="1.0000" title="Minimum: 0.1000; Maximum: 10.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ExplosivesDamageScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.1000, max: 10.0000, step: 0.5000, page: 0.5000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['ExplosivesDamageScale'] = {
+  formName: "settings_ExplosivesDamageScale",
+  min: 0.1000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: ControlledBreathingZoomType" id="settings_ControlledBreathingZoomType_label" name="settings_ControlledBreathingZoomType_label"><label for="settings_ControlledBreathingZoomType" title="?INT?WebAdmin.GameplaySettings Tooltips.ControlledBreathingZoomType?">Focus Zoom Type</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_ControlledBreathingZoomType" value="0" id="settings_ControlledBreathingZoomType_0"   /><label for="settings_ControlledBreathingZoomType_0">Always</label>
+<input type="radio" name="settings_ControlledBreathingZoomType" value="1" id="settings_ControlledBreathingZoomType_1" checked="checked"  /><label for="settings_ControlledBreathingZoomType_1">No Ironsight Zoom</label>
+<input type="radio" name="settings_ControlledBreathingZoomType" value="2" id="settings_ControlledBreathingZoomType_2"   /><label for="settings_ControlledBreathingZoomType_2">None</label>
+
+  
+</dd>
+<dt title="Setting ID: bForceHeloAdvancedFlightModel" id="settings_bForceHeloAdvancedFlightModel_label" name="settings_bForceHeloAdvancedFlightModel_label"><label for="settings_bForceHeloAdvancedFlightModel" title="Force all players to use the Advanced flight model rather than the Simplified one">Force Helicopter Advanced Flight Model</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bForceHeloAdvancedFlightModel" value="0" id="settings_bForceHeloAdvancedFlightModel_0" checked="checked"  /><label for="settings_bForceHeloAdvancedFlightModel_0">Disabled</label>
+<input type="radio" name="settings_bForceHeloAdvancedFlightModel" value="1" id="settings_bForceHeloAdvancedFlightModel_1"   /><label for="settings_bForceHeloAdvancedFlightModel_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: FriendlyInfantryCollisionType" id="settings_FriendlyInfantryCollisionType_label" name="settings_FriendlyInfantryCollisionType_label"><label for="settings_FriendlyInfantryCollisionType" title="How to collide with friendly non AI controlled infantry players. 0 = none, 1 = reduced size, and 2 = full">Friendly Infantry Collision Type</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_FriendlyInfantryCollisionType" value="0" id="settings_FriendlyInfantryCollisionType_0"   /><label for="settings_FriendlyInfantryCollisionType_0">No Collision</label>
+<input type="radio" name="settings_FriendlyInfantryCollisionType" value="1" id="settings_FriendlyInfantryCollisionType_1" checked="checked"  /><label for="settings_FriendlyInfantryCollisionType_1">Reduced Size Collision</label>
+<input type="radio" name="settings_FriendlyInfantryCollisionType" value="2" id="settings_FriendlyInfantryCollisionType_2"   /><label for="settings_FriendlyInfantryCollisionType_2">Full Size Collision</label>
+
+  
+</dd>
+<dt title="Setting ID: FriendlyPlayerNames" id="settings_FriendlyPlayerNames_label" name="settings_FriendlyPlayerNames_label"><label for="settings_FriendlyPlayerNames" title="Determines which Friendly Player names to show(0 = none, 1 = within 10 meters, 2 = full)">Friendly Player Names</label></dt>
+<dd class=" limited" >
+  <select id="settings_FriendlyPlayerNames" name="settings_FriendlyPlayerNames"  >
+<option value="0" >None</option>
+<option value="1" >10m</option>
+<option value="2" >50m</option>
+<option value="3" >100m</option>
+<option value="4" selected="selected">150m</option>
+
+</select>
+
+  <span class="realism limited"><span>This setting is limited in the current realism mode.<br />
+Original limits:  to  <br />
+Current limits: 1 to 4 </span></span>
+
+</dd>
+<dt title="Setting ID: bIncreasedBreathStaminaEffects" id="settings_bIncreasedBreathStaminaEffects_label" name="settings_bIncreasedBreathStaminaEffects_label"><label for="settings_bIncreasedBreathStaminaEffects" title="If set the player will recieved increased effects when breathing due to stamina (faster breathing when stamina is low, etc)">Increased Stamina Effects On Breathing</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bIncreasedBreathStaminaEffects" value="0" id="settings_bIncreasedBreathStaminaEffects_0"  disabled="disabled" /><label for="settings_bIncreasedBreathStaminaEffects_0">Disabled</label>
+<input type="radio" name="settings_bIncreasedBreathStaminaEffects" value="1" id="settings_bIncreasedBreathStaminaEffects_1" checked="checked" disabled="disabled" /><label for="settings_bIncreasedBreathStaminaEffects_1">Enabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bIncreasedSuppressionEffects" id="settings_bIncreasedSuppressionEffects_label" name="settings_bIncreasedSuppressionEffects_label"><label for="settings_bIncreasedSuppressionEffects" title="If set the player will recieved increased suppression effects (more screen shake, etc)">Increased Suppression Effects</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bIncreasedSuppressionEffects" value="0" id="settings_bIncreasedSuppressionEffects_0"  disabled="disabled" /><label for="settings_bIncreasedSuppressionEffects_0">Disabled</label>
+<input type="radio" name="settings_bIncreasedSuppressionEffects" value="1" id="settings_bIncreasedSuppressionEffects_1" checked="checked" disabled="disabled" /><label for="settings_bIncreasedSuppressionEffects_1">Enabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bLegDamageSlowsPlayer" id="settings_bLegDamageSlowsPlayer_label" name="settings_bLegDamageSlowsPlayer_label"><label for="settings_bLegDamageSlowsPlayer" title="If set the player will move slower for a short time if taking damage to the legs or feet">Leg Damage Slows Player</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bLegDamageSlowsPlayer" value="0" id="settings_bLegDamageSlowsPlayer_0"  disabled="disabled" /><label for="settings_bLegDamageSlowsPlayer_0">Disabled</label>
+<input type="radio" name="settings_bLegDamageSlowsPlayer" value="1" id="settings_bLegDamageSlowsPlayer_1" checked="checked" disabled="disabled" /><label for="settings_bLegDamageSlowsPlayer_1">Enabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: PlayerHitSoundMode" id="settings_PlayerHitSoundMode_label" name="settings_PlayerHitSoundMode_label"><label for="settings_PlayerHitSoundMode" title="Player hit sound mode used (0 = Exaggerated, 1 = Mildy Exaggerated, 2 = Not Exaggerated)">Player Hitsound Mode</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_PlayerHitSoundMode" value="0" id="settings_PlayerHitSoundMode_0"  disabled="disabled" /><label for="settings_PlayerHitSoundMode_0">High</label>
+<input type="radio" name="settings_PlayerHitSoundMode" value="1" id="settings_PlayerHitSoundMode_1" checked="checked" disabled="disabled" /><label for="settings_PlayerHitSoundMode_1">Medium</label>
+<input type="radio" name="settings_PlayerHitSoundMode" value="2" id="settings_PlayerHitSoundMode_2"  disabled="disabled" /><label for="settings_PlayerHitSoundMode_2">Low</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bRealisticDrivingRestrictions" id="settings_bRealisticDrivingRestrictions_label" name="settings_bRealisticDrivingRestrictions_label"><label for="settings_bRealisticDrivingRestrictions" title="If set, will not allow you to drive tanks, such as the Panzer IV, when you are unhatched">Realistic Driving Restrictions</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bRealisticDrivingRestrictions" value="0" id="settings_bRealisticDrivingRestrictions_0"  disabled="disabled" /><label for="settings_bRealisticDrivingRestrictions_0">Disabled</label>
+<input type="radio" name="settings_bRealisticDrivingRestrictions" value="1" id="settings_bRealisticDrivingRestrictions_1" checked="checked" disabled="disabled" /><label for="settings_bRealisticDrivingRestrictions_1">Enabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bRealisticPistolLoadouts" id="settings_bRealisticPistolLoadouts_label" name="settings_bRealisticPistolLoadouts_label"><label for="settings_bRealisticPistolLoadouts" title="If set, pistols will only be given to historically accurate roles">Realistic Pistol Loadouts</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bRealisticPistolLoadouts" value="0" id="settings_bRealisticPistolLoadouts_0"  disabled="disabled" /><label for="settings_bRealisticPistolLoadouts_0">Disabled</label>
+<input type="radio" name="settings_bRealisticPistolLoadouts" value="1" id="settings_bRealisticPistolLoadouts_1" checked="checked" disabled="disabled" /><label for="settings_bRealisticPistolLoadouts_1">Enabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: SmallArmsDamageScale" id="settings_SmallArmsDamageScale_label" name="settings_SmallArmsDamageScale_label"><label for="settings_SmallArmsDamageScale" title="Damage Scale applied to Small Arms">Small Arms Damage Scale</label></dt>
+<dd class=" disabled ranked" >
+  <input type="text" id="settings_SmallArmsDamageScale" name="settings_SmallArmsDamageScale" value="1.0000" title="Minimum: 0.1000; Maximum: 10.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_SmallArmsDamageScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.1000, max: 10.0000, step: 0.5000, page: 0.5000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['SmallArmsDamageScale'] = {
+  formName: "settings_SmallArmsDamageScale",
+  min: 0.1000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: bStopSprintingWhenExhausted" id="settings_bStopSprintingWhenExhausted_label" name="settings_bStopSprintingWhenExhausted_label"><label for="settings_bStopSprintingWhenExhausted" title="If set the player will stop sprinting when exhausted like in RO1">Stop Sprinting When Exhausted</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bStopSprintingWhenExhausted" value="0" id="settings_bStopSprintingWhenExhausted_0" checked="checked"  /><label for="settings_bStopSprintingWhenExhausted_0">Disabled</label>
+<input type="radio" name="settings_bStopSprintingWhenExhausted" value="1" id="settings_bStopSprintingWhenExhausted_1"   /><label for="settings_bStopSprintingWhenExhausted_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: TankAIFiringSetting" id="settings_TankAIFiringSetting_label" name="settings_TankAIFiringSetting_label"><label for="settings_TankAIFiringSetting" title="Used to modify when the AI controlled gunner and MGer in vehicles will fire">Tank AI Firing Setting</label></dt>
+<dd class="" >
+  <select id="settings_TankAIFiringSetting" name="settings_TankAIFiringSetting"  >
+<option value="0" selected="selected">Fire when targets are designated by the human player only</option>
+<option value="1" >Only Hull MG can fire when targets are designated by the human player only</option>
+<option value="2" >Only Main Gun can fire when targets are designated by the human player only</option>
+<option value="3" >Never fire at all</option>
+<option value="4" >Only the hull MG can fire autonomously</option>
+<option value="5" >Only the main gun can fire autonomously</option>
+<option value="6" >Tank AI can fire fully autonomously</option>
+
+</select>
+
+  
+</dd>
+<dt title="Setting ID: TankShellDamageScale" id="settings_TankShellDamageScale_label" name="settings_TankShellDamageScale_label"><label for="settings_TankShellDamageScale" title="Damage Scale applied to Tank Shells">Tank Shell Damage Scale</label></dt>
+<dd class=" disabled ranked" >
+  <input type="text" id="settings_TankShellDamageScale" name="settings_TankShellDamageScale" value="1.0000" title="Minimum: 0.1000; Maximum: 10.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_TankShellDamageScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.1000, max: 10.0000, step: 0.5000, page: 0.5000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['TankShellDamageScale'] = {
+  formName: "settings_TankShellDamageScale",
+  min: 0.1000,
+  max: 1.0000
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: TankTurretDamageMode" id="settings_TankTurretDamageMode_label" name="settings_TankTurretDamageMode_label"><label for="settings_TankTurretDamageMode" title="Damage mode for tank turret/main gun (0 = No damage, 1 = Can be damaged with reduced functionality, 2 = Can be disabled)">Tank Turret Damage Mode</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_TankTurretDamageMode" value="0" id="settings_TankTurretDamageMode_0"  disabled="disabled" /><label for="settings_TankTurretDamageMode_0">No Damage</label>
+<input type="radio" name="settings_TankTurretDamageMode" value="1" id="settings_TankTurretDamageMode_1" checked="checked" disabled="disabled" /><label for="settings_TankTurretDamageMode_1">Damage Reduces Functionality</label>
+<input type="radio" name="settings_TankTurretDamageMode" value="2" id="settings_TankTurretDamageMode_2"  disabled="disabled" /><label for="settings_TankTurretDamageMode_2">Damage Can Disable</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: VehicleCrewDamageMode" id="settings_VehicleCrewDamageMode_label" name="settings_VehicleCrewDamageMode_label"><label for="settings_VehicleCrewDamageMode" title="Damage mode used for vehicle crew (0 = No damage, 1 = Only damage if exposed, 2 = Full interior and exterior damage)">Vehicle Crew Damage Mode</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_VehicleCrewDamageMode" value="0" id="settings_VehicleCrewDamageMode_0"  disabled="disabled" /><label for="settings_VehicleCrewDamageMode_0">No Damage</label>
+<input type="radio" name="settings_VehicleCrewDamageMode" value="1" id="settings_VehicleCrewDamageMode_1"  disabled="disabled" /><label for="settings_VehicleCrewDamageMode_1">Only If Exposed</label>
+<input type="radio" name="settings_VehicleCrewDamageMode" value="2" id="settings_VehicleCrewDamageMode_2" checked="checked" disabled="disabled" /><label for="settings_VehicleCrewDamageMode_2">Full Damage</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: VehicleMobilityDamageMode" id="settings_VehicleMobilityDamageMode_label" name="settings_VehicleMobilityDamageMode_label"><label for="settings_VehicleMobilityDamageMode" title="Damage mode for vehicle mobility, such as engine, tracks, etc (0 = No damage, 1 = Can be damaged with reduced functionality, 2 = Can be disabled)">Vehicle Mobility Damage Mode</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_VehicleMobilityDamageMode" value="0" id="settings_VehicleMobilityDamageMode_0"  disabled="disabled" /><label for="settings_VehicleMobilityDamageMode_0">No Damage</label>
+<input type="radio" name="settings_VehicleMobilityDamageMode" value="1" id="settings_VehicleMobilityDamageMode_1"  disabled="disabled" /><label for="settings_VehicleMobilityDamageMode_1">Damage Reduces Functionality</label>
+<input type="radio" name="settings_VehicleMobilityDamageMode" value="2" id="settings_VehicleMobilityDamageMode_2" checked="checked" disabled="disabled" /><label for="settings_VehicleMobilityDamageMode_2">Damage Can Disable</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bNoVehicles" id="settings_bNoVehicles_label" name="settings_bNoVehicles_label"><label for="settings_bNoVehicles" title="If set, players will not be able to choose vehicle roles">Vehicles</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bNoVehicles" value="0" id="settings_bNoVehicles_0" checked="checked"  /><label for="settings_bNoVehicles_0">With Vehicles</label>
+<input type="radio" name="settings_bNoVehicles" value="1" id="settings_bNoVehicles_1"   /><label for="settings_bNoVehicles_1">No Vehicles</label>
+
+  
+</dd>
+<dt title="Setting ID: bNoWeaponLimits" id="settings_bNoWeaponLimits_label" name="settings_bNoWeaponLimits_label"><label for="settings_bNoWeaponLimits" title="If set, weapons will be unlimited">Weapon Limits</label></dt>
+<dd class=" disabled ranked" >
+  <input type="radio" name="settings_bNoWeaponLimits" value="0" id="settings_bNoWeaponLimits_0" checked="checked" disabled="disabled" /><label for="settings_bNoWeaponLimits_0">With Limits</label>
+<input type="radio" name="settings_bNoWeaponLimits" value="1" id="settings_bNoWeaponLimits_1"  disabled="disabled" /><label for="settings_bNoWeaponLimits_1">No Limits</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['bNoWeaponLimits'] = {
+  formName: "settings_bNoWeaponLimits",
+  value: '0',
+};
+// ]]>
+</script>
+
+</dd>
+
+</dl>
+</div>
+
+</div>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+    var tabs = $('<ul id="settingstabs"></ul>');
+    var tabidx = 0;
+    var idx = -1;
+    $('#settingsWrapper').prepend(tabs);
+    $('#settingsWrapper div.SettingsGroup').each(function() {
+        var title = $('h4', this);
+        ++idx;
+        tabs.append('<li><a href="#'+this.id+'"><span>'+title.text()+'</span></a></li>');
+        if ('#'+this.id == location.hash) {
+          tabidx = idx;
+        }
+        title.remove();
+    });
+    tabs.tabs({ selected: tabidx });    
+});
+//]]>
+</script>
+<div class="legenda">
+<span class="realism"></span>
+<span>These settings are limited by the current realism mode.</span>
+</div>
+<script type="text/javascript" src="/images/ranked.js?gzip"></script>
+<div class="legenda">
+<span class="ranked"></span>
+<span>These settings affect the ranked status of the server.</span>
+<br />
+<span class="ranked bad"></span>
+<span>These settings violate the limits for the ranked status.</span>
+</div>
+
+
+<div  ><input type="checkbox" name="liveAdjust" value="1" id="liveAdjust" checked="checked" />
+<label for="liveAdjust" title="When checked, changes are applied directly to the current game. This could influence the rules of the game.">Save changes directly to the current game instance.</label></div>
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
+</fieldset>
+</form>
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+	
+$(document).ready(function(){
+	var vLabel = '<span style="padding-left:2mm">Minute(s)</span>';
+	$('input[name=settings_MaxServerIdleDuration]').after(vLabel);
+	vLabel = '<span style="padding-left:2mm">Times</span>';
+	$('input[name=settings_NameChangeKickThreshold]').after(vLabel);
+});
+
+//]]>
+</script>
+
+<script type="text/javascript" src="/images/settings_gameplay.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,9 @@
+{
+  "form": {
+    "__Input": "mock-doc-20260930-alias",
+    "action": "attachalias",
+    "uniqueid": "{{UNIQUE_ID_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/tracking"
+}

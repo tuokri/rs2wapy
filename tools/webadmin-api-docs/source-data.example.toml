@@ -1,0 +1,6 @@
+# Copy this file to .webadmin-api-docs.local.toml and replace the example paths.
+# The local file is ignored by Git.
+
+[sources]
+# sdk_scripts_dir = "/path/to/RS2-Modding-SDK-Script-Sources"
+# web_assets_dir = "/path/to/web-assets-containing-ServerAdmin-and-images"

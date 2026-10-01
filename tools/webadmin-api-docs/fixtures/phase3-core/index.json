@@ -1,0 +1,215 @@
+{
+  "captures": [
+    {
+      "name": "phase3-core-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-core-login-page.request.json",
+      "response": "phase3-core-login-page.html"
+    },
+    {
+      "name": "phase3-core-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-core-login-submit.request.json",
+      "response": "phase3-core-login-submit.html"
+    },
+    {
+      "name": "phase3-notes-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-notes-baseline.request.json",
+      "response": "phase3-notes-baseline.html"
+    },
+    {
+      "name": "phase3-notes-save",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "phase3-notes-save.request.json",
+      "response": "phase3-notes-save.html"
+    },
+    {
+      "name": "phase3-notes-after-save",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-notes-after-save.request.json",
+      "response": "phase3-notes-after-save.html"
+    },
+    {
+      "name": "phase3-notes-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "phase3-notes-restore.request.json",
+      "response": "phase3-notes-restore.html"
+    },
+    {
+      "name": "phase3-notes-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-notes-after-restore.request.json",
+      "response": "phase3-notes-after-restore.html"
+    },
+    {
+      "name": "phase3-console-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-console-baseline.request.json",
+      "response": "phase3-console-baseline.html"
+    },
+    {
+      "name": "phase3-console-help",
+      "method": "POST",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-console-help.request.json",
+      "response": "phase3-console-help.html"
+    },
+    {
+      "name": "phase3-console-status",
+      "method": "POST",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-console-status.request.json",
+      "response": "phase3-console-status.html"
+    },
+    {
+      "name": "phase3-bans-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-bans-baseline.request.json",
+      "response": "phase3-bans-baseline.html"
+    },
+    {
+      "name": "phase3-ban-add",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-ban-add.request.json",
+      "response": "phase3-ban-add.html"
+    },
+    {
+      "name": "phase3-bans-after-add",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-bans-after-add.request.json",
+      "response": "phase3-bans-after-add.html"
+    },
+    {
+      "name": "phase3-ban-revoke",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-ban-revoke.request.json",
+      "response": "phase3-ban-revoke.html"
+    },
+    {
+      "name": "phase3-bans-after-revoke",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-bans-after-revoke.request.json",
+      "response": "phase3-bans-after-revoke.html"
+    },
+    {
+      "name": "phase3-core-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "phase3-core-logout.request.json",
+      "response": "phase3-core-logout.html"
+    }
+  ],
+  "failures": []
+}

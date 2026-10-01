@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - WebAdmin</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/system</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">WebAdmin</h2>
+<p id="pageDescription">Change the web administration configuration.</p>
+</div>
+
+<div id="messages">
+
+
+</div>
+
+
+<div id="content">
+
+<form method="post" action="/ServerAdmin/settings/system">
+<fieldset>
+<legend>WebAdmin Settings</legend>
+
+<div id="settingsWrapper">
+<div id="SG_General" class="SettingsGroup">
+<h4>General</h4>
+<dl>
+<dt title="Setting ID: ChatRefresh" id="settings_ChatRefresh_label" name="settings_ChatRefresh_label"><label for="settings_ChatRefresh" title="Delay between checking of chat messages in the chat window.">Chat Window Refresh</label></dt>
+<dd class="" >
+  <input type="text" id="settings_ChatRefresh" name="settings_ChatRefresh" value="5000" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ChatRefresh');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 10, page: 10*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: denyConsoleCommands" id="settings_denyConsoleCommands_label" name="settings_denyConsoleCommands_label"><label for="settings_denyConsoleCommands" title="Console commands which are not allowed to be executed in the management console. Matches the beginning of the command.">Deny Console Commands</label></dt>
+<dd class="" >
+  <textarea id="settings_denyConsoleCommands" name="settings_denyConsoleCommands" rows="4" cols="60"  >say
+obj
+debug
+flush
+set
+get engine.accesscontrol</textarea>
+
+  
+</dd>
+<dt title="Setting ID: denyUrlOptions" id="settings_denyUrlOptions_label" name="settings_denyUrlOptions_label"><label for="settings_denyUrlOptions" title="Options on a launch url to deny.">Deny URL options</label></dt>
+<dd class="" >
+  <textarea id="settings_denyUrlOptions" name="settings_denyUrlOptions" rows="4" cols="60"  >GamePassword
+AdminPassword
+Port
+QueryPort</textarea>
+
+  
+</dd>
+<dt title="Setting ID: hideNews" id="settings_hideNews_label" name="settings_hideNews_label"><label for="settings_hideNews" title="Hide the news on the page">Hide News</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_hideNews" value="0" id="settings_hideNews_0" checked="checked"  /><label for="settings_hideNews_0">Show</label>
+<input type="radio" name="settings_hideNews" value="1" id="settings_hideNews_1"   /><label for="settings_hideNews_1">Hide</label>
+
+  
+</dd>
+<dt title="Setting ID: bConsoleEnabled" id="settings_bConsoleEnabled_label" name="settings_bConsoleEnabled_label"><label for="settings_bConsoleEnabled" title="The management console is enabled.">Management Console Enabled</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bConsoleEnabled" value="0" id="settings_bConsoleEnabled_0"   /><label for="settings_bConsoleEnabled_0">Disabled</label>
+<input type="radio" name="settings_bConsoleEnabled" value="1" id="settings_bConsoleEnabled_1" checked="checked"  /><label for="settings_bConsoleEnabled_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: startpage" id="settings_startpage_label" name="settings_startpage_label"><label for="settings_startpage" title="The starting page when going to the Rising Storm 2 Web server.">Starting Page</label></dt>
+<dd class="" >
+  <input type="text" id="settings_startpage" name="settings_startpage" value="/current" maxlength="256" size="80"  />
+
+  
+</dd>
+<dt title="Setting ID: bEnableTeamChat" id="settings_bEnableTeamChat_label" name="settings_bEnableTeamChat_label"><label for="settings_bEnableTeamChat" title="Enable team chat functionality for webadmins.">Team Chatting</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableTeamChat" value="0" id="settings_bEnableTeamChat_0"   /><label for="settings_bEnableTeamChat_0">Disabled</label>
+<input type="radio" name="settings_bEnableTeamChat" value="1" id="settings_bEnableTeamChat_1" checked="checked"  /><label for="settings_bEnableTeamChat_1">Enabled</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_ChatLogging" class="SettingsGroup">
+<h4>Chat Logging</h4>
+<dl>
+<dt title="Setting ID: chatLogIncludeTimeStamp" id="settings_chatLogIncludeTimeStamp_label" name="settings_chatLogIncludeTimeStamp_label"><label for="settings_chatLogIncludeTimeStamp" title="Append a timestamp to the chatlog filename.">Append Timestamp</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_chatLogIncludeTimeStamp" value="0" id="settings_chatLogIncludeTimeStamp_0"   /><label for="settings_chatLogIncludeTimeStamp_0">No</label>
+<input type="radio" name="settings_chatLogIncludeTimeStamp" value="1" id="settings_chatLogIncludeTimeStamp_1" checked="checked"  /><label for="settings_chatLogIncludeTimeStamp_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: bChatLog" id="settings_bChatLog_label" name="settings_bChatLog_label"><label for="settings_bChatLog" title="Enable chat logging.">Chat Logging</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bChatLog" value="0" id="settings_bChatLog_0" checked="checked"  /><label for="settings_bChatLog_0">Disabled</label>
+<input type="radio" name="settings_bChatLog" value="1" id="settings_bChatLog_1"   /><label for="settings_bChatLog_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: chatLogFilename" id="settings_chatLogFilename_label" name="settings_chatLogFilename_label"><label for="settings_chatLogFilename" title="Mask for the filename. Following place holders can be used: %i = server ip; %p = server port; %c = computer name (as reported by the OS); %v = engine version.">Filename</label></dt>
+<dd class="" >
+  <input type="text" id="settings_chatLogFilename" name="settings_chatLogFilename" value="" maxlength="256" size="80"  />
+
+  
+</dd>
+<dt title="Setting ID: chatLogUnique" id="settings_chatLogUnique_label" name="settings_chatLogUnique_label"><label for="settings_chatLogUnique" title="Make sure the chatlog filename is unique.">Force Uniqe Name</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_chatLogUnique" value="0" id="settings_chatLogUnique_0" checked="checked"  /><label for="settings_chatLogUnique_0">No</label>
+<input type="radio" name="settings_chatLogUnique" value="1" id="settings_chatLogUnique_1"   /><label for="settings_chatLogUnique_1">Yes</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Authentication" class="SettingsGroup">
+<h4>Authentication</h4>
+<dl>
+<dt title="Setting ID: MaxAuthFails" id="settings_MaxAuthFails_label" name="settings_MaxAuthFails_label"><label for="settings_MaxAuthFails" title="Maximum failed login attempts before locking the user our for the duration of the game session.">Authentication Failure Threshold</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxAuthFails" name="settings_MaxAuthFails" value="5" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxAuthFails');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bHttpAuth" id="settings_bHttpAuth_label" name="settings_bHttpAuth_label"><label for="settings_bHttpAuth" title="Use HTTP Basic Authentication rather than a log in form.">HTTP Authentication</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bHttpAuth" value="0" id="settings_bHttpAuth_0" checked="checked"  /><label for="settings_bHttpAuth_0">Use Login Form</label>
+<input type="radio" name="settings_bHttpAuth" value="1" id="settings_bHttpAuth_1"   /><label for="settings_bHttpAuth_1">Use HTTP Authentication</label>
+
+  
+</dd>
+<dt title="Setting ID: sessionOctetValidation" id="settings_sessionOctetValidation_label" name="settings_sessionOctetValidation_label"><label for="settings_sessionOctetValidation" title="The number of IP segments to validate in the session. Increasing this value makes sessions less prone to hijacking.">IP Octet Validation</label></dt>
+<dd class="" >
+  <select id="settings_sessionOctetValidation" name="settings_sessionOctetValidation"  >
+<option value="0" >0</option>
+<option value="1" >1</option>
+<option value="2" >2</option>
+<option value="3" selected="selected">3</option>
+<option value="4" >4</option>
+
+</select>
+
+<span id="settings_sessionOctetValidation_rawsec" class="settingsraw"><input type="text" id="settings_sessionOctetValidation_raw" name="settings_sessionOctetValidation_raw" value="3"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_sessionOctetValidation_raw');
+  elm.numeric("");
+  elm.SpinButton({min: 0, max: 4, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+</span>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+  $('#settings_sessionOctetValidation_rawsec').before(' <button id=\"settings_sessionOctetValidation_btn\" type=\"button\" title=\"Enter a custom value instead of the preselected values.\">custom value</button> ');
+  $('#settings_sessionOctetValidation_btn').click(function(){
+    $(this).remove();
+    elm = $('#settings_sessionOctetValidation');
+    rawelm = $('#settings_sessionOctetValidation_raw');
+    rawelm.val(elm.val());
+    rawelm.attr('id', elm.attr('id'));
+    rawelm.attr('name', elm.attr('name'));
+    elm.remove();
+    $('#settings_sessionOctetValidation_rawsec').show();
+  });
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Advanced" class="SettingsGroup">
+<h4>Advanced</h4>
+<dl>
+<dt title="Setting ID: bAdminConsoleCommandsHack" id="settings_bAdminConsoleCommandsHack_label" name="settings_bAdminConsoleCommandsHack_label"><label for="settings_bAdminConsoleCommandsHack" title="Support the &quot;admin ...&quot; console commands.">{{ADMIN_1}} Console Commands Enabled</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAdminConsoleCommandsHack" value="0" id="settings_bAdminConsoleCommandsHack_0"   /><label for="settings_bAdminConsoleCommandsHack_0">Disabled</label>
+<input type="radio" name="settings_bAdminConsoleCommandsHack" value="1" id="settings_bAdminConsoleCommandsHack_1" checked="checked"  /><label for="settings_bAdminConsoleCommandsHack_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: AdminCommandHandlerClass" id="settings_AdminCommandHandlerClass_label" name="settings_AdminCommandHandlerClass_label"><label for="settings_AdminCommandHandlerClass" title="Handler for the &quot;admin ...&quot; console commands.">{{ADMIN_1}} Console Commands Handler</label></dt>
+<dd class="" >
+  <input type="text" id="settings_AdminCommandHandlerClass" name="settings_AdminCommandHandlerClass" value="WebAdmin.AdminCommandHandler" maxlength="256" size="80"  />
+
+  
+</dd>
+<dt title="Setting ID: AuthenticationClass" id="settings_AuthenticationClass_label" name="settings_AuthenticationClass_label"><label for="settings_AuthenticationClass" title="Class that performs the authentication for web administrators. Takes effect after the current game.">Authentication Class</label></dt>
+<dd class="" >
+  <input type="text" id="settings_AuthenticationClass" name="settings_AuthenticationClass" value="WebAdmin.MultiWebAdminAuth" maxlength="256" size="80"  />
+
+  
+</dd>
+<dt title="Setting ID: bUseStrictContentType" id="settings_bUseStrictContentType_label" name="settings_bUseStrictContentType_label"><label for="settings_bUseStrictContentType" title="Send the webpages with the application/xhtml+xml mime type.">Send XHTML headers</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bUseStrictContentType" value="0" id="settings_bUseStrictContentType_0" checked="checked"  /><label for="settings_bUseStrictContentType_0">No</label>
+<input type="radio" name="settings_bUseStrictContentType" value="1" id="settings_bUseStrictContentType_1"   /><label for="settings_bUseStrictContentType_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: SessionHandlerClass" id="settings_SessionHandlerClass_label" name="settings_SessionHandlerClass_label"><label for="settings_SessionHandlerClass" title="Class that manages session handling for logged in web administrators. Takes effect after the current game.">Session Handler class</label></dt>
+<dd class="" >
+  <input type="text" id="settings_SessionHandlerClass" name="settings_SessionHandlerClass" value="" maxlength="256" size="80"  />
+
+  
+</dd>
+
+</dl>
+</div>
+
+</div>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+    var tabs = $('<ul id="settingstabs"></ul>');
+    var tabidx = 0;
+    var idx = -1;
+    $('#settingsWrapper').prepend(tabs);
+    $('#settingsWrapper div.SettingsGroup').each(function() {
+        var title = $('h4', this);
+        ++idx;
+        tabs.append('<li><a href="#'+this.id+'"><span>'+title.text()+'</span></a></li>');
+        if ('#'+this.id == location.hash) {
+          tabidx = idx;
+        }
+        title.remove();
+    });
+    tabs.tabs({ selected: tabidx });    
+});
+//]]>
+</script>
+
+
+<div style="display: none;" ><input type="checkbox" name="liveAdjust" value="1" id="liveAdjust"  />
+<label for="liveAdjust" title="When checked, changes are applied directly to the current game. This could influence the rules of the game.">Save changes directly to the current game instance.</label></div>
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
+</fieldset>
+</form>
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+	
+$(document).ready(function(){
+	var vLabel = '<span style="padding-left:2mm">Minute(s)</span>';
+	$('input[name=settings_MaxServerIdleDuration]').after(vLabel);
+	vLabel = '<span style="padding-left:2mm">Times</span>';
+	$('input[name=settings_NameChangeKickThreshold]').after(vLabel);
+});
+
+//]]>
+</script>
+
+<script type="text/javascript" src="/images/settings_gameplay.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

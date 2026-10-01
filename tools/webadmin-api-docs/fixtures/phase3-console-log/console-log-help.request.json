@@ -1,0 +1,7 @@
+{
+  "form": {
+    "command": "help"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/console"
+}

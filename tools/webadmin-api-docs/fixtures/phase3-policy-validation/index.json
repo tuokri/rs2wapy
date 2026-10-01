@@ -1,0 +1,241 @@
+{
+  "captures": [
+    {
+      "name": "policy-validation-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-login-page.request.json",
+      "response": "policy-validation-login-page.html"
+    },
+    {
+      "name": "policy-validation-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-login-submit.request.json",
+      "response": "policy-validation-login-submit.html"
+    },
+    {
+      "name": "policy-validation-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-baseline.request.json",
+      "response": "policy-validation-baseline.html"
+    },
+    {
+      "name": "policy-invalid-mask",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-invalid-mask.request.json",
+      "response": "policy-invalid-mask.html"
+    },
+    {
+      "name": "policy-missing-policy",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-missing-policy.request.json",
+      "response": "policy-missing-policy.html"
+    },
+    {
+      "name": "policy-validation-add",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-add.request.json",
+      "response": "policy-validation-add.html"
+    },
+    {
+      "name": "policy-validation-after-add",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-after-add.request.json",
+      "response": "policy-validation-after-add.html"
+    },
+    {
+      "name": "policy-validation-duplicate-add",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-duplicate-add.request.json",
+      "response": "policy-validation-duplicate-add.html"
+    },
+    {
+      "name": "policy-validation-after-duplicate",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-after-duplicate.request.json",
+      "response": "policy-validation-after-duplicate.html"
+    },
+    {
+      "name": "policy-validation-update",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-update.request.json",
+      "response": "policy-validation-update.html"
+    },
+    {
+      "name": "policy-validation-after-update",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-after-update.request.json",
+      "response": "policy-validation-after-update.html"
+    },
+    {
+      "name": "policy-validation-before-delete",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-before-delete.request.json",
+      "response": "policy-validation-before-delete.html"
+    },
+    {
+      "name": "policy-validation-delete-2",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-delete-2.request.json",
+      "response": "policy-validation-delete-2.html"
+    },
+    {
+      "name": "policy-validation-before-delete",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-before-delete.request.json",
+      "response": "policy-validation-before-delete.html"
+    },
+    {
+      "name": "policy-validation-delete-1",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-delete-1.request.json",
+      "response": "policy-validation-delete-1.html"
+    },
+    {
+      "name": "policy-validation-before-delete",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-before-delete.request.json",
+      "response": "policy-validation-before-delete.html"
+    },
+    {
+      "name": "policy-validation-after-delete",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-after-delete.request.json",
+      "response": "policy-validation-after-delete.html"
+    },
+    {
+      "name": "policy-validation-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-validation-logout.request.json",
+      "response": "policy-validation-logout.html"
+    }
+  ],
+  "failures": []
+}

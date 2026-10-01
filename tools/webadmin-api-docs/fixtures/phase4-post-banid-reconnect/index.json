@@ -1,0 +1,501 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "authenticated-home",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "authenticated-home.request.json",
+      "response": "authenticated-home.html"
+    },
+    {
+      "name": "get-root",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-root.request.json",
+      "response": "get-root.html"
+    },
+    {
+      "name": "get-about",
+      "method": "GET",
+      "url": "{{BASE_URL}}/about",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-about.request.json",
+      "response": "get-about.html"
+    },
+    {
+      "name": "get-console",
+      "method": "GET",
+      "url": "{{BASE_URL}}/console",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-console.request.json",
+      "response": "get-console.html"
+    },
+    {
+      "name": "get-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current.request.json",
+      "response": "get-current.html"
+    },
+    {
+      "name": "get-current/change",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current-change.request.json",
+      "response": "get-current-change.html"
+    },
+    {
+      "name": "get-current/change/check",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/check",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current-change-check.request.json",
+      "response": "get-current-change-check.txt"
+    },
+    {
+      "name": "get-current/change/data",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/change/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "get-current-change-data.request.json",
+      "response": "get-current-change-data.html"
+    },
+    {
+      "name": "get-current/chat",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current-chat.request.json",
+      "response": "get-current-chat.html"
+    },
+    {
+      "name": "get-current/chat/data",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "get-current-chat-data.request.json",
+      "response": "get-current-chat-data.txt"
+    },
+    {
+      "name": "post-current/data",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "post-current-data.request.json",
+      "response": "post-current-data.html"
+    },
+    {
+      "name": "get-current/players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current-players.request.json",
+      "response": "get-current-players.html"
+    },
+    {
+      "name": "get-current/players/data",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "get-current-players-data.request.json",
+      "response": "get-current-players-data.html"
+    },
+    {
+      "name": "get-current/squads",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/squads",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current-squads.request.json",
+      "response": "get-current-squads.html"
+    },
+    {
+      "name": "get-current/workshoptool",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/workshoptool",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-current-workshoptool.request.json",
+      "response": "get-current-workshoptool.html"
+    },
+    {
+      "name": "get-data",
+      "method": "GET",
+      "url": "{{BASE_URL}}/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "get-data.request.json",
+      "response": "get-data.html"
+    },
+    {
+      "name": "get-multiadmin",
+      "method": "GET",
+      "url": "{{BASE_URL}}/multiadmin",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-multiadmin.request.json",
+      "response": "get-multiadmin.html"
+    },
+    {
+      "name": "get-policy",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy.request.json",
+      "response": "get-policy.html"
+    },
+    {
+      "name": "get-policy/bans",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy-bans.request.json",
+      "response": "get-policy-bans.html"
+    },
+    {
+      "name": "get-policy/hashbans",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/hashbans",
+      "status": 404,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy-hashbans.request.json",
+      "response": "get-policy-hashbans.html"
+    },
+    {
+      "name": "get-policy/members",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy-members.request.json",
+      "response": "get-policy-members.html"
+    },
+    {
+      "name": "get-policy/session",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy-session.request.json",
+      "response": "get-policy-session.html"
+    },
+    {
+      "name": "get-policy/toxicplayers",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/toxicplayers",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy-toxicplayers.request.json",
+      "response": "get-policy-toxicplayers.html"
+    },
+    {
+      "name": "get-policy/tracking",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-policy-tracking.request.json",
+      "response": "get-policy-tracking.html"
+    },
+    {
+      "name": "get-settings",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings.request.json",
+      "response": "get-settings.html"
+    },
+    {
+      "name": "get-settings/campaign",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/campaign",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-campaign.request.json",
+      "response": "get-settings-campaign.html"
+    },
+    {
+      "name": "get-settings/gametypes",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-gametypes.request.json",
+      "response": "get-settings-gametypes.html"
+    },
+    {
+      "name": "get-settings/general",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-general.request.json",
+      "response": "get-settings-general.html"
+    },
+    {
+      "name": "get-settings/general/gameplay",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/gameplay",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-general-gameplay.request.json",
+      "response": "get-settings-general-gameplay.html"
+    },
+    {
+      "name": "get-settings/general/passwords",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/passwords",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-general-passwords.request.json",
+      "response": "get-settings-general-passwords.html"
+    },
+    {
+      "name": "get-settings/general/welcome",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-general-welcome.request.json",
+      "response": "get-settings-general-welcome.html"
+    },
+    {
+      "name": "get-settings/maplist",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-maplist.request.json",
+      "response": "get-settings-maplist.html"
+    },
+    {
+      "name": "get-settings/mutators",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/mutators",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-mutators.request.json",
+      "response": "get-settings-mutators.html"
+    },
+    {
+      "name": "get-settings/serveractors",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/serveractors",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-serveractors.request.json",
+      "response": "get-settings-serveractors.html"
+    },
+    {
+      "name": "get-settings/system",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/system",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "get-settings-system.request.json",
+      "response": "get-settings-system.html"
+    },
+    {
+      "name": "logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "logout.request.json",
+      "response": "logout.html"
+    }
+  ],
+  "failures": []
+}

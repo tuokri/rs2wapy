@@ -1,0 +1,15 @@
+{
+  "form": {
+    "action": "save",
+    "adminid": "{{ADMIN_1}}",
+    "allow": "/settings/general/welcome\n/policy/session",
+    "deny": "/settings/gametypes\n/multiadmin",
+    "displayname": "{{ADMIN_DISPLAY_1}}",
+    "enabled": "1",
+    "order": "DenyAllow",
+    "password1": "",
+    "password2": ""
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/multiadmin"
+}

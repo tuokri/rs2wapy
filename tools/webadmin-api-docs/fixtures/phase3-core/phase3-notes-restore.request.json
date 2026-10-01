@@ -1,0 +1,9 @@
+{
+  "form": {
+    "action": "save",
+    "ajax": "1",
+    "notes": ""
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/data"
+}

@@ -1,0 +1,228 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "{{REDACTED}}",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "player-before-actions",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-before-actions.request.json",
+      "response": "player-before-actions.html"
+    },
+    {
+      "name": "player-mutevoice",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-mutevoice.request.json",
+      "response": "player-mutevoice.html"
+    },
+    {
+      "name": "player-unmutevoice",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-unmutevoice.request.json",
+      "response": "player-unmutevoice.html"
+    },
+    {
+      "name": "session-bans-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-bans-before.request.json",
+      "response": "session-bans-before.html"
+    },
+    {
+      "name": "player-sessionban",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-sessionban.request.json",
+      "response": "player-sessionban.html"
+    },
+    {
+      "name": "session-bans-after-action",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-bans-after-action.request.json",
+      "response": "session-bans-after-action.html"
+    },
+    {
+      "name": "session-ban-revoke",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-ban-revoke.request.json",
+      "response": "session-ban-revoke.html"
+    },
+    {
+      "name": "session-bans-after-revoke",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-bans-after-revoke.request.json",
+      "response": "session-bans-after-revoke.html"
+    },
+    {
+      "name": "permanent-bans-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permanent-bans-before.request.json",
+      "response": "permanent-bans-before.html"
+    },
+    {
+      "name": "player-banid",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "player-banid.request.json",
+      "response": "player-banid.html"
+    },
+    {
+      "name": "permanent-bans-after-action",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permanent-bans-after-action.request.json",
+      "response": "permanent-bans-after-action.html"
+    },
+    {
+      "name": "permanent-ban-revoke",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permanent-ban-revoke.request.json",
+      "response": "permanent-ban-revoke.html"
+    },
+    {
+      "name": "permanent-bans-after-revoke",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "permanent-bans-after-revoke.request.json",
+      "response": "permanent-bans-after-revoke.html"
+    },
+    {
+      "name": "player-after-action",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "player-after-action.request.json",
+      "response": "player-after-action.html"
+    },
+    {
+      "name": "logout-player-actions",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "{{REDACTED}}",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "logout-player-actions.request.json",
+      "response": "logout-player-actions.html"
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,12 @@
+logs/**.log
+logs/**.txt
+
+.python-version
+
+.venv/
+venv/
+**/.venv
+**/venv
+.uv-python/
+.source-data/
+.webadmin-api-docs.local.toml

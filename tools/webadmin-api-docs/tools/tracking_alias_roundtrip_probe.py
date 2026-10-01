@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Capture and restore a disposable alias on an existing tracking record."""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+from pathlib import Path
+
+import click
+import httpx2
+from player_action_probe import player_details
+from probe_webadmin import Capture
+from probe_webadmin import Sanitizer
+from probe_webadmin import WebAdminProbe
+from probe_webadmin import info
+from probe_webadmin import task
+from probe_webadmin import warn
+from probe_webadmin import write_capture
+
+from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
+from webadmin_api_docs.cli import ToolArguments
+from webadmin_api_docs.cli import exit_with_status
+
+RUN_MARKER = "mock-doc-20260930-alias"
+
+
+def tracking_actions(page: Capture, unique_id: str) -> set[str]:
+    """Return actions rendered for the row belonging to one tracking record."""
+    for row in re.findall(r"<tr>.*?</tr>", page.body, re.IGNORECASE | re.DOTALL):
+        unique_match = re.search(
+            r'name=["\']__UniqueId_\d+["\'][^>]*value=["\']([^"\']+)',
+            row,
+            re.IGNORECASE,
+        )
+        if not unique_match or unique_match.group(1) != unique_id:
+            continue
+        return set(re.findall(r'<option\s+value=["\']([^"\']+)', row, re.IGNORECASE))
+    raise RuntimeError("controlled player does not have a rendered tracking record")
+
+
+def run(args: ToolArguments) -> int:
+    """Attach a disposable alias and restore the tracking record baseline."""
+    if not args.username or not args.password:
+        warn("Administrator credentials are required")
+        return 2
+
+    captures: list[Capture] = []
+    failures: list[dict[str, str]] = []
+    probe: WebAdminProbe | None = None
+    unique_id = ""
+    alias_submitted = False
+
+    try:
+        task("Authenticating for the tracking alias round trip")
+        probe = WebAdminProbe(args.base_url, args.username, args.password)
+        captures.extend(probe.login())
+        players = probe.request("tracking-alias-before-players", "current/players")
+        tracking_before = probe.request("tracking-alias-before", "policy/tracking")
+        captures.extend([players, tracking_before])
+        _, unique_id = player_details(players, args.player_name)
+        actions_before = tracking_actions(tracking_before, unique_id)
+        if "attachalias" not in actions_before or "deletealias" in actions_before:
+            raise RuntimeError("tracking alias baseline is not empty")
+
+        task("Attaching a disposable tracking alias")
+        alias_submitted = True
+        captures.append(
+            probe.request(
+                "tracking-alias-attach",
+                "policy/tracking",
+                {"action": "attachalias", "uniqueid": unique_id, "__Input": RUN_MARKER},
+            )
+        )
+        tracking_after_attach = probe.request(
+            "tracking-alias-after-attach", "policy/tracking"
+        )
+        captures.append(tracking_after_attach)
+        if (
+            RUN_MARKER not in tracking_after_attach.body
+            or "deletealias" not in tracking_actions(tracking_after_attach, unique_id)
+        ):
+            raise RuntimeError("tracking alias did not appear after submission")
+    except (OSError, RuntimeError, httpx2.RequestError) as error:
+        failures.append({"route": "tracking-alias", "error": str(error)})
+    finally:
+        if probe is not None and alias_submitted and unique_id:
+            try:
+                task("Removing the disposable tracking alias")
+                captures.append(
+                    probe.request(
+                        "tracking-alias-delete",
+                        "policy/tracking",
+                        {"action": "deletealias", "uniqueid": unique_id},
+                    )
+                )
+                tracking_final = probe.request(
+                    "tracking-alias-final", "policy/tracking"
+                )
+                captures.append(tracking_final)
+                if (
+                    RUN_MARKER in tracking_final.body
+                    or "attachalias" not in tracking_actions(tracking_final, unique_id)
+                    or "deletealias" in tracking_actions(tracking_final, unique_id)
+                ):
+                    failures.append(
+                        {
+                            "route": "policy/tracking",
+                            "error": "tracking alias baseline was not restored",
+                        }
+                    )
+            except (OSError, RuntimeError, httpx2.RequestError) as error:
+                failures.append(
+                    {"route": "tracking-alias-cleanup", "error": str(error)}
+                )
+        if probe is not None:
+            try:
+                captures.append(probe.request("tracking-alias-logout", "logout"))
+            except (OSError, httpx2.RequestError) as error:
+                failures.append({"route": "tracking-alias-logout", "error": str(error)})
+
+    args.output.mkdir(parents=True, exist_ok=True)
+    sanitizer = Sanitizer(args.base_url)
+    entries = [write_capture(args.output, capture, sanitizer) for capture in captures]
+    (args.output / "index.json").write_text(
+        json.dumps({"captures": entries, "failures": failures}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    if failures:
+        for failure in failures:
+            warn(f"{failure['route']}: {failure['error']}")
+        return 1
+    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    return 0
+
+
+@click.command(context_settings=CLICK_CONTEXT_SETTINGS)
+@click.option("--base-url", required=True)
+@click.option("--output", type=click.Path(path_type=Path), required=True)
+@click.option("--player-name", required=True)
+@click.option("--username", default=os.environ.get("RS2_WEBADMIN_USERNAME"))
+@click.option("--password", default=os.environ.get("RS2_WEBADMIN_PASSWORD"))
+def main(
+    base_url: str,
+    output: Path,
+    player_name: str,
+    username: str | None,
+    password: str | None,
+) -> None:
+    """Capture and restore a disposable alias on an existing tracking record."""
+    exit_with_status(
+        run(
+            ToolArguments(
+                base_url=base_url,
+                output=output,
+                player_name=player_name,
+                username=username or "",
+                password=password or "",
+            )
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

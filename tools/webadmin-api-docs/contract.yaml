@@ -1,0 +1,410 @@
+contract_version: 1
+target:
+  server: UnrealEngine IpDrv Web Server Build 7258
+  base_path: /ServerAdmin/
+  authority: live-development-server
+  response_model: stateful-html-forms
+authentication:
+  session_cookie:
+    name: sessionid
+    path: /ServerAdmin/
+    value_format: quoted-hex
+  login:
+    path: /
+    method: POST
+    fields: [token, username, password, password_hash, remember]
+    observed_hash_algorithm: plaintext-baseline-and-sha1-multiadmin
+    sha1_variant: live-verified-multiadmin-profile
+  unauthenticated_response: login-page-http-200
+  logout_path: /logout
+bundled_client_assets:
+  source_root: RS2 Server bundled web files
+  authority: source-confirmed-client-contract-only
+  live-404-despite-template: [multiadmin, policy-hashbans]
+fixtures:
+  read_surface: fixtures/capture/index.json
+  policy_roundtrip: fixtures/policy-roundtrip/index.json
+  player_actions: fixtures/player-actions/index.json
+  kick_ban_actions: fixtures/kick-ban-actions/index.json
+  multiadmin_sha1: fixtures/multiadmin-sha1/index.json
+  multiadmin_sha1_authorization: fixtures/multiadmin-sha1-authz/index.json
+  multiadmin_readonly: fixtures/multiadmin-readonly/index.json
+  multiadmin_permissions: fixtures/multiadmin-permissions/index.json
+  multiadmin_empty_state: fixtures/multiadmin-empty-state/index.json
+  phase3_core: fixtures/phase3-core/index.json
+  phase3_travel_roundtrip: fixtures/phase3-travel-roundtrip/index.json
+  phase3_policy_validation_roundtrip: fixtures/phase3-policy-validation-roundtrip/index.json
+  phase3_welcome_settings: fixtures/phase3-welcome-settings/index.json
+  phase3_console_log: fixtures/phase3-console-log/index.json
+  phase4_player_readonly: fixtures/phase4-player-readonly/index.json
+  phase4_player_actions: fixtures/phase4-player-actions/index.json
+  phase4_banid_roundtrip: fixtures/phase4-banid-roundtrip/index.json
+  phase4_post_banid_reconnect: fixtures/phase4-post-banid-reconnect/index.json
+  phase4_player_form_membership: fixtures/phase4-player-form-membership/index.json
+  phase4_tracking_alias_roundtrip: fixtures/phase4-tracking-alias-roundtrip/index.json
+  phase4_tracking_note_roundtrip: fixtures/phase4-tracking-note-roundtrip/index.json
+  phase4_player_form_swapteam: fixtures/phase4-player-form-swapteam/index.json
+  phase5_two_player_readonly: fixtures/phase5-two-player-readonly/index.json
+  phase5_chat_live_cursors: fixtures/phase5-chat-live-cursors/index.json
+  placeholders_are_relation_preserving: true
+states:
+  - unauthenticated
+  - authenticated
+  - travelling
+  - logged_out
+endpoints:
+  - id: app-root
+    path: /
+    methods: [GET, POST]
+    auth: optional
+    transitions:
+      GET authenticated: redirect-current
+      POST valid-login: authenticated
+      POST invalid-or-incomplete-login: unauthenticated-login-page
+    fixture: login-page
+    verification: live-verified
+  - id: logout
+    path: /logout
+    methods: [GET]
+    auth: required
+    transitions:
+      GET: logged_out
+    fixture: logout
+    verification: live-verified
+  - id: about
+    path: /about
+    methods: [GET]
+    auth: required
+    response: full-html
+    fixture: get-about
+    verification: live-verified
+  - id: data
+    path: /data
+    methods: [GET, POST]
+    auth: required
+    response: request-xml
+    fields: [type]
+    fixture: get-data
+    verification: live-verified
+  - id: multiadmin
+    path: /multiadmin
+    methods: [GET, POST]
+    auth: required
+    profile: multiadmin-sha1
+    fields: [adminid, action, displayname, enabled, password1, password2, order, allow, deny]
+    response: full-html
+    fixtures: [get-multiadmin, primary-multiadmin, primary-select-secondary, secondary-get-multiadmin, permission-enable, permission-disable, permission-restored-profile]
+    verification: live-verified-read-select-save-restored
+  - id: current
+    path: /current
+    methods: [GET, POST]
+    auth: required
+    response: full-html
+    dom: ["#players", "#notesForm", "#resetCampaign"]
+    fields: [sortby, reverse, action]
+    writes:
+      reset-campaign: source-confirmed
+    fixture: get-current
+    verification: live-verified
+  - id: current-data
+    path: /current/data
+    methods: [POST]
+    auth: required
+    request_encoding: application/x-www-form-urlencoded
+    fields: [ajax, action, notes]
+    response: request-xml
+    writes:
+      save-notes: live-verified-restored
+      reset-campaign: source-confirmed
+    fixtures: [post-current-data, phase3-notes-save, phase3-notes-after-save, phase3-notes-restore, phase3-notes-after-restore]
+    verification: live-verified-save-readback-restored
+  - id: players
+    path: /current/players
+    methods: [GET, POST]
+    auth: required
+    fields: [action, playerkey, __ExpNumber, __ExpUnit, __IsAdmin]
+    response: full-html
+    dom: ["#players", "__PlayerId_N", "__PlayerKey_N", "__PlayerName_N", "__Action_N"]
+    writes:
+      makemember: live-verified-restored
+      cancelmembership: live-verified-restored
+      swapteam: live-verified-no-transition-in-one-player-state
+    fixtures: [get-current-players, form-membership-create, form-membership-after-create-members, form-membership-cancel, form-membership-final-members, form-swapteam-action, form-swapteam-after-action, session-a-players, session-b-players]
+    verification: live-verified-read-membership-roundtrip-and-swapteam-noop
+  - id: players-data
+    path: /current/players/data
+    methods: [POST]
+    auth: required
+    fields: [ajax, action, playerkey, __Reason, __ExpNumber, __ExpUnit, __NotifyPlayers]
+    response: request-xml
+    results: [nop, kicked, text, messages]
+    writes:
+      mutevoice: live-verified
+      unmutevoice: live-verified
+      kick: live-verified
+      sessionban: live-verified
+      banid-permanent: live-verified-revoked-reconnect-confirmed
+      extended-actions: legacy-handler-falls-through-to-kick
+      sessionban-admin-target: live-verified-denied
+    behavior:
+      non_admin_or_developer_target: kicked-and-session-ban-created
+      banid_with_never_expiry: kicked-and-persistent-id-ban-created
+      logged_admin_or_developer_target: nop-with-error-message-and-no-ban
+      browser_result_handling:
+        kicked: remove-row-with-matching-playerkey
+        text: relabel-toggletext-action-for-matching-playerkey
+    fixtures: [get-current-players-data, player-mutevoice, player-unmutevoice, player-sessionban, banid-submit, banid-after-policy, permanent-ban-revoke, permanent-bans-after-revoke, get-current-players]
+    verification: live-verified
+  - id: squads
+    path: /current/squads
+    methods: [GET, POST]
+    auth: required
+    fields: [action, squadteam, squadnumber, squadname]
+    response: full-html
+    fixture: get-current-squads
+    verification: live-verified
+  - id: chat
+    path: /current/chat
+    methods: [GET, POST]
+    auth: required
+    fields: [message, teamsay, rnd, ajax]
+    response: full-html
+    fixtures: [session-a-chat, session-a-chat-data-baseline, session-b-chat, session-b-chat-data-baseline, chat-a-marker-poll, chat-a-post-marker-poll, chat-b-marker-poll, chat-b-post-marker-poll]
+    behavior:
+      human-all-chat: visible-to-fresh-admin-sessions-in-newest-first-order
+      human-team-chat: absent-from-observed-admin-chat-polls
+      second-poll-after-read: empty
+    dom: ["#chatlog", "#chatform", ".chatmessage"]
+    fixture: chat-post
+    verification: live-verified
+  - id: chat-data
+    path: /current/chat/data
+    methods: [GET, POST]
+    auth: required
+    fields: [ajax, message, teamsay]
+    response: html-fragment
+    dom: [.chatmessage, .username, .message, .teamcolor]
+    state: per-session-chat-cursor
+    client_behavior:
+      poll_form: [ajax]
+      retained_dom_messages: 50
+    fixture: chat-data-after-post
+    verification: live-verified
+  - id: current-change
+    path: /current/change
+    methods: [GET, POST]
+    auth: required
+    fields: [action, gametype, map, mutatorGroupCount, mutgroupN, urlextra]
+    response: full-html
+    writes:
+      update-options: source-confirmed
+      start-travel: live-verified-restored
+    fixtures: [get-current-change, travel-change-baseline, travel-to-alternate, travel-change-after-alternate, travel-restore, travel-change-after-restore]
+    verification: live-verified-empty-server-roundtrip-restored
+  - id: current-change-data
+    path: /current/change/data
+    methods: [GET, POST]
+    auth: required
+    fields: [ajax, gametype, mutatorGroupCount, mutgroupN]
+    response: html-fragment
+    dom: ["#map", "#mutators", "#mutatorGroupCount"]
+    fixture: get-current-change-data
+    verification: live-verified
+  - id: current-change-check
+    path: /current/change/check
+    methods: [GET]
+    auth: required
+    response: plain-text-or-503
+    states:
+      authenticated: ok
+      travelling: 503
+      post-travel-session-only: unauthenticated
+      post-travel-remembered: new-authenticated-session
+    fixtures: [get-current-change-check, travel-alternate-check-1, travel-alternate-check-5, travel-restore-check-1, travel-restore-check-5]
+    verification: live-verified-travel-roundtrip
+  - id: workshop
+    path: /current/workshoptool
+    methods: [GET, POST]
+    auth: required
+    fields: [action, add, update, delete, download, idx, steamid, steamname]
+    response: full-html
+    fixture: get-current-workshoptool
+    verification: live-verified
+  - id: console
+    path: /console
+    methods: [GET, POST]
+    auth: required
+    fields: [command]
+    response: full-html
+    writes: command-submission-live-verified-output-unavailable
+    log_correlation: help-status-version-no-command-result-lines
+    fixtures: [get-console, phase3-console-baseline, phase3-console-help, phase3-console-status, console-log-baseline, console-log-help, console-log-status, console-log-version]
+    verification: live-verified-no-output-or-log-result
+  - id: policy
+    path: /policy
+    methods: [GET, POST]
+    auth: required
+    fields: [action, ipmask, policy, update, delete]
+    response: full-html
+    dom: ["#policies", "#addpolicy", ".message"]
+    writes:
+      add: live-verified
+      update: live-verified-restored
+      delete: live-verified
+    validation:
+      malformed-ipmask: inline-error-no-write
+      missing-policy: inline-error-no-write
+      duplicate-allow: accepted
+      persisted-allow-edit-select: no-selected-option
+    fixtures: [get-policy, policy-add, policy-delete, policy-after-delete, policy-invalid-mask, policy-missing-policy, policy-validation-add, policy-validation-after-add, policy-validation-duplicate-add, policy-validation-after-duplicate, policy-validation-update, policy-validation-after-update, policy-validation-delete-2, policy-validation-delete-1, policy-validation-after-delete]
+    verification: live-verified-validation-update-restored
+  - id: policy-bans
+    path: /policy/bans
+    methods: [GET, POST]
+    auth: required
+    fields: [action, uniqueid, playername, banid, __Submitter, __IdType, __UniqueId, __PlayerName, __Reason, __ExpNumber, __ExpUnit, __NotifyPlayers]
+    response: full-html
+    writes:
+      add: live-verified-restored
+      revoke: live-verified
+    fixtures: [get-policy-bans, permanent-bans-before, player-banid, permanent-bans-after-action, permanent-ban-revoke, permanent-bans-after-revoke, kick-ban-permanent-bans-before, player-banid-permanent, kick-ban-permanent-bans-after-action, phase3-bans-baseline, phase3-ban-add, phase3-bans-after-add, phase3-ban-revoke, phase3-bans-after-revoke]
+    verification: live-verified
+  - id: policy-session-bans
+    path: /policy/session
+    methods: [GET, POST]
+    auth: required
+    fields: [action, banid, uniqueid, __UniqueId, __Submitter]
+    response: full-html
+    writes:
+      revoke: live-verified
+    fixtures: [get-policy-session, session-bans-before, session-bans-after-action, session-ban-revoke, session-bans-after-revoke]
+    verification: live-verified
+  - id: policy-toxic-players
+    path: /policy/toxicplayers
+    methods: [GET, POST]
+    auth: required
+    fields: [action, playerkey, __PlayerName, __Submitter]
+    response: full-html
+    fixture: get-policy-toxicplayers
+    verification: live-verified
+  - id: policy-tracking
+    path: /policy/tracking
+    methods: [GET, POST]
+    auth: required
+    fields: [action, uniqueid, playername, noteid, details, __Input, __Text, __CurrentTabIndex, __FirstVisibleRowIndex]
+    pagination_actions: [firstpage, previouspage, nextpage, lastpage]
+    response: full-html
+    writes:
+      attachalias: live-verified-restored
+      deletealias: live-verified-restored
+      attachnote: live-verified-restored
+      deletenote: live-verified-restored
+    fixtures: [get-policy-tracking, tracking-alias-attach, tracking-alias-after-attach, tracking-alias-delete, tracking-alias-final, tracking-note-baseline-details, tracking-note-attach, tracking-note-after-attach, tracking-note-delete, tracking-note-final-details]
+    verification: live-verified-alias-and-note-roundtrips-restored
+  - id: policy-members
+    path: /policy/members
+    methods: [GET, POST]
+    auth: required
+    fields: [action, uniqueid, membername, __CurrentTabIndex, __FirstVisibleRowIndex]
+    pagination_actions: [firstpage, previouspage, nextpage, lastpage]
+    response: full-html
+    fixture: get-policy-members
+    verification: live-verified
+  - id: settings
+    path: /settings
+    methods: [GET]
+    auth: required
+    response: redirect-general
+    fixture: get-settings
+    verification: live-verified
+  - id: settings-general
+    path: /settings/general
+    methods: [GET, POST]
+    auth: required
+    fields: [settings_Property, liveAdjust, action]
+    response: full-html
+    fixture: get-settings-general
+    verification: live-verified
+  - id: settings-gameplay
+    path: /settings/general/gameplay
+    methods: [GET, POST]
+    auth: required
+    fields: [settings_Property, liveAdjust, action]
+    response: full-html
+    fixture: get-settings-general-gameplay
+    verification: live-verified
+  - id: settings-passwords
+    path: /settings/general/passwords
+    methods: [GET, POST]
+    auth: required
+    fields: [action, gamepw1, gamepw2, adminpw1, adminpw2]
+    response: full-html
+    fixture: get-settings-general-passwords
+    verification: live-verified
+  - id: settings-welcome
+    path: /settings/general/welcome
+    methods: [GET, POST]
+    auth: required
+    fields: [BannerLink, ClanMotto, ServerMOTD, tglWelcomeScreen, TBVal, liveAdjust, action]
+    response: full-html
+    writes:
+      save: live-verified-readback-restored
+    toggle_contract:
+      rendered-hidden-TBVal: always-0
+      browser-submit-TBVal: checkbox-derived-0-or-1
+      persisted-field: TBVal
+      server-log-bShowWelcomeScreen: misleading-absent-request-field
+    fixtures: [get-settings-general-welcome, welcome-baseline, welcome-save-marker, welcome-after-save, welcome-restore, welcome-after-restore]
+    verification: live-verified-save-readback-restored
+  - id: settings-gametypes
+    path: /settings/gametypes
+    methods: [GET, POST]
+    auth: required
+    fields: [gametype, settings_Property, liveAdjust, action]
+    response: full-html
+    fixture: get-settings-gametypes
+    verification: live-verified
+  - id: settings-mutators
+    path: /settings/mutators
+    methods: [GET, POST]
+    auth: required
+    fields: [mutator, action]
+    response: full-html
+    fixture: get-settings-mutators
+    verification: live-verified
+  - id: settings-maplist
+    path: /settings/maplist
+    methods: [GET, POST]
+    auth: required
+    fields: [maplistidx, gametype, mapcycle, action, delete, activate]
+    response: full-html
+    fixture: get-settings-maplist
+    verification: live-verified
+  - id: settings-serveractors
+    path: /settings/serveractors
+    methods: [GET, POST]
+    auth: required
+    fields: [serveractors, action]
+    response: full-html
+    fixture: get-settings-serveractors
+    verification: live-verified
+  - id: settings-system
+    path: /settings/system
+    methods: [GET, POST]
+    auth: required
+    fields: [settings_Property, action]
+    response: full-html
+    fixture: get-settings-system
+    verification: live-verified
+  - id: settings-campaign
+    path: /settings/campaign
+    methods: [GET, POST]
+    auth: required
+    fields: [__CurrentTabIndex, settings_Property, campaignname, regionCount, viewingTheater, gametype, save, delete, activate, reset]
+    response: full-html
+    fixture: get-settings-campaign
+    verification: live-verified
+not_exposed:
+  - path: /policy/hashbans
+    status: 404
+    fixture: get-policy-hashbans

@@ -1,0 +1,654 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - General</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/general</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">General</h2>
+<p id="pageDescription">Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+
+<div id="content">
+
+<form method="post" action="/ServerAdmin/settings/general">
+<fieldset>
+<legend>General Settings</legend>
+
+<div id="settingsWrapper">
+<div id="SG_Server" class="SettingsGroup">
+<h4>Server Information</h4>
+<dl>
+<dt title="Setting ID: ServerAdvertisementInterval" id="settings_ServerAdvertisementInterval_label" name="settings_ServerAdvertisementInterval_label"><label for="settings_ServerAdvertisementInterval" title="Number of seconds between advertisement broadcasts.">Advertisement Interval</label></dt>
+<dd class="" >
+  <input type="text" id="settings_ServerAdvertisementInterval" name="settings_ServerAdvertisementInterval" value="30" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ServerAdvertisementInterval');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 5, page: 5*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: ServerAdvertisementMessages" id="settings_ServerAdvertisementMessages_label" name="settings_ServerAdvertisementMessages_label"><label for="settings_ServerAdvertisementMessages" title="Messages to broadcast to all players at a given interval. One message per line, 259 characters max per message.">Advertisement Messages</label></dt>
+<dd class="" >
+  <textarea id="settings_ServerAdvertisementMessages" name="settings_ServerAdvertisementMessages" rows="4" cols="60"  ></textarea>
+
+  
+</dd>
+<dt title="Setting ID: ServerName" id="settings_ServerName_label" name="settings_ServerName_label"><label for="settings_ServerName" title="The name for the server as shown in the server browser.">Server Name</label></dt>
+<dd class="" >
+  <input type="text" id="settings_ServerName" name="settings_ServerName" value="{{SERVER_NAME_1}}" maxlength="256" size="80"  />
+
+  
+</dd>
+<dt title="Setting ID: bLANServer" id="settings_bLANServer_label" name="settings_bLANServer_label"><label for="settings_bLANServer" title="?INT?WebAdmin.GeneralSettings Tooltips.bLANServer?">Server Type</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bLANServer" value="0" id="settings_bLANServer_0" checked="checked"  /><label for="settings_bLANServer_0">Internet Server</label>
+<input type="radio" name="settings_bLANServer" value="1" id="settings_bLANServer_1"   /><label for="settings_bLANServer_1">LAN Server</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Connection" class="SettingsGroup">
+<h4>Connection</h4>
+<dl>
+<dt title="Setting ID: MaxIdleTime" id="settings_MaxIdleTime_label" name="settings_MaxIdleTime_label"><label for="settings_MaxIdleTime" title="Maximum number of idle seconds before kicking the player. 0 disables idle kicking.">Maximum Idle Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxIdleTime" name="settings_MaxIdleTime" value="0.0000" title="Minimum: 0.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxIdleTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MaxPlayers" id="settings_MaxPlayers_label" name="settings_MaxPlayers_label"><label for="settings_MaxPlayers" title="Maximum number of players allowed on the server.">Maximum Players</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxPlayers" name="settings_MaxPlayers" value="64" title="Minimum: 0; Maximum: 64"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxPlayers');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 64, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MaxServerIdleDuration" id="settings_MaxServerIdleDuration_label" name="settings_MaxServerIdleDuration_label"><label for="settings_MaxServerIdleDuration" title="If the server is idle/empty for more than this duration, then the next map will be loaded (0 = disabled)">Maximum Server Idle Duration</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxServerIdleDuration" name="settings_MaxServerIdleDuration" value="0" title="Minimum: 0; Maximum: 120"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxServerIdleDuration');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 120, step: 10, page: 10*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MaxSpectators" id="settings_MaxSpectators_label" name="settings_MaxSpectators_label"><label for="settings_MaxSpectators" title="Maximum number of spectators allowed to join the server.">Maximum Spectators</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxSpectators" name="settings_MaxSpectators" value="2" title="Minimum: 0; Maximum: 64"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxSpectators');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 64, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MinNetPlayers" id="settings_MinNetPlayers_label" name="settings_MinNetPlayers_label"><label for="settings_MinNetPlayers" title="Minimum number of players required before initiating the match.">Minimum Players</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MinNetPlayers" name="settings_MinNetPlayers" value="1" title="Minimum: 1; Maximum: 64"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MinNetPlayers');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 1, max: 64, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: NameChangeKickThreshold" id="settings_NameChangeKickThreshold_label" name="settings_NameChangeKickThreshold_label"><label for="settings_NameChangeKickThreshold" title="Per player name-change threshold. If exceeded, then the player will be session-banned. (0 = disabled)">Name-Change Kick Threshold</label></dt>
+<dd class="" >
+  <input type="text" id="settings_NameChangeKickThreshold" name="settings_NameChangeKickThreshold" value="4" title="Minimum: 0; Maximum: 10"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_NameChangeKickThreshold');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 10, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: PingLimit" id="settings_PingLimit_label" name="settings_PingLimit_label"><label for="settings_PingLimit" title="Maximum allowed average ping limit. If exceeded, then the player will be kicked. (0 = disabled)">Ping Limit</label></dt>
+<dd class="" >
+  <input type="text" id="settings_PingLimit" name="settings_PingLimit" value="0" title="Minimum: 0; Maximum: 999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_PingLimit');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 999, step: 50, page: 50*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Game" class="SettingsGroup">
+<h4>Game</h4>
+<dl>
+<dt title="Setting ID: bBalanceTeams" id="settings_bBalanceTeams_label" name="settings_bBalanceTeams_label"><label for="settings_bBalanceTeams" title="Do not allow teams to get out of balance">Balance Teams</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bBalanceTeams" value="0" id="settings_bBalanceTeams_0"   /><label for="settings_bBalanceTeams_0">No</label>
+<input type="radio" name="settings_bBalanceTeams" value="1" id="settings_bBalanceTeams_1" checked="checked"  /><label for="settings_bBalanceTeams_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: bAutoBalanceTeamsOnDeath" id="settings_bAutoBalanceTeamsOnDeath_label" name="settings_bAutoBalanceTeamsOnDeath_label"><label for="settings_bAutoBalanceTeamsOnDeath" title="Force team balancing when a player died.">Balance Teams On Death</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAutoBalanceTeamsOnDeath" value="0" id="settings_bAutoBalanceTeamsOnDeath_0"   /><label for="settings_bAutoBalanceTeamsOnDeath_0">No</label>
+<input type="radio" name="settings_bAutoBalanceTeamsOnDeath" value="1" id="settings_bAutoBalanceTeamsOnDeath_1" checked="checked"  /><label for="settings_bAutoBalanceTeamsOnDeath_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: PreStartDuration" id="settings_PreStartDuration_label" name="settings_PreStartDuration_label"><label for="settings_PreStartDuration" title="Number of seconds to wait after the minimum number of players have joined the server before starting the match.">Game Start Delay</label></dt>
+<dd class="" >
+  <input type="text" id="settings_PreStartDuration" name="settings_PreStartDuration" value="5" title="Minimum: 0; Maximum: 180"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_PreStartDuration');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 180, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MaxTeamDifference" id="settings_MaxTeamDifference_label" name="settings_MaxTeamDifference_label"><label for="settings_MaxTeamDifference" title="Maximum difference in teams size to allow during team balancing.">Maximum Team Difference</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxTeamDifference" name="settings_MaxTeamDifference" value="2" title="Minimum: 2; Maximum: 64"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxTeamDifference');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 2, max: 64, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: ReadyUpDelay" id="settings_ReadyUpDelay_label" name="settings_ReadyUpDelay_label"><label for="settings_ReadyUpDelay" title="?INT?WebAdmin.GeneralSettings Tooltips.ReadyUpDelay?">Ready Up Delay</label></dt>
+<dd class="" >
+  <input type="text" id="settings_ReadyUpDelay" name="settings_ReadyUpDelay" value="5" title="Minimum: 0; Maximum: 180"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ReadyUpDelay');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 180, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: RealismLevel" id="settings_RealismLevel_label" name="settings_RealismLevel_label"><label for="settings_RealismLevel" title="Realism profile to use. This determines various aspects of the game, like HUD elements and feedback messages.">Realism</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_RealismLevel" value="0" id="settings_RealismLevel_0" checked="checked"  /><label for="settings_RealismLevel_0">Enabled</label>
+<input type="radio" name="settings_RealismLevel" value="1" id="settings_RealismLevel_1"   /><label for="settings_RealismLevel_1">Custom Game Options</label>
+
+  <script type="text/javascript">
+// <![CDATA[
+var origRealismValue = {};
+$(document).ready(function(){
+  origRealismValue.element = $('input[name="settings_RealismLevel"]:checked');
+  origRealismValue.value = origRealismValue.element.val();
+  $('input[name="settings_RealismLevel"]').click(function(eventObject){
+    var thisVal = $(this).val();
+    if (thisVal == origRealismValue.value) {
+      return;
+    }
+    var callback = function(res) {
+      if (!res) {
+        origRealismValue.element.click();
+      }      
+    };
+    messageConfirm('Changing the realism mode can override various settings.\nAre you sure you want to change the realism mode?', callback);  
+  });
+});
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: SpectatingMode" id="settings_SpectatingMode_label" name="settings_SpectatingMode_label"><label for="settings_SpectatingMode" title="">Spectating Mode</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_SpectatingMode" value="0" id="settings_SpectatingMode_0" checked="checked"  /><label for="settings_SpectatingMode_0">3rd Person</label>
+<input type="radio" name="settings_SpectatingMode" value="1" id="settings_SpectatingMode_1"   /><label for="settings_SpectatingMode_1">3rd Person (Camera Locked)</label>
+<input type="radio" name="settings_SpectatingMode" value="2" id="settings_SpectatingMode_2"   /><label for="settings_SpectatingMode_2">1st Person Only</label>
+
+  
+</dd>
+<dt title="Setting ID: bUseMapList" id="settings_bUseMapList_label" name="settings_bUseMapList_label"><label for="settings_bUseMapList" title="Make use of the map cycles to switch to a new map at the end of the match.">Use Map List</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bUseMapList" value="0" id="settings_bUseMapList_0"   /><label for="settings_bUseMapList_0">No</label>
+<input type="radio" name="settings_bUseMapList" value="1" id="settings_bUseMapList_1" checked="checked"  /><label for="settings_bUseMapList_1">Yes</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Administration" class="SettingsGroup">
+<h4>Administration</h4>
+<dl>
+<dt title="Setting ID: bAdminCanPause" id="settings_bAdminCanPause_label" name="settings_bAdminCanPause_label"><label for="settings_bAdminCanPause" title="Are administrators allowed to pause a network game.">{{ADMIN_1}} Can Pause</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAdminCanPause" value="0" id="settings_bAdminCanPause_0" checked="checked"  /><label for="settings_bAdminCanPause_0">No</label>
+<input type="radio" name="settings_bAdminCanPause" value="1" id="settings_bAdminCanPause_1"   /><label for="settings_bAdminCanPause_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: bSilentAdminLogin" id="settings_bSilentAdminLogin_label" name="settings_bSilentAdminLogin_label"><label for="settings_bSilentAdminLogin" title="Whether to announce to players when an other player logs in as an administrator. This does not influence administration via the WebAdmin.">{{ADMIN_1}} Login</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bSilentAdminLogin" value="0" id="settings_bSilentAdminLogin_0" checked="checked"  /><label for="settings_bSilentAdminLogin_0">Announce</label>
+<input type="radio" name="settings_bSilentAdminLogin" value="1" id="settings_bSilentAdminLogin_1"   /><label for="settings_bSilentAdminLogin_1">Keep Silent</label>
+
+  
+</dd>
+<dt title="Setting ID: bEnableGlobalBanList" id="settings_bEnableGlobalBanList_label" name="settings_bEnableGlobalBanList_label"><label for="settings_bEnableGlobalBanList" title="Whether to download and enforce the global ban list maintained by Tripwire Interactive">Global Ban List</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableGlobalBanList" value="0" id="settings_bEnableGlobalBanList_0"   /><label for="settings_bEnableGlobalBanList_0">Disable</label>
+<input type="radio" name="settings_bEnableGlobalBanList" value="1" id="settings_bEnableGlobalBanList_1" checked="checked"  /><label for="settings_bEnableGlobalBanList_1">Enable</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_MapVoting" class="SettingsGroup">
+<h4>Map Voting</h4>
+<dl>
+<dt title="Setting ID: EndGameVotingPercentage" id="settings_EndGameVotingPercentage_label" name="settings_EndGameVotingPercentage_label"><label for="settings_EndGameVotingPercentage" title="?INT?WebAdmin.GeneralSettings Tooltips.EndGameVotingPercentage?">End Game Voting Percentage</label></dt>
+<dd class="" >
+  <input type="text" id="settings_EndGameVotingPercentage" name="settings_EndGameVotingPercentage" value="50.0000" title="Minimum: 1.0000; Maximum: 100.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_EndGameVotingPercentage');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 1.0000, max: 100.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MapRepeatLimit" id="settings_MapRepeatLimit_label" name="settings_MapRepeatLimit_label"><label for="settings_MapRepeatLimit" title="?INT?WebAdmin.GeneralSettings Tooltips.MapRepeatLimit?">Map Repeat Limit</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MapRepeatLimit" name="settings_MapRepeatLimit" value="0" title="Minimum: 0; Maximum: 256"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MapRepeatLimit');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 256, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bEnableMapVoting" id="settings_bEnableMapVoting_label" name="settings_bEnableMapVoting_label"><label for="settings_bEnableMapVoting" title="?INT?WebAdmin.GeneralSettings Tooltips.bEnableMapVoting?">Map Voting</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableMapVoting" value="0" id="settings_bEnableMapVoting_0"   /><label for="settings_bEnableMapVoting_0">Disabled</label>
+<input type="radio" name="settings_bEnableMapVoting" value="1" id="settings_bEnableMapVoting_1" checked="checked"  /><label for="settings_bEnableMapVoting_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: MapVotingTime" id="settings_MapVotingTime_label" name="settings_MapVotingTime_label"><label for="settings_MapVotingTime" title="?INT?WebAdmin.GeneralSettings Tooltips.MapVotingTime?">Map Voting Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MapVotingTime" name="settings_MapVotingTime" value="30.0000" title="Minimum: 10.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MapVotingTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 10.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bAllowMidGameVoting" id="settings_bAllowMidGameVoting_label" name="settings_bAllowMidGameVoting_label"><label for="settings_bAllowMidGameVoting" title="?INT?WebAdmin.GeneralSettings Tooltips.bAllowMidGameVoting?">Mid Game Voting</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAllowMidGameVoting" value="0" id="settings_bAllowMidGameVoting_0" checked="checked"  /><label for="settings_bAllowMidGameVoting_0">Disallow</label>
+<input type="radio" name="settings_bAllowMidGameVoting" value="1" id="settings_bAllowMidGameVoting_1"   /><label for="settings_bAllowMidGameVoting_1">Allow</label>
+
+  
+</dd>
+<dt title="Setting ID: MidGameVotingPercentage" id="settings_MidGameVotingPercentage_label" name="settings_MidGameVotingPercentage_label"><label for="settings_MidGameVotingPercentage" title="?INT?WebAdmin.GeneralSettings Tooltips.MidGameVotingPercentage?">Mid Game Voting Percentage</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MidGameVotingPercentage" name="settings_MidGameVotingPercentage" value="50.0000" title="Minimum: 1.0000; Maximum: 100.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MidGameVotingPercentage');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 1.0000, max: 100.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: RecentMaps" id="settings_RecentMaps_label" name="settings_RecentMaps_label"><label for="settings_RecentMaps" title="?INT?WebAdmin.GeneralSettings Tooltips.RecentMaps?">Recently Played Maps (restricted from voting)</label></dt>
+<dd class="" >
+  <textarea id="settings_RecentMaps" name="settings_RecentMaps" rows="4" cols="60"  ></textarea>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_KickVoting" class="SettingsGroup">
+<h4>Kick Voting</h4>
+<dl>
+<dt title="Setting ID: bAnonymousVoteKicking" id="settings_bAnonymousVoteKicking_label" name="settings_bAnonymousVoteKicking_label"><label for="settings_bAnonymousVoteKicking" title="?INT?WebAdmin.GeneralSettings Tooltips.bAnonymousVoteKicking?">Anonymous Votes</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAnonymousVoteKicking" value="0" id="settings_bAnonymousVoteKicking_0" checked="checked"  /><label for="settings_bAnonymousVoteKicking_0">Disabled</label>
+<input type="radio" name="settings_bAnonymousVoteKicking" value="1" id="settings_bAnonymousVoteKicking_1"   /><label for="settings_bAnonymousVoteKicking_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bEnableKickVoting" id="settings_bEnableKickVoting_label" name="settings_bEnableKickVoting_label"><label for="settings_bEnableKickVoting" title="?INT?WebAdmin.GeneralSettings Tooltips.bEnableKickVoting?">Kick Voting</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableKickVoting" value="0" id="settings_bEnableKickVoting_0"   /><label for="settings_bEnableKickVoting_0">Disabled</label>
+<input type="radio" name="settings_bEnableKickVoting" value="1" id="settings_bEnableKickVoting_1" checked="checked"  /><label for="settings_bEnableKickVoting_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: KickVotingTime" id="settings_KickVotingTime_label" name="settings_KickVotingTime_label"><label for="settings_KickVotingTime" title="?INT?WebAdmin.GeneralSettings Tooltips.KickVotingTime?">Kick Voting Time</label></dt>
+<dd class="" >
+  <input type="text" id="settings_KickVotingTime" name="settings_KickVotingTime" value="30.0000" title="Minimum: 10.0000; Maximum: 300.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_KickVotingTime');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 10.0000, max: 300.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MinKickVoteThreshold" id="settings_MinKickVoteThreshold_label" name="settings_MinKickVoteThreshold_label"><label for="settings_MinKickVoteThreshold" title="Threshold of players on the server necessary to vote kick a player.">Minimum Kick Vote Threshold</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MinKickVoteThreshold" name="settings_MinKickVoteThreshold" value="0.3300" title="Minimum: 0.3000; Maximum: 0.9000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MinKickVoteThreshold');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.3000, max: 0.9000, step: 0.0100, page: 0.0100*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_RoleKicking" class="SettingsGroup">
+<h4>Role Kicking</h4>
+<dl>
+<dt title="Setting ID: bEnableRoleKick" id="settings_bEnableRoleKick_label" name="settings_bEnableRoleKick_label"><label for="settings_bEnableRoleKick" title="If set, then role-kick voting is enabled.">Enable Role Kick</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableRoleKick" value="0" id="settings_bEnableRoleKick_0"   /><label for="settings_bEnableRoleKick_0">Disabled</label>
+<input type="radio" name="settings_bEnableRoleKick" value="1" id="settings_bEnableRoleKick_1" checked="checked"  /><label for="settings_bEnableRoleKick_1">Enabled</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Chat" class="SettingsGroup">
+<h4>Chat</h4>
+<dl>
+<dt title="Setting ID: ChatFilterList" id="settings_ChatFilterList_label" name="settings_ChatFilterList_label"><label for="settings_ChatFilterList" title="Words to censor in chat. Define one word per line.">Censor Words</label></dt>
+<dd class="" >
+  <textarea id="settings_ChatFilterList" name="settings_ChatFilterList" rows="4" cols="60"  >ipsmlorum1
+ipsmlorum2
+ipsmlorum3</textarea>
+
+  
+</dd>
+<dt title="Setting ID: bEnableDeadToDeadVOIP" id="settings_bEnableDeadToDeadVOIP_label" name="settings_bEnableDeadToDeadVOIP_label"><label for="settings_bEnableDeadToDeadVOIP" title="Defines if dead players are allowed to speak to other dead players.">Dead-to-Dead VoIP</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableDeadToDeadVOIP" value="0" id="settings_bEnableDeadToDeadVOIP_0"   /><label for="settings_bEnableDeadToDeadVOIP_0">Disabled</label>
+<input type="radio" name="settings_bEnableDeadToDeadVOIP" value="1" id="settings_bEnableDeadToDeadVOIP_1" checked="checked"  /><label for="settings_bEnableDeadToDeadVOIP_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: Proximity3DVOIPSetting" id="settings_Proximity3DVOIPSetting_label" name="settings_Proximity3DVOIPSetting_label"><label for="settings_Proximity3DVOIPSetting" title="?INT?WebAdmin.GeneralSettings Tooltips.Proximity3DVOIPSetting?">Positional 3D VoIP</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_Proximity3DVOIPSetting" value="0" id="settings_Proximity3DVOIPSetting_0"   /><label for="settings_Proximity3DVOIPSetting_0">Disabled</label>
+<input type="radio" name="settings_Proximity3DVOIPSetting" value="1" id="settings_Proximity3DVOIPSetting_1"   /><label for="settings_Proximity3DVOIPSetting_1">Friendly Only</label>
+<input type="radio" name="settings_Proximity3DVOIPSetting" value="2" id="settings_Proximity3DVOIPSetting_2" checked="checked"  /><label for="settings_Proximity3DVOIPSetting_2">All Players</label>
+
+  
+</dd>
+<dt title="Setting ID: bDisablePublicTextChat" id="settings_bDisablePublicTextChat_label" name="settings_bDisablePublicTextChat_label"><label for="settings_bDisablePublicTextChat" title="Defines if public chat messages are possible.">Public Text Chat</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bDisablePublicTextChat" value="0" id="settings_bDisablePublicTextChat_0" checked="checked"  /><label for="settings_bDisablePublicTextChat_0">Available</label>
+<input type="radio" name="settings_bDisablePublicTextChat" value="1" id="settings_bDisablePublicTextChat_1"   /><label for="settings_bDisablePublicTextChat_1">Unavailable</label>
+
+  
+</dd>
+<dt title="Setting ID: bDisablePublicVOIPChannel" id="settings_bDisablePublicVOIPChannel_label" name="settings_bDisablePublicVOIPChannel_label"><label for="settings_bDisablePublicVOIPChannel" title="Defines the availability of a public VoIP channel.">Public VoIP Channel</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bDisablePublicVOIPChannel" value="0" id="settings_bDisablePublicVOIPChannel_0" checked="checked"  /><label for="settings_bDisablePublicVOIPChannel_0">Available</label>
+<input type="radio" name="settings_bDisablePublicVOIPChannel" value="1" id="settings_bDisablePublicVOIPChannel_1"   /><label for="settings_bDisablePublicVOIPChannel_1">Unavailable</label>
+
+  
+</dd>
+<dt title="Setting ID: bDisableTeamVOIPChannel" id="settings_bDisableTeamVOIPChannel_label" name="settings_bDisableTeamVOIPChannel_label"><label for="settings_bDisableTeamVOIPChannel" title="Defines the availability of the Team VoIP channel.">Team VoIP Channel</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bDisableTeamVOIPChannel" value="0" id="settings_bDisableTeamVOIPChannel_0" checked="checked"  /><label for="settings_bDisableTeamVOIPChannel_0">Available</label>
+<input type="radio" name="settings_bDisableTeamVOIPChannel" value="1" id="settings_bDisableTeamVOIPChannel_1"   /><label for="settings_bDisableTeamVOIPChannel_1">Unavailable</label>
+
+  
+</dd>
+<dt title="Setting ID: bEnableVOIP" id="settings_bEnableVOIP_label" name="settings_bEnableVOIP_label"><label for="settings_bEnableVOIP" title="Enable Voice over IP.">VoIP</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bEnableVOIP" value="0" id="settings_bEnableVOIP_0"   /><label for="settings_bEnableVOIP_0">Disabled</label>
+<input type="radio" name="settings_bEnableVOIP" value="1" id="settings_bEnableVOIP_1" checked="checked"  /><label for="settings_bEnableVOIP_1">Enabled</label>
+
+  
+</dd>
+
+</dl>
+</div>
+
+</div>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+    var tabs = $('<ul id="settingstabs"></ul>');
+    var tabidx = 0;
+    var idx = -1;
+    $('#settingsWrapper').prepend(tabs);
+    $('#settingsWrapper div.SettingsGroup').each(function() {
+        var title = $('h4', this);
+        ++idx;
+        tabs.append('<li><a href="#'+this.id+'"><span>'+title.text()+'</span></a></li>');
+        if ('#'+this.id == location.hash) {
+          tabidx = idx;
+        }
+        title.remove();
+    });
+    tabs.tabs({ selected: tabidx });    
+});
+//]]>
+</script>
+
+
+<div  ><input type="checkbox" name="liveAdjust" value="1" id="liveAdjust" checked="checked" />
+<label for="liveAdjust" title="When checked, changes are applied directly to the current game. This could influence the rules of the game.">Save changes directly to the current game instance.</label></div>
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
+</fieldset>
+</form>
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+	
+$(document).ready(function(){
+	var vLabel = '<span style="padding-left:2mm">Minute(s)</span>';
+	$('input[name=settings_MaxServerIdleDuration]').after(vLabel);
+	vLabel = '<span style="padding-left:2mm">Times</span>';
+	$('input[name=settings_NameChangeKickThreshold]').after(vLabel);
+});
+
+//]]>
+</script>
+
+<script type="text/javascript" src="/images/settings_gameplay.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

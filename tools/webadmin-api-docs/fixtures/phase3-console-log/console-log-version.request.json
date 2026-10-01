@@ -1,0 +1,7 @@
+{
+  "form": {
+    "command": "version"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/console"
+}

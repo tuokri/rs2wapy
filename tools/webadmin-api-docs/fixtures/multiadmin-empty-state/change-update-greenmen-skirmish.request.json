@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "update",
+    "gametype": "GreenMenMod.GMGameInfoSkirmish"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/change"
+}

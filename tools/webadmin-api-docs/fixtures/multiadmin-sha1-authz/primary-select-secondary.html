@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Administrators</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/multiadmin</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Administrators</h2>
+<p id="pageDescription">Manage WebAdmin administrators.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+
+<div id="content">
+
+<fieldset id="mloverview">
+<legend>Administrators</legend>
+<form id="editlist" method="post" action="/ServerAdmin/multiadmin">
+<div>
+    <select id="adminidlist" name="adminid">
+    <option value=""></option>
+    <option value="{{ADMIN_1}}"  class="adminEnabled">{{ADMIN_1}}</option>
+<option value="{{ADMIN_2}}" selected="selected" class="adminEnabled">{{ADMIN_2}}</option>
+<option value="{{ADMIN_3}}"  class="adminDisabled">{{ADMIN_3}}</option>
+
+    </select>
+    <button type="submit" id="btnselect">edit administrator</button>
+</div>
+</form>
+<form id="newadmin" method="post" action="/ServerAdmin/multiadmin">
+<div>
+    <br />
+    <label for="newadminid">Username:</label>
+    <input type="text" id="newadminid" name="adminid" value=""/>
+    <button type="submit" name="action" value="create">create administrator</button>
+</div>
+</form>
+</fieldset>
+
+<form method="post" action="/ServerAdmin/multiadmin" id="profileform">
+<fieldset>
+  <legend>{{ADMIN_2}}</legend>
+  <input type="hidden" name="adminid" value="{{ADMIN_2}}" />
+   
+  <dl>
+    <dt title="Show this as the name of the administrator rather than the user name"><label for="displayname">Display name</label></dt>
+    <dd><input type="text" name="displayname" id="displayname" value="{{ADMIN_DISPLAY_1}}" size="40" maxlength="128" /></dd>
+    
+    <dt>Account Enabled</dt>
+    <dd>
+      <input type="radio" name="enabled" id="enabledTrue" value="1" checked="checked" /> <label for="enabledTrue">Enabled</label>
+      <br />
+      <input type="radio" name="enabled" id="enabledFalse" value="0"  /> <label for="enabledFalse">Disabled</label>
+    </dd>
+    
+    <dt><label for="password1">Password</label></dt>
+    <dd><input type="password" name="password1" id="password1" value="" size="40" maxlength="128" /></dd>
+    
+    <dt><label for="password2">Confirm password</label></dt>
+    <dd><input type="password" name="password2" id="password2" value="" size="40" maxlength="128" /></dd>
+    
+    <dt>Access order</dt>
+    <dd>
+      <input type="radio" name="order" id="DenyAllow" value="DenyAllow" checked="checked" /> <label for="DenyAllow" title="Deny access unless it is eplicitly allow. Defaults to allow.">Deny, Allow</label>
+      <br />
+      <input type="radio" name="order" id="AllowDeny" value="AllowDeny"  /> <label for="AllowDeny" title="Access is denied if it is now allowed. Defaults to deny.">Allow, Deny</label>
+    </dd>
+  
+    <dt><label for="deny">Deny patterns</label></dt>
+    <dd><textarea id="deny" name="deny" cols="60" rows="6"></textarea></dd>
+    
+    <dt><label for="allow">Allow patterns</label></dt>
+    <dd><textarea id="allow" name="allow" cols="60" rows="6">*
+**</textarea></dd>
+    
+    <dd>
+    <p>
+    The allow and deny patterns are the part of the URL in the webadmin after <code>/ServerAdmin</code>. 
+    For example, the pattern for this page is: <code>/multiadmin</code>, and the full URL is <code>/ServerAdmin/multiadmin</code>.
+    The patterns may contain the wildcards <code>*</code> and <code>**</code>, the latter wildcard is greedy. 
+    The pattern <code>/foo/*/bar</code> would match <code>/foo/quux/bar</code>, but not <code>/foo/bar</code>.
+    The pattern <code>/xxx**y</code> would match <code>/xxx/something/yyy</code>, the pattern <code>/xxx*y</code> would not.
+    </p>
+    <p>
+    Certain pages provide more granular permission control. 
+    For example the settings pages can filter on settings groups, or filter what game type or mutator can be edited.  
+    </p>
+    <p>
+    To see what privilege URLs where checked for given pages you can enable the privilege log with the next button: 
+    <button type="submit" name="privlog" value="privlog">Toggle privilege log</button>. The privilege log can be shown by pressing the &Pi; button in the lower left corner of the screen.
+    </p>
+    </dd>
+  
+  </dl>
+  
+  <div id="pfactions">
+  <br />
+  <button type="submit" name="action" value="save">save</button>
+  <!--<button type="submit" name="action" value="delete" <%allowdelete%>>delete</button>-->
+  </div>
+  
+  <div id="menueditor"><h3>Navigation Preview</h3>
+<ul>
+<li><a href="/current" title="The current game status.">Current Game</a>
+<ul>
+<li><a href="/current/change" title="Change the current map or game mode.">Change Map</a></li>
+<li><a href="/current/chat" title="This console allows you to chat with the players on the server.">Chat console</a></li>
+<li><a href="/current/players" title="Manage the players currently on the server.">Players</a></li>
+<li><a href="/current/squads" title="Manage the squads currently on the server.">Squads</a></li>
+<li><a href="/current/workshoptool" title="Manage the current Steam Workshop items on this server.">Steam Workshop Tool</a></li>
+
+</ul>
+</li>
+<li><a href="/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server.">Management Console</a></li>
+<li><a href="/policy" title="Change the IP policies that determine who can join the server.">Access Policy</a>
+<ul>
+<li><a href="/policy/members" title="Manage the members for this server.">Members</a></li>
+<li><a href="/policy/bans" title="Change account ban records. These records ban a single online account.">Banned IDs</a></li>
+<li><a href="/policy/session" title="View current session bans.">Session Bans</a></li>
+<li><a href="/policy/toxicplayers" title="Manage the toxic players in this server.">Toxic Players</a></li>
+<li><a href="/policy/tracking" title="Overview of players being tracked.">Tracking</a></li>
+
+</ul>
+</li>
+<li><a href="/settings" title="">Settings</a>
+<ul>
+<li><a href="/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level.">General</a>
+<ul>
+<li><a href="/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level.">Gameplay</a></li>
+<li><a href="/settings/general/passwords" title="Change the game and/or administration passwords.">Passwords</a></li>
+<li><a href="/settings/general/welcome" title="Change the content of the screen shown when players join.">Welcome Screen</a></li>
+
+</ul>
+</li>
+<li><a href="/settings/campaign" title="Change the region configuration for the campaign mode.">Campaign</a></li>
+<li><a href="/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level.">Gametypes</a></li>
+<li><a href="/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle.">Map Cycles</a></li>
+<li><a href="/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level.">Mutators</a></li>
+<li><a href="/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server.">Server Actors</a></li>
+<li><a href="/settings/system" title="Change the web administration configuration.">WebAdmin</a></li>
+
+</ul>
+</li>
+<li><a href="/multiadmin" title="Manage WebAdmin administrators.">Administrators</a></li>
+<li><a href="/logout" title="Log out from the webadmin and clear all authentication information.">Log out</a></li>
+
+</ul>
+</div>
+  
+</fieldset>
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function() {
+  $('#pfactions button[value="delete"]').click(function () {
+    return window.confirm("Are you sure you want to delete this administrator?\nThis will log out existing users.");
+  });
+  $('#pfactions button[value="delete"]:disabled').before('<small title="To delete this admin you have to edit the configuration file."> This admin cannot be deleted via the webadmin.</small>').remove();
+  $('#pfactions button[value="save"]').click(function () {
+    if ($('#password1').val() != $('#password2').val())
+    {
+      alert("New password and confirmation do not match.");
+      return false;
+    }
+    return true;
+  });
+  
+  var menuedit = $('#menueditor');
+  $('#profileform dl').prepend(menuedit.clone()); 
+  menuedit.remove();
+  
+  reloadAccessRules();
+  $('#profileform input[name="order"]').change(reloadAccessRules);
+  $('#allow, #deny').change(reloadAccessRules);
+  $('#menueditor a').click(function(){return false;});
+  $('#menueditor').show();
+  $('#menueditor a').draggable({
+    helper: 'clone',
+    zIndex: 100,
+    appendTo: '#profileform',
+    start: function(ev, ui) {
+      $(ui.helper).addClass('dragging');
+    },
+    stop: function(ev, ui) {
+      $(ui.helper).removeClass('dragging');
+    }
+  });
+  $('#allow, #deny').droppable({
+    accept: 'a',
+    hoverClass: "dropHover",
+    activeClass: "droppable",
+    drop: function(e, ui) {
+      var item = $(ui.draggable);
+      var te = $(this);
+      te.val(jQuery.trim(te.val()+'\n'+item.attr('href')));
+      reloadAccessRules();
+    }
+  });
+});
+
+function toRegExp(str)
+{
+  str = str.replace(/\*\*/g, '\2').replace(/\*/g, '.*?').replace(/\2/g, '.*');
+  return new RegExp(str, 'i');
+}
+
+function reloadAccessRules()
+{
+  var allow = $('#allow').val().split('\n');
+  for (var i = 0; i < allow.length; i++)
+  {
+    allow[i] = jQuery.trim(allow[i]);
+    allow[i] = toRegExp(allow[i]);
+  }
+  var deny = $('#deny').val().split('\n');
+  for (var i = 0; i < deny.length; i++)
+  {
+    deny[i] = jQuery.trim(deny[i]);
+    deny[i] = toRegExp(deny[i]);
+  }
+  var denyallow = $('#profileform input[name="order"]:checked').val() == $('#DenyAllow').val();
+  $('#menueditor a').each(function() {
+    var path = $(this).attr('href');
+    var inallow = false;
+    var indeny = false;
+    for (var i = 0; i < allow.length; i++)
+    {
+      if (allow[i].exec(path) == path)
+      {
+        inallow = true;
+        break;
+      }
+    }
+    for (var i = 0; i < deny.length; i++)
+    {
+      if (deny[i].exec(path) == path)
+      {
+        indeny = true;
+        break;
+      }
+    }
+    if (denyallow) {
+      if (indeny && !inallow) $(this).addClass('denied');
+      else $(this).removeClass('denied');
+    }
+    else {
+      if (inallow) $(this).removeClass('denied');
+      else $(this).addClass('denied');
+    }
+  });
+}
+
+//]]>
+</script>
+
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+    $('#adminidlist').change(function(){
+        $('#editlist').submit();
+    });
+    $('#newadmin').submit(function() {
+        var nlid = jQuery.trim($(this.adminid).val());
+        var isValid = true;
+        var nameregex = /^[a-z0-9_-]+$/i;
+        if (nlid.length == 0)
+        {
+            alert('The administrator name cannot be empty.');
+            isValid = false;
+        }
+        else if (!nameregex.test(nlid))
+        {
+            alert('The administrator name may only contain alphanumeric characters, including underscore and dash.\nRegular expression: '+nameregex);
+            isValid = false;
+        }
+        else {
+            $('#adminidlist option').each(function() {
+                var item = $(this);
+                if (item.text().toUpperCase() == nlid.toUpperCase()) {
+                    alert('There is already an administrator with the name '+nlid);
+                    isValid = false;
+                }
+            });
+        }
+        if (!isValid) return false;
+    });
+    $('#newadmin div *').hide();
+    $('#mloverview form, #mloverview div').css('display', 'inline');
+    $('#newadmin button').show().click(function () {
+        if (haveName)
+        {
+            haveName = false;
+            return true;
+        }
+        else {
+            messagePrompt('Enter the username of the new administrator', promptedName, '');
+            return false;
+        }
+    });
+});
+
+var haveName = false;
+
+function promptedName(newname) {
+    var mapid = jQuery.trim(newname);
+    if (mapid.length > 0) {
+        haveName = true;
+        $('#newadminid').val(mapid);
+        $('#newadmin button').click();
+        return true;
+    }
+    return false;
+}
+
+//]]>
+</script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,174 @@
+{
+  "captures": [
+    {
+      "name": "chat-a-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-a-login-page.request.json",
+      "response": "chat-a-login-page.html"
+    },
+    {
+      "name": "chat-a-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-a-login-submit.request.json",
+      "response": "chat-a-login-submit.html"
+    },
+    {
+      "name": "chat-a-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-a-page.request.json",
+      "response": "chat-a-page.html"
+    },
+    {
+      "name": "chat-a-first-poll",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "chat-a-first-poll.request.json",
+      "response": "chat-a-first-poll.txt"
+    },
+    {
+      "name": "chat-a-second-poll",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "chat-a-second-poll.request.json",
+      "response": "chat-a-second-poll.txt"
+    },
+    {
+      "name": "chat-b-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-b-login-page.request.json",
+      "response": "chat-b-login-page.html"
+    },
+    {
+      "name": "chat-b-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-b-login-submit.request.json",
+      "response": "chat-b-login-submit.html"
+    },
+    {
+      "name": "chat-b-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-b-page.request.json",
+      "response": "chat-b-page.html"
+    },
+    {
+      "name": "chat-b-first-poll",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "chat-b-first-poll.request.json",
+      "response": "chat-b-first-poll.txt"
+    },
+    {
+      "name": "chat-b-second-poll",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "chat-b-second-poll.request.json",
+      "response": "chat-b-second-poll.txt"
+    },
+    {
+      "name": "chat-session-1-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-session-1-logout.request.json",
+      "response": "chat-session-1-logout.html"
+    },
+    {
+      "name": "chat-session-2-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "chat-session-2-logout.request.json",
+      "response": "chat-session-2-logout.html"
+    }
+  ],
+  "failures": [
+    {
+      "route": "chat-a-first-poll",
+      "error": "one or more expected human chat markers were absent"
+    },
+    {
+      "route": "chat-b-first-poll",
+      "error": "one or more expected human chat markers were absent"
+    }
+  ]
+}

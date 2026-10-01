@@ -1,0 +1,512 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Gametypes</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/settings/gametypes</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Gametypes</h2>
+<p id="pageDescription">Change the default settings of the gametypes. Changes will take effect in the next level.</p>
+</div>
+
+<div id="messages">
+
+
+</div>
+
+
+<div id="content">
+
+<p>Note: editing gametype settings will result in the loading of the package. 
+If the gametype is currently not active the current players might need to
+download the newly loaded package.</p>
+
+<form method="post" action="/ServerAdmin/settings/gametypes" id="gametypeselect">
+<fieldset>
+<legend>Gametype selection</legend>
+    <select id="gametype" name="gametype">
+    <option value=""></option>
+    <option value="ROGame.ROGameInfoSkirmish" >Skirmish</option>
+<option value="GreenMenMod.GMGameInfoSkirmish" >Skirmish &sup1;</option>
+<option value="ROGame.ROGameInfoSupremacy" >Supremacy</option>
+<option value="GreenMenMod.GMGameInfoSupremacy" >Supremacy &sup1;</option>
+<option value="ROGame.ROGameInfoTerritories" selected="selected">Territories</option>
+<option value="GreenMenMod.GMGameInfoTerritories" >Territories &sup1;</option>
+
+    </select>
+    <button type="submit" name="action" value="select" id="btnselect">edit gametype</button>
+</fieldset>
+</form>
+
+<form method="post" action="/ServerAdmin/settings/gametypes">
+<fieldset>
+<legend>Settings for <em>Territories</em></legend>
+<input type="hidden" name="gametype" value="ROGame.ROGameInfoTerritories" />
+
+<div id="settingsWrapper">
+<div id="SG_Rules" class="SettingsGroup">
+<h4>Rules</h4>
+<dl>
+<dt title="Setting ID: DisallowedItems" id="settings_DisallowedItems_label" name="settings_DisallowedItems_label"><label for="settings_DisallowedItems" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.DisallowedItems?">Disallowed Items</label></dt>
+<dd class=" disabled ranked" >
+  <textarea id="settings_DisallowedItems" name="settings_DisallowedItems" rows="4" cols="60" disabled="disabled" ></textarea>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['DisallowedItems'] = {
+  formName: "settings_DisallowedItems",
+  value: '',
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: DisallowedRoles" id="settings_DisallowedRoles_label" name="settings_DisallowedRoles_label"><label for="settings_DisallowedRoles" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.DisallowedRoles?">Disallowed Roles</label></dt>
+<dd class=" disabled ranked" >
+  <textarea id="settings_DisallowedRoles" name="settings_DisallowedRoles" rows="4" cols="60" disabled="disabled" ></textarea>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['DisallowedRoles'] = {
+  formName: "settings_DisallowedRoles",
+  value: '',
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: bLockdownEnabled" id="settings_bLockdownEnabled_label" name="settings_bLockdownEnabled_label"><label for="settings_bLockdownEnabled" title="">Enable Lockdown</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bLockdownEnabled" value="0" id="settings_bLockdownEnabled_0"   /><label for="settings_bLockdownEnabled_0">Disabled</label>
+<input type="radio" name="settings_bLockdownEnabled" value="1" id="settings_bLockdownEnabled_1" checked="checked"  /><label for="settings_bLockdownEnabled_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bMeleeOnly" id="settings_bMeleeOnly_label" name="settings_bMeleeOnly_label"><label for="settings_bMeleeOnly" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bMeleeOnly?">Melee Only</label></dt>
+<dd class=" disabled ranked" >
+  <input type="radio" name="settings_bMeleeOnly" value="0" id="settings_bMeleeOnly_0" checked="checked" disabled="disabled" /><label for="settings_bMeleeOnly_0">No</label>
+<input type="radio" name="settings_bMeleeOnly" value="1" id="settings_bMeleeOnly_1"  disabled="disabled" /><label for="settings_bMeleeOnly_1">Yes</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+<span class="ranked "></span>
+<script type="text/javascript">
+// <![CDATA[
+window.rankedDb = window.rankedDb || {};
+window.rankedDb['bMeleeOnly'] = {
+  formName: "settings_bMeleeOnly",
+  value: '0',
+};
+// ]]>
+</script>
+
+</dd>
+<dt title="Setting ID: bDisableReinforcementLimit" id="settings_bDisableReinforcementLimit_label" name="settings_bDisableReinforcementLimit_label"><label for="settings_bDisableReinforcementLimit" title="">Reinforcement Limit</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bDisableReinforcementLimit" value="0" id="settings_bDisableReinforcementLimit_0" checked="checked" disabled="disabled" /><label for="settings_bDisableReinforcementLimit_0">Enabled</label>
+<input type="radio" name="settings_bDisableReinforcementLimit" value="1" id="settings_bDisableReinforcementLimit_1"  disabled="disabled" /><label for="settings_bDisableReinforcementLimit_1">Disabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: ReinforcementScale" id="settings_ReinforcementScale_label" name="settings_ReinforcementScale_label"><label for="settings_ReinforcementScale" title="">Reinforcement Scale</label></dt>
+<dd class=" disabled" >
+  <input type="text" id="settings_ReinforcementScale" name="settings_ReinforcementScale" value="1.0000" title="Minimum: 0.0000; Maximum: 9999.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ReinforcementScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 9999.0000, step: 1.0000, page: 1.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: ReinforcementTimeScale" id="settings_ReinforcementTimeScale_label" name="settings_ReinforcementTimeScale_label"><label for="settings_ReinforcementTimeScale" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.ReinforcementTimeScale?">Reinforcement Time Scale</label></dt>
+<dd class=" disabled" >
+  <input type="text" id="settings_ReinforcementTimeScale" name="settings_ReinforcementTimeScale" value="1.0000" title="Minimum: 0.0000; Maximum: 9999.0000" disabled="disabled" />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ReinforcementTimeScale');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 9999.0000, step: 1.0000, page: 1.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: RoundLimit" id="settings_RoundLimit_label" name="settings_RoundLimit_label"><label for="settings_RoundLimit" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.RoundLimit?">Round Limit</label></dt>
+<dd class="" >
+  <input type="text" id="settings_RoundLimit" name="settings_RoundLimit" value="1" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_RoundLimit');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bTeamSwapEnabled" id="settings_bTeamSwapEnabled_label" name="settings_bTeamSwapEnabled_label"><label for="settings_bTeamSwapEnabled" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bTeamSwapEnabled?">Team-swap at mid-match round ending</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bTeamSwapEnabled" value="0" id="settings_bTeamSwapEnabled_0"   /><label for="settings_bTeamSwapEnabled_0">Disabled</label>
+<input type="radio" name="settings_bTeamSwapEnabled" value="1" id="settings_bTeamSwapEnabled_1" checked="checked"  /><label for="settings_bTeamSwapEnabled_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bPreserveSquadsOnTeamSwap" id="settings_bPreserveSquadsOnTeamSwap_label" name="settings_bPreserveSquadsOnTeamSwap_label"><label for="settings_bPreserveSquadsOnTeamSwap" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bPreserveSquadsOnTeamSwap?">Team-swap preserves player squads</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bPreserveSquadsOnTeamSwap" value="0" id="settings_bPreserveSquadsOnTeamSwap_0"   /><label for="settings_bPreserveSquadsOnTeamSwap_0">Disabled</label>
+<input type="radio" name="settings_bPreserveSquadsOnTeamSwap" value="1" id="settings_bPreserveSquadsOnTeamSwap_1" checked="checked"  /><label for="settings_bPreserveSquadsOnTeamSwap_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bDisableTimeLimit" id="settings_bDisableTimeLimit_label" name="settings_bDisableTimeLimit_label"><label for="settings_bDisableTimeLimit" title="">Time Limit</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bDisableTimeLimit" value="0" id="settings_bDisableTimeLimit_0" checked="checked" disabled="disabled" /><label for="settings_bDisableTimeLimit_0">Enabled</label>
+<input type="radio" name="settings_bDisableTimeLimit" value="1" id="settings_bDisableTimeLimit_1"  disabled="disabled" /><label for="settings_bDisableTimeLimit_1">Disabled</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bUseCapturesForTieBreaking" id="settings_bUseCapturesForTieBreaking_label" name="settings_bUseCapturesForTieBreaking_label"><label for="settings_bUseCapturesForTieBreaking" title="">Use Captures For Tie Breaking</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bUseCapturesForTieBreaking" value="0" id="settings_bUseCapturesForTieBreaking_0"   /><label for="settings_bUseCapturesForTieBreaking_0">No</label>
+<input type="radio" name="settings_bUseCapturesForTieBreaking" value="1" id="settings_bUseCapturesForTieBreaking_1" checked="checked"  /><label for="settings_bUseCapturesForTieBreaking_1">Yes</label>
+
+  
+</dd>
+
+</dl>
+</div>
+<div id="SG_Game" class="SettingsGroup">
+<h4>Game</h4>
+<dl>
+<dt title="Setting ID: bShowVictimKilledFromRange" id="settings_bShowVictimKilledFromRange_label" name="settings_bShowVictimKilledFromRange_label"><label for="settings_bShowVictimKilledFromRange" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bShowVictimKilledFromRange?">Add Range Information to Victim's KilledBy Messages</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bShowVictimKilledFromRange" value="0" id="settings_bShowVictimKilledFromRange_0"   /><label for="settings_bShowVictimKilledFromRange_0">No</label>
+<input type="radio" name="settings_bShowVictimKilledFromRange" value="1" id="settings_bShowVictimKilledFromRange_1" checked="checked"  /><label for="settings_bShowVictimKilledFromRange_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: bAllowKillCamera" id="settings_bAllowKillCamera_label" name="settings_bAllowKillCamera_label"><label for="settings_bAllowKillCamera" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bAllowKillCamera?">Allow Kill Camera</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAllowKillCamera" value="0" id="settings_bAllowKillCamera_0" checked="checked"  /><label for="settings_bAllowKillCamera_0">No</label>
+<input type="radio" name="settings_bAllowKillCamera" value="1" id="settings_bAllowKillCamera_1"   /><label for="settings_bAllowKillCamera_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: bAllowDeadRoaming" id="settings_bAllowDeadRoaming_label" name="settings_bAllowDeadRoaming_label"><label for="settings_bAllowDeadRoaming" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bAllowDeadRoaming?">Dead Roaming</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bAllowDeadRoaming" value="0" id="settings_bAllowDeadRoaming_0"  disabled="disabled" /><label for="settings_bAllowDeadRoaming_0">Disallowed</label>
+<input type="radio" name="settings_bAllowDeadRoaming" value="1" id="settings_bAllowDeadRoaming_1" checked="checked" disabled="disabled" /><label for="settings_bAllowDeadRoaming_1">allowed</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: EndOfMapDelay" id="settings_EndOfMapDelay_label" name="settings_EndOfMapDelay_label"><label for="settings_EndOfMapDelay" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.EndOfMapDelay?">End Of Map Delay</label></dt>
+<dd class="" >
+  <input type="text" id="settings_EndOfMapDelay" name="settings_EndOfMapDelay" value="45.0000" title="Minimum: 15.0000; Maximum: 60.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_EndOfMapDelay');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 15.0000, max: 60.0000, step: 5.0000, page: 5.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: KillMessageDelay" id="settings_KillMessageDelay_label" name="settings_KillMessageDelay_label"><label for="settings_KillMessageDelay" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.KillMessageDelay?">Kill Message Delay</label></dt>
+<dd class=" limited" >
+  <input type="text" id="settings_KillMessageDelay" name="settings_KillMessageDelay" value="5.0000" title="Minimum: 0.0000; Maximum: 15.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_KillMessageDelay');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0.0000, max: 15.0000, step: 1.0000, page: 1.0000*10, asint: false});
+});
+//]]>
+</script>
+
+  <span class="realism limited"><span>This setting is limited in the current realism mode.<br />
+Original limits: 0.0000 to 999.0000 <br />
+Current limits: 0.0000 to 15.0000 </span></span>
+
+</dd>
+<dt title="Setting ID: KillMessageMode" id="settings_KillMessageMode_label" name="settings_KillMessageMode_label"><label for="settings_KillMessageMode" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.KillMessageMode?">Kill Message Mode</label></dt>
+<dd class=" disabled" >
+  <select id="settings_KillMessageMode" name="settings_KillMessageMode" disabled="disabled" >
+<option value="0" >None</option>
+<option value="1" >Own Death</option>
+<option value="2" >Own</option>
+<option value="3" >Squad</option>
+<option value="4" selected="selected">All</option>
+
+</select>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: MaxRoundDuration" id="settings_MaxRoundDuration_label" name="settings_MaxRoundDuration_label"><label for="settings_MaxRoundDuration" title="If a round takes longer than this duration, then the next rounds will be skipped (0 = disabled)">Maximum Round Duration</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxRoundDuration" name="settings_MaxRoundDuration" value="0" title="Minimum: 0; Maximum: 180"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxRoundDuration');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 180, step: 30, page: 30*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MinPlayers" id="settings_MinPlayers_label" name="settings_MinPlayers_label"><label for="settings_MinPlayers" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.MinPlayers?">Minimum Number Of Players</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MinPlayers" name="settings_MinPlayers" value="0" title="Minimum: 0; Maximum: 64"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MinPlayers');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 64, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: PreStartDuration" id="settings_PreStartDuration_label" name="settings_PreStartDuration_label"><label for="settings_PreStartDuration" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.PreStartDuration?">Pre Start Duration</label></dt>
+<dd class="" >
+  <input type="text" id="settings_PreStartDuration" name="settings_PreStartDuration" value="5" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_PreStartDuration');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bUseReadySystem" id="settings_bUseReadySystem_label" name="settings_bUseReadySystem_label"><label for="settings_bUseReadySystem" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bUseReadySystem?">Ready System</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bUseReadySystem" value="0" id="settings_bUseReadySystem_0" checked="checked"  /><label for="settings_bUseReadySystem_0">None</label>
+<input type="radio" name="settings_bUseReadySystem" value="1" id="settings_bUseReadySystem_1"   /><label for="settings_bUseReadySystem_1">Use Lobby</label>
+
+  
+</dd>
+<dt title="Setting ID: ReadyUpDelay" id="settings_ReadyUpDelay_label" name="settings_ReadyUpDelay_label"><label for="settings_ReadyUpDelay" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.ReadyUpDelay?">Ready Up Delay</label></dt>
+<dd class="" >
+  <input type="text" id="settings_ReadyUpDelay" name="settings_ReadyUpDelay" value="5" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_ReadyUpDelay');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bAllowViewpointSpectating" id="settings_bAllowViewpointSpectating_label" name="settings_bAllowViewpointSpectating_label"><label for="settings_bAllowViewpointSpectating" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bAllowViewpointSpectating?">Viewpoint Spectating</label></dt>
+<dd class=" disabled" >
+  <input type="radio" name="settings_bAllowViewpointSpectating" value="0" id="settings_bAllowViewpointSpectating_0"  disabled="disabled" /><label for="settings_bAllowViewpointSpectating_0">Disallowed</label>
+<input type="radio" name="settings_bAllowViewpointSpectating" value="1" id="settings_bAllowViewpointSpectating_1" checked="checked" disabled="disabled" /><label for="settings_bAllowViewpointSpectating_1">allowed</label>
+
+  <span class="realism locked"><span>This setting is disabled in the current realism mode.</span></span>
+
+</dd>
+<dt title="Setting ID: bUseMatchWarmup" id="settings_bUseMatchWarmup_label" name="settings_bUseMatchWarmup_label"><label for="settings_bUseMatchWarmup" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.bUseMatchWarmup?">Warmup Round</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bUseMatchWarmup" value="0" id="settings_bUseMatchWarmup_0" checked="checked"  /><label for="settings_bUseMatchWarmup_0">No</label>
+<input type="radio" name="settings_bUseMatchWarmup" value="1" id="settings_bUseMatchWarmup_1"   /><label for="settings_bUseMatchWarmup_1">Yes</label>
+
+  
+</dd>
+<dt title="Setting ID: WarmupRoundDuration" id="settings_WarmupRoundDuration_label" name="settings_WarmupRoundDuration_label"><label for="settings_WarmupRoundDuration" title="?INT?WebAdmin.ROGameInfoTerritoriesSettings Tooltips.WarmupRoundDuration?">Warmup Round Duration</label></dt>
+<dd class="" >
+  <input type="text" id="settings_WarmupRoundDuration" name="settings_WarmupRoundDuration" value="30" title="Minimum: 0; Maximum: 9999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_WarmupRoundDuration');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 9999, step: 1, page: 1*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+</div>
+
+</div>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+    var tabs = $('<ul id="settingstabs"></ul>');
+    var tabidx = 0;
+    var idx = -1;
+    $('#settingsWrapper').prepend(tabs);
+    $('#settingsWrapper div.SettingsGroup').each(function() {
+        var title = $('h4', this);
+        ++idx;
+        tabs.append('<li><a href="#'+this.id+'"><span>'+title.text()+'</span></a></li>');
+        if ('#'+this.id == location.hash) {
+          tabidx = idx;
+        }
+        title.remove();
+    });
+    tabs.tabs({ selected: tabidx });    
+});
+//]]>
+</script>
+<div class="legenda">
+<span class="realism"></span>
+<span>These settings are limited by the current realism mode.</span>
+</div>
+<script type="text/javascript" src="/images/ranked.js?gzip"></script>
+<div class="legenda">
+<span class="ranked"></span>
+<span>These settings affect the ranked status of the server.</span>
+<br />
+<span class="ranked bad"></span>
+<span>These settings violate the limits for the ranked status.</span>
+</div>
+
+
+<div  ><input type="checkbox" name="liveAdjust" value="1" id="liveAdjust" checked="checked" />
+<label for="liveAdjust" title="When checked, changes are applied directly to the current game. This could influence the rules of the game.">Save changes directly to the current game instance.</label></div>
+<button type="submit" name="action" value="save" id="btnsave">save settings</button>
+</fieldset>
+</form>
+
+<p><sup>1)</sup> settings shown for these gametypes may not reflect the actual used and available settings, the best guess is shown.</p> 
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function(){
+	var vMinutes = '<span style="padding-left:2mm">Minute(s)</span>';
+	$('input[name=settings_MaxRoundDuration]').after(vMinutes);
+	
+    $('#gametype').change(function(){
+        $('#gametypeselect').submit();
+    });
+});
+    
+//]]>
+</script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+
