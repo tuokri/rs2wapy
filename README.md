@@ -24,6 +24,33 @@ TODO: re-write this entire doc!
 pip install rs2wapy
 ```
 
+##### Development
+
+The rs2wapy development environment includes the nested WebAdmin API
+documentation package as an editable development-only dependency. It is not
+included in rs2wapy distributions.
+
+From the rs2wapy repository root:
+
+```bash
+uv python install 3.14
+uv sync --all-groups --python 3.14
+```
+
+This creates the rs2wapy development environment and makes changes under
+`tools/webadmin-api-docs` immediately available to it.
+
+The documentation package also has its own standalone project environment:
+
+```bash
+cd tools/webadmin-api-docs
+uv python install 3.14
+uv sync --all-groups --python 3.14
+```
+
+Use the standalone environment when working only on WebAdmin documentation and
+discovery tooling. Both projects keep their own `uv.lock` and `.venv`.
+
 ##### Steam Web API key (optional)
 
 Setting your Steam Web API key as an environment variable

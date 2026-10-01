@@ -44,15 +44,33 @@ dev = [
     "pytest>=9.0.3",
     "ruff>=0.15.5",
     "uv-dynamic-versioning>=0.13.0",
+    "webadmin-api-docs",
 ]
 
+[tool.uv.sources]
+webadmin-api-docs = { path = "tools/webadmin-api-docs", editable = true }
+
+[tool.uv.dependency-groups]
+dev = { requires-python = ">=3.14" }
+
 [tool.hatch.build.targets.wheel]
+packages = ["rs2wapy"]
 exclude = [
     "rs2wapy/tests"
 ]
 
+[tool.hatch.build]
+exclude = [
+    "/tools",
+]
+skip-excluded-dirs = true
+
 [tool.mypy]
 ignore_missing_imports = true
+exclude = ["^tools/"]
+
+[tool.pytest.ini_options]
+norecursedirs = ["tools"]
 
 [tool.mypy-rs2wapy._version]
 ignore_errors = true

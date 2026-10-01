@@ -1,3 +1,5 @@
+extend-exclude = ["tools"]
+
 [lint]
 extend-select = ["I"]
 
