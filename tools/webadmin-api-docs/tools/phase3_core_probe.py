@@ -14,14 +14,13 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 SYNTHETIC_UNIQUE_ID = "0xDEADBEEF"
 RUN_MARKER = "mock-doc-20260926-phase3"
@@ -50,7 +49,7 @@ def notes_value(body: str) -> str:
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -60,7 +59,7 @@ def run(args: ToolArguments) -> int:
     created_ban_id: str | None = None
     baseline_ban_ids: set[str] = set()
     try:
-        task("Authenticating for reversible phase-three probes")
+        logger.info("authenticating for reversible phase-three probes")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         login_captures, authenticated = login(
             probe, "phase3-core", args.username, args.password, "sha1"
@@ -75,7 +74,7 @@ def run(args: ToolArguments) -> int:
         if RUN_MARKER in baseline_notes:
             raise RuntimeError("run marker already exists in server notes")
 
-        task("Saving and restoring server notes")
+        logger.info("saving and restoring server notes")
         captures.append(
             probe.request(
                 "phase3-notes-save",
@@ -100,7 +99,7 @@ def run(args: ToolArguments) -> int:
             raise RuntimeError("server notes were not restored")
         baseline_notes = None
 
-        task("Submitting harmless console commands")
+        logger.info("submitting harmless console commands")
         captures.extend(
             [
                 probe.request("phase3-console-baseline", "console"),
@@ -111,7 +110,7 @@ def run(args: ToolArguments) -> int:
             ]
         )
 
-        task("Adding and revoking a synthetic ID ban")
+        logger.info("adding and revoking a synthetic ID ban")
         bans_before = probe.request("phase3-bans-baseline", "policy/bans")
         captures.append(bans_before)
         baseline_ban_ids = ban_ids(bans_before.body)
@@ -202,9 +201,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -217,6 +216,7 @@ def main(
     base_url: str, output: Path, username: str | None, password: str | None
 ) -> None:
     """Run reversible no-player WebAdmin state probes with verified cleanup."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

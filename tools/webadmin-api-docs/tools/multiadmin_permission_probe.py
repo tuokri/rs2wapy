@@ -16,14 +16,13 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,7 +111,7 @@ def run(args: ToolArguments) -> int:
             args.restricted_password,
         )
     ):
-        warn("Primary and restricted account credentials are required")
+        logger.warning("primary and restricted account credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -122,7 +121,7 @@ def run(args: ToolArguments) -> int:
     enabled = False
     restoration_verified = False
     try:
-        task("Authenticating recovery administrator")
+        logger.info("authenticating recovery administrator")
         primary = WebAdminProbe(
             args.base_url, args.primary_username, args.primary_password
         )
@@ -149,7 +148,7 @@ def run(args: ToolArguments) -> int:
                 "restricted account was not disabled at the expected baseline"
             )
 
-        task("Enabling disposable restricted administrator")
+        logger.info("enabling disposable restricted administrator")
         captures.append(
             primary.request(
                 "permission-enable", "multiadmin", baseline.save_form(enabled="1")
@@ -157,7 +156,7 @@ def run(args: ToolArguments) -> int:
         )
         enabled = True
 
-        task("Capturing restricted administrator reads")
+        logger.info("capturing restricted administrator reads")
         restricted = WebAdminProbe(
             args.base_url, args.restricted_username, args.restricted_password
         )
@@ -180,7 +179,7 @@ def run(args: ToolArguments) -> int:
         ):
             captures.append(restricted.request(name, route))
 
-        task("Disabling disposable restricted administrator")
+        logger.info("disabling disposable restricted administrator")
         captures.append(
             primary.request("permission-disable", "multiadmin", baseline.save_form())
         )
@@ -261,9 +260,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -287,6 +286,7 @@ def main(
     restricted_password: str | None,
 ) -> None:
     """Probe a disposable MultiAdmin permission profile and restore it."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

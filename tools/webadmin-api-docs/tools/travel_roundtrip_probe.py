@@ -16,14 +16,13 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 MAX_WAIT_SECONDS = 20
 POLL_INTERVAL_SECONDS = 1
@@ -123,7 +122,7 @@ def wait_for_ready(probe: WebAdminProbe, captures: list[Capture], label: str) ->
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -132,7 +131,7 @@ def run(args: ToolArguments) -> int:
     baseline: ChangeState | None = None
     restore_required = False
     try:
-        task("Authenticating for the empty-server travel round trip")
+        logger.info("authenticating for the empty-server travel round trip")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         # Server travel invalidates the session cookie. A short remembered
         # authentication lets the next request establish a fresh session.
@@ -158,7 +157,7 @@ def run(args: ToolArguments) -> int:
         if target is None:
             raise RuntimeError("current game type did not expose an alternate map")
 
-        task("Travelling to one alternate map")
+        logger.info("travelling to one alternate map")
         captures.append(
             probe.request(
                 "travel-to-alternate", "current/change", baseline.form("change", target)
@@ -176,7 +175,7 @@ def run(args: ToolArguments) -> int:
                 "alternate travel did not reach the requested game and map"
             )
 
-        task("Restoring the baseline game and map")
+        logger.info("restoring the baseline game and map")
         captures.append(
             probe.request("travel-restore", "current/change", baseline.form("change"))
         )
@@ -198,7 +197,7 @@ def run(args: ToolArguments) -> int:
     finally:
         if probe is not None and baseline is not None and restore_required:
             try:
-                task("Attempting map-travel cleanup")
+                logger.info("attempting map-travel cleanup")
                 captures.append(
                     probe.request(
                         "travel-cleanup-restore",
@@ -239,9 +238,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -254,6 +253,7 @@ def main(
     base_url: str, output: Path, username: str | None, password: str | None
 ) -> None:
     """Capture an empty-server map-travel round trip with verified restoration."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

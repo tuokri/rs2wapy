@@ -14,14 +14,13 @@ from player_action_probe import player_details
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 RUN_MARKER = "mock-doc-20260930-note"
 
@@ -57,7 +56,7 @@ def details_capture(probe: WebAdminProbe, name: str, unique_id: str) -> Capture:
 def run(args: ToolArguments) -> int:
     """Attach a disposable note and restore the tracking-record note baseline."""
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -68,7 +67,7 @@ def run(args: ToolArguments) -> int:
     note_id = ""
 
     try:
-        task("Authenticating for the tracking note round trip")
+        logger.info("authenticating for the tracking note round trip")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         captures.extend(probe.login())
         players = probe.request("tracking-note-before-players", "current/players")
@@ -83,7 +82,7 @@ def run(args: ToolArguments) -> int:
                 "tracking record already has notes; refusing to change baseline"
             )
 
-        task("Attaching one disposable tracking note")
+        logger.info("attaching one disposable tracking note")
         note_submitted = True
         captures.append(
             probe.request(
@@ -108,7 +107,7 @@ def run(args: ToolArguments) -> int:
                     )
                     captures.append(recovery_details)
                     note_id = marker_note_id(recovery_details)
-                task("Removing the disposable tracking note")
+                logger.info("removing the disposable tracking note")
                 captures.append(
                     probe.request(
                         "tracking-note-delete",
@@ -149,9 +148,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -169,6 +168,7 @@ def main(
     password: str | None,
 ) -> None:
     """Capture and restore one disposable note on an existing tracking record."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

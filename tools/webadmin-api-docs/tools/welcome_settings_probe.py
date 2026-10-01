@@ -15,14 +15,13 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 RUN_MARKER = "mock-doc-20260926-welcome"
 TEXT_FIELDS = (
@@ -85,7 +84,7 @@ def verify_welcome(body: str, expected: dict[str, str], enabled: bool) -> None:
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -94,7 +93,7 @@ def run(args: ToolArguments) -> int:
     baseline_form: dict[str, str] | None = None
     baseline_enabled = False
     try:
-        task("Authenticating for welcome-settings save and restore")
+        logger.info("authenticating for welcome-settings save and restore")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         login_captures, authenticated = login(
             probe, "welcome", args.username, args.password, "sha1"
@@ -109,7 +108,7 @@ def run(args: ToolArguments) -> int:
         if RUN_MARKER in baseline_form["ServerMOTD"]:
             raise RuntimeError("welcome marker already exists in the server MOTD")
 
-        task("Saving and reading back a welcome MOTD marker")
+        logger.info("saving and reading back a welcome MOTD marker")
         changed_form = baseline_form.copy()
         changed_form["ServerMOTD"] = RUN_MARKER
         captures.append(
@@ -121,7 +120,7 @@ def run(args: ToolArguments) -> int:
         captures.append(after_save)
         verify_welcome(after_save.body, changed_form, baseline_enabled)
 
-        task("Restoring the exact welcome-screen baseline")
+        logger.info("restoring the exact welcome-screen baseline")
         captures.append(
             probe.request("welcome-restore", "settings/general/welcome", baseline_form)
         )
@@ -175,9 +174,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -190,6 +189,7 @@ def main(
     base_url: str, output: Path, username: str | None, password: str | None
 ) -> None:
     """Save and restore the welcome-screen MOTD with form-shape verification."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

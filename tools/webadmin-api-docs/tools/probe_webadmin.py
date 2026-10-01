@@ -18,9 +18,8 @@ import httpx2
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
-from webadmin_api_docs.logging import info
-from webadmin_api_docs.logging import task
-from webadmin_api_docs.logging import warn
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 ROUTE_SEEDS = (
     "",
@@ -493,11 +492,11 @@ def write_capture(
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn(
-            "Username and password are required through options or environment variables"
+        logger.warning(
+            "username and password are required through options or environment variables"
         )
         return 2
-    task("Authenticating with WebAdmin")
+    logger.info("authenticating with WebAdmin")
     probe = WebAdminProbe(args.base_url, args.username, args.password)
     failures: list[dict[str, str]] = []
     try:
@@ -505,26 +504,26 @@ def run(args: ToolArguments) -> int:
         authenticated_home = probe.request("authenticated-home", "")
         captures.append(authenticated_home)
         routes = probe.discover_routes(authenticated_home.body)
-        task(f"Capturing {len(routes)} route candidates")
+        logger.info("capturing {} route candidates", len(routes))
         for route in routes:
             try:
                 form = SAFE_FORM_READS.get(route)
                 name = f"{'post' if form else 'get'}-{route or 'root'}"
                 captures.append(probe.request(name, route, form))
             except (OSError, httpx2.RequestError) as error:
-                warn(f"Route {route or '/'} failed: {error}")
+                logger.warning("route '{}' failed: {}", route or "/", error)
                 failures.append({"route": route or "/", "error": str(error)})
         if args.write_chat:
-            task("Posting authorized chat probe")
+            logger.info("posting authorized chat probe")
             captures.extend(
                 probe.send_chat_probe("RS2 WebAdmin documentation probe {{TIMESTAMP}}")
             )
         if args.policy_roundtrip:
-            task("Running reversible access-policy probe")
+            logger.info("running reversible access-policy probe")
             captures.extend(probe.run_policy_roundtrip("203.0.113.251"))
         captures.append(probe.request("logout", "logout"))
     except (OSError, RuntimeError, httpx2.RequestError) as error:
-        warn(str(error))
+        logger.error("probe error: {}", error)
         return 1
     args.output.mkdir(parents=True, exist_ok=True)
     sanitizer = Sanitizer(probe.base_url)
@@ -533,7 +532,7 @@ def run(args: ToolArguments) -> int:
         json.dumps({"captures": entries, "failures": failures}, indent=2) + "\n",
         encoding="utf-8",
     )
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -566,6 +565,7 @@ def main(
     policy_roundtrip: bool,
 ) -> None:
     """Capture sanitized RS2 WebAdmin API evidence."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

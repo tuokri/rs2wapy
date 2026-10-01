@@ -14,14 +14,13 @@ from player_action_probe import player_details
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 RUN_MARKER = "mock-doc-20260930-alias"
 
@@ -43,7 +42,7 @@ def tracking_actions(page: Capture, unique_id: str) -> set[str]:
 def run(args: ToolArguments) -> int:
     """Attach a disposable alias and restore the tracking record baseline."""
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -53,7 +52,7 @@ def run(args: ToolArguments) -> int:
     alias_submitted = False
 
     try:
-        task("Authenticating for the tracking alias round trip")
+        logger.info("authenticating for the tracking alias round trip")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         captures.extend(probe.login())
         players = probe.request("tracking-alias-before-players", "current/players")
@@ -64,7 +63,7 @@ def run(args: ToolArguments) -> int:
         if "attachalias" not in actions_before or "deletealias" in actions_before:
             raise RuntimeError("tracking alias baseline is not empty")
 
-        task("Attaching a disposable tracking alias")
+        logger.info("attaching a disposable tracking alias")
         alias_submitted = True
         captures.append(
             probe.request(
@@ -87,7 +86,7 @@ def run(args: ToolArguments) -> int:
     finally:
         if probe is not None and alias_submitted and unique_id:
             try:
-                task("Removing the disposable tracking alias")
+                logger.info("removing the disposable tracking alias")
                 captures.append(
                     probe.request(
                         "tracking-alias-delete",
@@ -129,9 +128,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -149,6 +148,7 @@ def main(
     password: str | None,
 ) -> None:
     """Capture and restore a disposable alias on an existing tracking record."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

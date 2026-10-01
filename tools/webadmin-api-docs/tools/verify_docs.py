@@ -11,8 +11,8 @@ import click
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import exit_with_status
-from webadmin_api_docs.logging import info
-from webadmin_api_docs.logging import warn
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "fixtures"
@@ -171,7 +171,7 @@ def run() -> int:
         str(path.relative_to(ROOT)) for path in REQUIRED_FILES if not path.is_file()
     ]
     if missing:
-        warn(f"Missing required files: {', '.join(missing)}")
+        logger.warning("missing required files: {}", ", ".join(missing))
         return 1
     try:
         names_by_directory = {
@@ -180,24 +180,24 @@ def run() -> int:
         for directory in CAPTURE_DIRS:
             validate_sanitization(directory)
     except (OSError, ValueError, json.JSONDecodeError) as error:
-        warn(str(error))
+        logger.error("documentation validation error: {}", error)
         return 1
 
     contract = (ROOT / "contract.yaml").read_text(encoding="utf-8")
     if "contract_version: 1" not in contract or "endpoints:" not in contract:
-        warn("Contract does not declare version 1 endpoints")
+        logger.warning("contract does not declare version 1 endpoints")
         return 1
     documented_fixtures = contract_fixture_names(contract)
     captured_names = set().union(*names_by_directory.values())
     missing_fixtures = sorted(documented_fixtures - captured_names)
     if missing_fixtures:
-        warn(f"Contract refers to missing captures: {', '.join(missing_fixtures)}")
+        logger.warning("contract refers to missing captures: {}", ", ".join(missing_fixtures))
         return 1
     if {"chat-post", "chat-data-after-post"} - captured_names:
-        warn("Chat write evidence is missing")
+        logger.warning("chat write evidence is missing")
         return 1
     if {"policy-add", "policy-delete", "policy-after-delete"} - captured_names:
-        warn("Policy roundtrip evidence is missing")
+        logger.warning("policy roundtrip evidence is missing")
         return 1
     if {
         "player-mutevoice",
@@ -211,10 +211,12 @@ def run() -> int:
         "kick-ban-permanent-bans-after-action",
         "logout-kick-ban-actions",
     } - captured_names:
-        warn("Player-action evidence is missing")
+        logger.warning("player-action evidence is missing")
         return 1
-    info(
-        f"Validated {len(captured_names)} capture names across {len(CAPTURE_DIRS)} fixture sets"
+    logger.info(
+        "validated {} capture names across {} fixture sets",
+        len(captured_names),
+        len(CAPTURE_DIRS),
     )
     return 0
 
@@ -222,6 +224,7 @@ def run() -> int:
 @click.command(context_settings=CLICK_CONTEXT_SETTINGS)
 def main() -> None:
     """Validate the RS2 WebAdmin documentation capture set."""
+    configure_logging()
     exit_with_status(run())
 
 

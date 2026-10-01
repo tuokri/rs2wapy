@@ -9,7 +9,6 @@ from loguru import logger
 
 type LogLevel = str | int
 
-_PACKAGE_NAME = "webadmin_api_docs"
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _LOG_DIRECTORY = _PROJECT_ROOT / "logs"
 _LOG_FORMAT = (
@@ -18,7 +17,6 @@ _LOG_FORMAT = (
     "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
     "<level>{message}</level>"
 )
-_configured = False
 
 
 def normalize_level(level: LogLevel) -> str | int:
@@ -40,15 +38,16 @@ def normalize_level(level: LogLevel) -> str | int:
 
 
 def configure_logging(level: LogLevel = "INFO") -> None:
-    """Configure console and rotating project-log sinks exactly once."""
-    global _configured
-    if _configured:
-        return
-
+    """Called once in application entry point."""
     normalized_level = normalize_level(level)
     _LOG_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    logger.remove()
-    logger.add(sys.stdout, format=_LOG_FORMAT, level=normalized_level)
+
+    logger.remove()  # Replace Loguru's default sink.
+    logger.add(
+        sys.stdout,
+        format=_LOG_FORMAT,
+        level=normalized_level,
+    )
     logger.add(
         _LOG_DIRECTORY / "webadmin-api-docs.log",
         format=_LOG_FORMAT,
@@ -56,28 +55,5 @@ def configure_logging(level: LogLevel = "INFO") -> None:
         rotation="50 MB",
         retention=5,
         enqueue=True,
+        colorize=False,
     )
-    _configured = True
-
-
-def _ensure_configured() -> None:
-    if not _configured:
-        configure_logging()
-
-
-def info(message: str) -> None:
-    """Emit an informational progress message."""
-    _ensure_configured()
-    logger.info(message)
-
-
-def task(message: str) -> None:
-    """Emit the next unit of work as an informational message."""
-    _ensure_configured()
-    logger.info("Task: {}", message)
-
-
-def warn(message: str) -> None:
-    """Emit a warning or error-condition message."""
-    _ensure_configured()
-    logger.warning(message)

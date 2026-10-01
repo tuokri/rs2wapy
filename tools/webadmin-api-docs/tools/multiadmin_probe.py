@@ -15,14 +15,13 @@ import httpx2
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 
 def login(
@@ -92,7 +91,7 @@ def require_args(args: ToolArguments) -> bool:
     )
     if all(required):
         return True
-    warn("Primary, secondary, and disabled account credentials are required")
+    logger.warning("primary, secondary, and disabled account credentials are required")
     return False
 
 
@@ -103,7 +102,7 @@ def run(args: ToolArguments) -> int:
     captures: list[Capture] = []
     failures: list[dict[str, str]] = []
     try:
-        task("Capturing primary MultiAdmin session")
+        logger.info("capturing primary MultiAdmin session")
         primary = WebAdminProbe(
             args.base_url, args.primary_username, args.primary_password
         )
@@ -137,7 +136,7 @@ def run(args: ToolArguments) -> int:
             ]
         )
 
-        task("Capturing plaintext login compatibility")
+        logger.info("capturing plaintext login compatibility")
         plaintext = WebAdminProbe(
             args.base_url, args.primary_username, args.primary_password
         )
@@ -156,7 +155,7 @@ def run(args: ToolArguments) -> int:
         else:
             captures.append(plaintext.request("primary-plaintext-logout", "logout"))
 
-        task("Capturing secondary administrator authorization reads")
+        logger.info("capturing secondary administrator authorization reads")
         secondary = WebAdminProbe(
             args.base_url, args.secondary_username, args.secondary_password
         )
@@ -184,7 +183,7 @@ def run(args: ToolArguments) -> int:
                 captures.append(secondary.request(f"secondary-get-{route}", route))
             captures.append(secondary.request("secondary-logout", "logout"))
 
-        task("Capturing disabled-account login response")
+        logger.info("capturing disabled-account login response")
         disabled = WebAdminProbe(
             args.base_url, args.disabled_username, args.disabled_password
         )
@@ -203,7 +202,7 @@ def run(args: ToolArguments) -> int:
         RuntimeError,
         httpx2.RequestError,
     ) as error:
-        warn(str(error))
+        logger.error("multiadmin probe error: {}", error)
         return 1
 
     args.output.mkdir(parents=True, exist_ok=True)
@@ -213,7 +212,7 @@ def run(args: ToolArguments) -> int:
         json.dumps({"captures": entries, "failures": failures}, indent=2) + "\n",
         encoding="utf-8",
     )
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -245,6 +244,7 @@ def main(
     disabled_password: str | None,
 ) -> None:
     """Capture sanitized, read-only RS2 WebAdmin MultiAdmin evidence."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

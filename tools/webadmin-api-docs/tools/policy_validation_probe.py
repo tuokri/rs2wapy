@@ -14,14 +14,13 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 TEST_NET_MASK = "192.0.2.240"
 
@@ -55,7 +54,7 @@ def target_rows(body: str) -> list[tuple[str, str, str]]:
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -64,7 +63,7 @@ def run(args: ToolArguments) -> int:
     baseline_count = 0
     target_created = False
     try:
-        task("Authenticating for safe policy validation probes")
+        logger.info("authenticating for safe policy validation probes")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         login_captures, authenticated = login(
             probe, "policy-validation", args.username, args.password, "sha1"
@@ -79,7 +78,7 @@ def run(args: ToolArguments) -> int:
         if target_rows(baseline.body):
             raise RuntimeError("reserved documentation policy already exists")
 
-        task("Submitting policy validation boundaries")
+        logger.info("submitting policy validation boundaries")
         invalid_mask = probe.request(
             "policy-invalid-mask",
             "policy",
@@ -103,7 +102,7 @@ def run(args: ToolArguments) -> int:
         ):
             raise RuntimeError("missing policy unexpectedly changed policy state")
 
-        task("Adding, updating, and deleting reserved documentation policies")
+        logger.info("adding, updating, and deleting reserved documentation policies")
         captures.append(
             probe.request(
                 "policy-validation-add",
@@ -240,9 +239,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -255,6 +254,7 @@ def main(
     base_url: str, output: Path, username: str | None, password: str | None
 ) -> None:
     """Probe safe IP-policy validation and update paths with verified cleanup."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

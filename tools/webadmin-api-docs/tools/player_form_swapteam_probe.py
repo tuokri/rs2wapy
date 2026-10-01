@@ -16,14 +16,13 @@ from player_non_disconnect_probe import player_actions
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 
 def player_team(page: Capture, player_name: str) -> str:
@@ -45,7 +44,7 @@ def player_team(page: Capture, player_name: str) -> str:
 def run(args: ToolArguments) -> int:
     """Swap the controlled player's team through the form endpoint and restore it."""
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -56,7 +55,7 @@ def run(args: ToolArguments) -> int:
     swap_succeeded = False
 
     try:
-        task("Authenticating for the Current Players team-swap form probe")
+        logger.info("authenticating for the Current Players team-swap form probe")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         captures.extend(probe.login())
         before = probe.request("form-swapteam-before", "current/players")
@@ -66,7 +65,7 @@ def run(args: ToolArguments) -> int:
         if "swapteam" not in player_actions(before, args.player_name):
             raise RuntimeError("team-swap action is not available")
 
-        task("Submitting swapteam through POST /current/players")
+        logger.info("submitting swapteam through POST /current/players")
         captures.append(
             probe.request(
                 "form-swapteam-action",
@@ -82,15 +81,15 @@ def run(args: ToolArguments) -> int:
             )
         if player_team(after_swap, args.player_name) != baseline_team:
             swap_succeeded = True
-            info("Form action changed the rendered player team")
+            logger.info("form action changed the rendered player team")
         else:
-            info("Form action did not change the rendered player team")
+            logger.info("form action did not change the rendered player team")
     except (OSError, RuntimeError, httpx2.RequestError) as error:
         failures.append({"route": "form-swapteam", "error": str(error)})
     finally:
         if probe is not None and player_key and swap_succeeded:
             try:
-                task("Restoring the original team through POST /current/players")
+                logger.info("restoring the original team through POST /current/players")
                 captures.append(
                     probe.request(
                         "form-swapteam-restore",
@@ -127,9 +126,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -147,6 +146,7 @@ def main(
     password: str | None,
 ) -> None:
     """Capture a direct-form player team swap and restore the original team."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

@@ -51,8 +51,11 @@ configuration writes formatted output to the console and a rotating
 `logs/webadmin-api-docs.log` file. The logs directory is intentionally ignored
 by Git.
 
-Use `task()` before a unit of work, `info()` for progress and results, and
-`warn()` for warnings and errors. Do not use `print()` for operational output.
+Import `logger` and `configure_logging` from `webadmin_api_docs.logging`.
+Each CLI entrypoint calls `configure_logging()` once before it begins its work.
+Use direct Loguru methods such as `logger.info()`, `logger.warning()`, and
+`logger.error()` for operational output; their positional formatting is lazy.
+Do not use `print()` for operational output.
 Never send credentials, cookies, hashes, player identifiers, IP addresses, or
 raw server responses to a log sink.
 
@@ -79,6 +82,16 @@ Wrap logged paths with `''`. E.g.:
 ```python
 logger.info("using external web-assets source: '{}'", plan.web_assets_dir)  # Good!
 logger.info("using external web-assets source: {}", plan.web_assets_dir)  # Bad!
+```
+
+Exception messages should be informational. E.g.:
+```python
+raise SourceConfigurationError("DepotDownloader archive hash does not match its pin")  # Bad!
+raise SourceConfigurationError(
+  "DepotDownloader archive hash does not match its pin:"
+  f" expected: {expected_hash}"
+  f", actual: {actual_hash}"
+)  # Good!
 ```
 
 ## Discovery safety

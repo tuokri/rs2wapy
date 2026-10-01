@@ -13,14 +13,13 @@ import httpx2
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 ALL_CHAT_MARKERS = ("a1", "b1")
 TEAM_CHAT_MARKERS = ("a2", "b2")
@@ -33,14 +32,14 @@ def renamed(captures: list[Capture], prefix: str) -> list[Capture]:
 def run(args: ToolArguments) -> int:
     """Create cursors, wait for markers, and then capture both poll sequences."""
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
     failures: list[dict[str, str]] = []
     probes: list[tuple[str, WebAdminProbe]] = []
     try:
-        task("Establishing two independent chat cursors")
+        logger.info("establishing two independent chat cursors")
         for prefix in ("chat-a", "chat-b"):
             probe = WebAdminProbe(args.base_url, args.username, args.password)
             probes.append((prefix, probe))
@@ -52,10 +51,10 @@ def run(args: ToolArguments) -> int:
                 )
             )
 
-        info("Chat cursors are ready; waiting for the human marker checkpoint")
+        logger.info("chat cursors are ready; waiting for the human marker checkpoint")
         input()
 
-        task("Polling marker visibility and cursor advancement")
+        logger.info("polling marker visibility and cursor advancement")
         for prefix, probe in probes:
             first_poll = probe.request(
                 f"{prefix}-marker-poll", "current/chat/data", {"ajax": "1"}
@@ -69,7 +68,7 @@ def run(args: ToolArguments) -> int:
                     }
                 )
             elif any(marker not in first_poll.body for marker in TEAM_CHAT_MARKERS):
-                info("Team-chat markers were not visible in the WebAdmin chat poll")
+                logger.info("team-chat markers were not visible in the WebAdmin chat poll")
             captures.append(
                 probe.request(
                     f"{prefix}-post-marker-poll", "current/chat/data", {"ajax": "1"}
@@ -93,9 +92,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -111,6 +110,7 @@ def main(
     password: str | None,
 ) -> None:
     """Hold two chat sessions open across a human marker-send checkpoint."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

@@ -14,14 +14,13 @@ from player_action_probe import player_details
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 
 def renamed(captures: list[Capture], prefix: str) -> list[Capture]:
@@ -31,17 +30,17 @@ def renamed(captures: list[Capture], prefix: str) -> list[Capture]:
 def run(args: ToolArguments) -> int:
     """Capture player, squad, and chat reads without changing server state."""
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
     if not args.player_name or not args.second_player_name:
-        warn("Two controlled player names are required")
+        logger.warning("two controlled player names are required")
         return 2
 
     captures: list[Capture] = []
     failures: list[dict[str, str]] = []
     probes: list[WebAdminProbe] = []
     try:
-        task("Creating two independent authenticated WebAdmin sessions")
+        logger.info("creating two independent authenticated WebAdmin sessions")
         for prefix in ("session-a", "session-b"):
             probe = WebAdminProbe(args.base_url, args.username, args.password)
             probes.append(probe)
@@ -83,9 +82,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -105,6 +104,7 @@ def main(
     password: str | None,
 ) -> None:
     """Capture two-player read-only state from independent WebAdmin sessions."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

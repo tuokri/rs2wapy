@@ -13,28 +13,27 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 COMMANDS = ("help", "status", "version")
 
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
     failures: list[dict[str, str]] = []
     probe: WebAdminProbe | None = None
     try:
-        task("Authenticating for harmless console submissions")
+        logger.info("authenticating for harmless console submissions")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         login_captures, authenticated = login(
             probe, "console-log", args.username, args.password, "sha1"
@@ -43,7 +42,7 @@ def run(args: ToolArguments) -> int:
         if not authenticated:
             raise RuntimeError("administrator login was not authenticated")
         captures.append(probe.request("console-log-baseline", "console"))
-        task("Submitting documented harmless console commands")
+        logger.info("submitting documented harmless console commands")
         for command in COMMANDS:
             captures.append(
                 probe.request(f"console-log-{command}", "console", {"command": command})
@@ -70,9 +69,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -85,6 +84,7 @@ def main(
     base_url: str, output: Path, username: str | None, password: str | None
 ) -> None:
     """Capture harmless management-console submissions for log correlation."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

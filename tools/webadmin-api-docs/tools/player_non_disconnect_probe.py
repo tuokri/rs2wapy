@@ -17,14 +17,13 @@ from player_action_probe import player_details
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 RUN_MARKER = "mock-doc-20260926-player"
 
@@ -54,7 +53,7 @@ def player_actions(page: Capture, player_name: str) -> set[str]:
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -65,7 +64,7 @@ def run(args: ToolArguments) -> int:
     member_created = False
     tracking_enabled = False
     try:
-        task("Authenticating for reversible player actions")
+        logger.info("authenticating for reversible player actions")
         probe = WebAdminProbe(args.base_url, args.username, args.password)
         login_captures, authenticated = login(
             probe, "player-nondisconnect", args.username, args.password, "sha1"
@@ -80,7 +79,7 @@ def run(args: ToolArguments) -> int:
         available = player_actions(before, args.player_name)
 
         if "whisper" in available:
-            task("Sending one controlled whisper")
+            logger.info("sending one controlled whisper")
             captures.append(
                 player_action(
                     probe,
@@ -92,7 +91,7 @@ def run(args: ToolArguments) -> int:
             )
 
         if "swapteam" in available:
-            task("Swapping and restoring the controlled player's team")
+            logger.info("swapping and restoring the controlled player's team")
             captures.append(
                 player_action(probe, "player-swapteam", "swapteam", player_key)
             )
@@ -101,7 +100,7 @@ def run(args: ToolArguments) -> int:
             )
 
         if "enabletracking" in available:
-            task("Enabling then restoring tracking")
+            logger.info("enabling then restoring tracking")
             tracking_enabled = True
             captures.append(
                 player_action(
@@ -130,7 +129,7 @@ def run(args: ToolArguments) -> int:
             tracking_enabled = False
 
         if "makemember" in available:
-            task("Creating and cancelling a temporary membership")
+            logger.info("creating and cancelling a temporary membership")
             member_created = True
             captures.append(
                 player_action(
@@ -225,9 +224,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -245,6 +244,7 @@ def main(
     password: str | None,
 ) -> None:
     """Exercise reversible, non-disconnecting actions for one authorized player."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

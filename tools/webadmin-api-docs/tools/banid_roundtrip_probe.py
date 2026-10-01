@@ -19,14 +19,13 @@ from probe_webadmin import write_capture
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
-from webadmin_api_docs.logging import info
-from webadmin_api_docs.logging import task
-from webadmin_api_docs.logging import warn
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 
 def run(args: ToolArguments) -> int:
     if not args.username or not args.password:
-        warn("Administrator credentials are required")
+        logger.warning("administrator credentials are required")
         return 2
 
     captures: list[Capture] = []
@@ -35,7 +34,7 @@ def run(args: ToolArguments) -> int:
     unique_id = ""
     ban_submitted = False
     try:
-        task("Authenticating for the permanent ID-ban round trip")
+        logger.info("authenticating for the permanent ID-ban round trip")
         captures.extend(probe.login())
         players = probe.request("banid-before-players", "current/players")
         captures.append(players)
@@ -45,7 +44,7 @@ def run(args: ToolArguments) -> int:
         if unique_id in bans_before.body:
             raise RuntimeError("target already has a permanent ID ban")
 
-        task("Submitting one permanent ID ban")
+        logger.info("submitting one permanent ID ban")
         ban_submitted = True
         captures.append(
             player_action(
@@ -87,9 +86,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -107,6 +106,7 @@ def main(
     password: str | None,
 ) -> None:
     """Exercise one permanent player-ID ban and mandatory revocation."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(

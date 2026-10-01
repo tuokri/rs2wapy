@@ -20,9 +20,8 @@ from probe_webadmin import write_capture
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
-from webadmin_api_docs.logging import info
-from webadmin_api_docs.logging import task
-from webadmin_api_docs.logging import warn
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 
 def wait_for_player(
@@ -44,7 +43,7 @@ def wait_for_player(
                 raise RuntimeError(
                     f"target did not reconnect within {wait_seconds} seconds"
                 )
-            info("Waiting for target player to reconnect")
+            logger.info("waiting for target player to reconnect")
             time.sleep(3)
 
 
@@ -65,7 +64,7 @@ def wait_for_disconnect(probe: WebAdminProbe, player_name: str) -> list[Capture]
 def run(args: ToolArguments) -> tuple[list[Capture], str]:
     probe = WebAdminProbe(args.base_url, args.username, args.password)
     captures = probe.login()
-    task("Waiting for authorized target player")
+    logger.info("waiting for authorized target player")
     initial, player_key, unique_id = wait_for_player(
         probe,
         args.player_name,
@@ -81,7 +80,7 @@ def run(args: ToolArguments) -> tuple[list[Capture], str]:
             "target already has a permanent ID ban; refusing to alter existing state"
         )
 
-    task("Testing kick action")
+    logger.info("testing kick action")
     captures.append(
         player_action(
             probe,
@@ -93,7 +92,7 @@ def run(args: ToolArguments) -> tuple[list[Capture], str]:
     )
     captures.extend(wait_for_disconnect(probe, args.player_name))
 
-    task("Waiting for reconnect after kick")
+    logger.info("waiting for reconnect after kick")
     reconnected, player_key, reconnected_unique_id = wait_for_player(
         probe,
         args.player_name,
@@ -106,7 +105,7 @@ def run(args: ToolArguments) -> tuple[list[Capture], str]:
             "reconnected player did not have the expected unique identifier"
         )
 
-    task("Testing permanent ID-ban action with mandatory cleanup")
+    logger.info("testing permanent ID-ban action with mandatory cleanup")
     permanent_ban_submitted = False
     try:
         # A connection failure after sending this request has an unknown write
@@ -136,7 +135,7 @@ def run(args: ToolArguments) -> tuple[list[Capture], str]:
         if permanent_ban_submitted:
             captures.extend(revoke_permanent_ban(probe, unique_id))
 
-    task("Waiting for reconnect after permanent ID-ban revoke")
+    logger.info("waiting for reconnect after permanent ID-ban revoke")
     restored, restored_key, restored_unique_id = wait_for_player(
         probe,
         args.player_name,
@@ -152,17 +151,17 @@ def run(args: ToolArguments) -> tuple[list[Capture], str]:
 
 def execute(args: ToolArguments) -> int:
     if args.wait_seconds < 1:
-        warn("Wait seconds must be positive")
+        logger.warning("wait seconds must be positive")
         return 2
     if not args.username or not args.password:
-        warn(
-            "Username and password are required through options or environment variables"
+        logger.warning(
+            "username and password are required through options or environment variables"
         )
         return 2
     try:
         captures, base_url = run(args)
     except (OSError, RuntimeError) as error:
-        warn(str(error))
+        logger.error("kick/ban probe error: {}", error)
         return 1
     args.output.mkdir(parents=True, exist_ok=True)
     sanitizer = Sanitizer(base_url)
@@ -171,7 +170,7 @@ def execute(args: ToolArguments) -> int:
         json.dumps({"captures": entries, "failures": []}, indent=2) + "\n",
         encoding="utf-8",
     )
-    info(f"Wrote {len(entries)} sanitized kick/ban captures to {args.output}")
+    logger.info("wrote {} sanitized kick/ban captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -204,6 +203,7 @@ def main(
     password: str | None,
 ) -> None:
     """Exercise a kick and permanent-ID-ban against one authorized player."""
+    configure_logging()
     exit_with_status(
         execute(
             ToolArguments(

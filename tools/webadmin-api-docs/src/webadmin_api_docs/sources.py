@@ -20,9 +20,7 @@ import click
 import httpx2
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
-from webadmin_api_docs.logging import info
-from webadmin_api_docs.logging import task
-from webadmin_api_docs.logging import warn
+from webadmin_api_docs.logging import logger
 
 CONFIG_NAME: Final = ".webadmin-api-docs.local.toml"
 SOURCE_DATA_DIRECTORY: Final = ".source-data"
@@ -268,9 +266,9 @@ def bootstrap_downloader(root: Path, *, force: bool) -> Path:
         try:
             _validate_downloader(executable, pin)
         except (OSError, SourceConfigurationError, subprocess.SubprocessError) as error:
-            warn(f"Cached DepotDownloader is invalid and will be replaced: {error}")
+            logger.warning("cached DepotDownloader is invalid and will be replaced: {}", error)
         else:
-            info(f"Reusing verified DepotDownloader from {executable}")
+            logger.info("reusing verified DepotDownloader from '{}'", executable)
             return executable
     destination.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="depotdownloader-", dir=destination.parent) as raw:
@@ -278,7 +276,7 @@ def bootstrap_downloader(root: Path, *, force: bool) -> Path:
         archive = staging / pin.archive_name
         staged_tool = staging / "tool"
         staged_tool.mkdir()
-        task(f"Downloading pinned DepotDownloader {DEPOTDOWNLOADER_VERSION}")
+        logger.info("downloading pinned DepotDownloader {}", DEPOTDOWNLOADER_VERSION)
         _download(pin.url, archive)
         if sha256_file(archive) != pin.archive_sha256:
             raise SourceConfigurationError("DepotDownloader archive hash does not match its pin")
@@ -290,7 +288,7 @@ def bootstrap_downloader(root: Path, *, force: bool) -> Path:
             staged_executable.chmod(0o755)
         _validate_downloader(staged_executable, pin)
         _replace_directory(staged_tool, destination)
-    info(f"Cached verified DepotDownloader at {executable}")
+    logger.info("cached verified DepotDownloader at '{}'", executable)
     return executable
 
 
@@ -349,7 +347,7 @@ def fetch_web_assets(root: Path, *, downloader: Path, app_id: int, depot_id: int
         staging = Path(raw)
         file_list = staging / "filelist.txt"
         file_list.write_text(FILE_LIST_CONTENT, encoding="utf-8")
-        task("Downloading bundled WebAdmin templates and static assets")
+        logger.info("downloading bundled WebAdmin templates and static assets")
         _run_downloader(downloader, staging / "depot", file_list, app_id=app_id, depot_id=depot_id)
         server_admin, images = _find_downloaded_assets(staging / "depot")
         normalized = staging / WEB_ASSETS_DIRECTORY
@@ -382,21 +380,23 @@ def status() -> None:
     try:
         config = load_local_config(root)
         if config.sdk_scripts_dir is None:
-            warn("SDK source is not configured")
+            logger.warning("sdk source is not configured")
         else:
-            info(f"SDK source: {validate_sdk_scripts_dir(config.sdk_scripts_dir)}")
+            logger.info("sdk source: '{}'", validate_sdk_scripts_dir(config.sdk_scripts_dir))
         if config.web_assets_dir is not None:
-            info(f"External web-assets source: {validate_web_assets_dir(config.web_assets_dir)}")
+            logger.info(
+                "external web-assets source: '{}'", validate_web_assets_dir(config.web_assets_dir)
+            )
         else:
             assets = managed_web_assets_dir(root)
             try:
                 validate_web_assets_dir(assets)
             except SourceConfigurationError:
-                warn(f"Managed web-assets cache is not available: {assets}")
+                logger.warning("managed web-assets cache is not available: '{}'", assets)
             else:
-                info(f"Managed web-assets cache: {assets}")
+                logger.info("managed web-assets cache: '{}'", assets)
     except SourceConfigurationError as error:
-        warn(str(error))
+        logger.error("source status error: {}", error)
         raise click.exceptions.Exit(1) from error
 
 
@@ -412,9 +412,9 @@ def configure(sdk_sources_dir: Path | None, web_assets_dir: Path | None) -> None
         config = _updated_config(load_local_config(root), sdk_scripts_dir=sdk_sources_dir, web_assets_dir=web_assets_dir)
         write_local_config(root, config)
     except SourceConfigurationError as error:
-        warn(str(error))
+        logger.error("source configuration error: {}", error)
         raise click.exceptions.Exit(1) from error
-    info(f"Saved local source configuration to {config_path(root)}")
+    logger.info("saved local source configuration to '{}'", config_path(root))
 
 
 @sources.command("setup")
@@ -439,28 +439,28 @@ def setup(
     try:
         config = load_local_config(root)
         plan = make_setup_plan(root, config, sdk_scripts_dir=sdk_sources_dir, web_assets_dir=web_assets_dir, force=force)
-        info(f"Using SDK source: {plan.sdk_scripts_dir}")
+        logger.info("using SDK source: '{}'", plan.sdk_scripts_dir)
         if plan.web_assets_external:
-            info(f"Using external web-assets source: '{plan.web_assets_dir}'")
+            logger.info("using external web-assets source: '{}'", plan.web_assets_dir)
         elif plan.fetch_web_assets:
-            info(f"Refreshing managed web-assets cache: '{plan.web_assets_dir}'")
+            logger.info("refreshing managed web-assets cache: '{}'", plan.web_assets_dir)
             if depot_downloader is not None:
                 if not allow_unverified_downloader:
                     raise SourceConfigurationError("--depot-downloader requires --allow-unverified-downloader")
                 downloader = depot_downloader.expanduser().resolve()
                 if not downloader.is_file():
                     raise SourceConfigurationError("Supplied DepotDownloader path is not a file")
-                warn(f"Using unverified operator-supplied DepotDownloader: {downloader}")
+                logger.warning("using unverified operator-supplied DepotDownloader: '{}'", downloader)
             else:
                 downloader = bootstrap_downloader(root, force=force)
             fetch_web_assets(root, downloader=downloader, app_id=app_id, depot_id=depot_id)
-            info(f"Installed managed web assets at {plan.web_assets_dir}")
+            logger.info("installed managed web assets at '{}'", plan.web_assets_dir)
         else:
-            info(f"Reusing managed web-assets cache: {plan.web_assets_dir}")
+            logger.info("reusing managed web-assets cache: '{}'", plan.web_assets_dir)
         updated = _updated_config(config, sdk_scripts_dir=sdk_sources_dir, web_assets_dir=web_assets_dir)
         if updated != config:
             write_local_config(root, updated)
-            info(f"Saved local source configuration to {config_path(root)}")
+            logger.info("saved local source configuration to '{}'", config_path(root))
     except (OSError, SourceConfigurationError, httpx2.RequestError, subprocess.SubprocessError, zipfile.BadZipFile) as error:
-        warn(str(error))
+        logger.error("source setup error: {}", error)
         raise click.exceptions.Exit(1) from error

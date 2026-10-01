@@ -13,14 +13,13 @@ from multiadmin_probe import login
 from probe_webadmin import Capture
 from probe_webadmin import Sanitizer
 from probe_webadmin import WebAdminProbe
-from probe_webadmin import info
-from probe_webadmin import task
-from probe_webadmin import warn
 from probe_webadmin import write_capture
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
+from webadmin_api_docs.logging import configure_logging
+from webadmin_api_docs.logging import logger
 
 GAME_TYPES = {
     "skirmish": "ROGame.ROGameInfoSkirmish",
@@ -41,13 +40,13 @@ def run(args: ToolArguments) -> int:
             args.secondary_password,
         )
     ):
-        warn("Primary and secondary account credentials are required")
+        logger.warning("primary and secondary account credentials are required")
         return 2
 
     captures: list[Capture] = []
     failures: list[dict[str, str]] = []
     try:
-        task("Capturing empty-server dynamic map and mutator fragments")
+        logger.info("capturing empty-server dynamic map and mutator fragments")
         primary = WebAdminProbe(
             args.base_url, args.primary_username, args.primary_password
         )
@@ -89,7 +88,7 @@ def run(args: ToolArguments) -> int:
             ]
         )
 
-        task("Capturing independent empty chat polls")
+        logger.info("capturing independent empty chat polls")
         secondary = WebAdminProbe(
             args.base_url, args.secondary_username, args.secondary_password
         )
@@ -131,9 +130,9 @@ def run(args: ToolArguments) -> int:
     )
     if failures:
         for failure in failures:
-            warn(f"{failure['route']}: {failure['error']}")
+            logger.warning("{}: {}", failure["route"], failure["error"])
         return 1
-    info(f"Wrote {len(entries)} sanitized captures to {args.output}")
+    logger.info("wrote {} sanitized captures to '{}'", len(entries), args.output)
     return 0
 
 
@@ -157,6 +156,7 @@ def main(
     secondary_password: str | None,
 ) -> None:
     """Capture sanitized empty-server WebAdmin read and refresh responses."""
+    configure_logging()
     exit_with_status(
         run(
             ToolArguments(
