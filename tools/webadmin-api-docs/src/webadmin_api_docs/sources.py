@@ -217,19 +217,19 @@ def selected_platform_pin() -> DepotDownloaderPin:
 
 
 def validate_zip_members(bundle: zipfile.ZipFile, pin: DepotDownloaderPin) -> None:
-    """Reject archive paths other than the reviewed self-contained executable."""
+    """Reject archive paths other than the reviewed executable and license."""
     names = bundle.namelist()
-    expected = [pin.executable_name]
+    expected = [pin.executable_name, "LICENSE"]
     if names != expected:
         raise SourceConfigurationError(
-            "Downloader archive has unexpected contents:"
-            f" expected: {names}"
-            f", actual: {expected}"
+            "downloader archive has unexpected contents:"
+            f" expected: {expected}"
+            f", actual: {names}"
         )
     for name in names:
         member = PurePosixPath(name)
         if member.is_absolute() or ".." in member.parts or "\\" in name:
-            raise SourceConfigurationError("Downloader archive contains an unsafe path")
+            raise SourceConfigurationError("downloader archive contains an unsafe path")
 
 
 def _download(url: str, destination: Path) -> None:
