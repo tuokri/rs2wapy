@@ -48,13 +48,12 @@ def _render(
 
 def _record_response(
     request: Request,
-    endpoint_id: str,
     response: HTTPResponse,
     started_at: float,
 ) -> HTTPResponse:
     """Record safe metadata without preserving request data or credentials."""
     state: MockState = request.app.ctx.mock_state
-    state.record_request(endpoint_id, request.method, response.status, started_at)
+    state.record_request(request.path, request.method, response.status, started_at)
     return response
 
 
@@ -67,7 +66,7 @@ def _not_implemented(request: Request, endpoint_id: str) -> HTTPResponse:
         endpoint_id=endpoint_id,
         request_method=request.method,
     )
-    return _record_response(request, endpoint_id, response, started_at)
+    return _record_response(request, response, started_at)
 
 
 def _debug_context(request: Request, page: str) -> dict[str, object]:
@@ -107,10 +106,12 @@ def create_mock_server(
     seed: MockSeed | None = None,
     *,
     enable_debug_panel: bool = False,
+    app_name: str | None = None,
 ) -> MockServer:
     """Create a fresh seeded mock server with no persistence between instances."""
     state = MockState(seed or MockSeed())
-    app = Sanic(f"rs2_webadmin_mock_{uuid4().hex}", configure_logging=False)
+    app = Sanic(app_name or f"rs2_webadmin_mock_{uuid4().hex}", configure_logging=False)
+    app.config.ACCESS_LOG = True
     app.ctx.mock_state = state
 
     @app.get("/")
@@ -143,28 +144,28 @@ def create_mock_server(
             response = _render(
                 "debug/dashboard.html", context=_debug_context(request, "dashboard")
             )
-            return _record_response(request, "debug-dashboard", response, started_at)
+            return _record_response(request, response, started_at)
 
         @app.get(f"{DEBUG_BASE_PATH}players")
         async def debug_players(request: Request) -> HTTPResponse:
             """Render seeded players and intentionally unavailable controls."""
             started_at = monotonic()
             response = _render("debug/players.html", context=_debug_context(request, "players"))
-            return _record_response(request, "debug-players", response, started_at)
+            return _record_response(request, response, started_at)
 
         @app.get(f"{DEBUG_BASE_PATH}state")
         async def debug_state(request: Request) -> HTTPResponse:
             """Render a safe projection of currently modelled runtime state."""
             started_at = monotonic()
             response = _render("debug/state.html", context=_debug_context(request, "state"))
-            return _record_response(request, "debug-state", response, started_at)
+            return _record_response(request, response, started_at)
 
         @app.get(f"{DEBUG_BASE_PATH}requests")
         async def debug_requests(request: Request) -> HTTPResponse:
             """Render bounded sanitized request metadata."""
             started_at = monotonic()
             response = _render("debug/requests.html", context=_debug_context(request, "requests"))
-            return _record_response(request, "debug-requests", response, started_at)
+            return _record_response(request, response, started_at)
 
         @app.post(f"{DEBUG_BASE_PATH}actions/<action_name:str>")
         async def debug_action(request: Request, action_name: str) -> HTTPResponse:
@@ -176,11 +177,11 @@ def create_mock_server(
                     "debug/components/not_implemented.html",
                     action_name="unknown debug action",
                 )
-                return _record_response(request, "debug-action-unknown", response, started_at)
+                return _record_response(request, response, started_at)
             response = _render(
                 "debug/components/not_implemented.html",
                 action_name=action_name.replace("-", " "),
             )
-            return _record_response(request, f"debug-action-{action_name}", response, started_at)
+            return _record_response(request, response, started_at)
 
     return MockServer(app=app, debug=MockDebugController(state))

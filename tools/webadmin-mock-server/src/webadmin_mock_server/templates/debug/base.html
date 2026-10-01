@@ -10,16 +10,17 @@
   <body>
     <header class="command-bar">
       <a class="brand" href="{{ debug_base_path }}" aria-label="RS2 WebAdmin mock debug overview">
-        <span class="brand-kicker">Rising Storm 2</span>
-        <span class="brand-name">Mock Command</span>
+        <span class="brand-kicker">Rising Storm 2 · Vietnam</span>
+        <span class="brand-name">Mock Server Control Panel</span>
       </a>
       <div class="command-bar-meta">
         <span class="environment-badge"><span aria-hidden="true">●</span> Development only</span>
-        <span class="command-context">{{ server.map_name }} · {{ server.game_type }}</span>
+        <span class="command-context">{{ server.map_name }} <span aria-hidden="true">//</span> {{ server.game_type }}</span>
       </div>
     </header>
     <div class="app-layout">
       <nav aria-label="Debug sections">
+        <p class="nav-title">WebAdmin mock</p>
         <p class="nav-label">Operations</p>
         <a href="{{ debug_base_path }}" {% if active_page == "dashboard" %}aria-current="page"{% endif %}>Overview</a>
         <a href="{{ debug_base_path }}players" {% if active_page == "players" %}aria-current="page"{% endif %}>Players</a>

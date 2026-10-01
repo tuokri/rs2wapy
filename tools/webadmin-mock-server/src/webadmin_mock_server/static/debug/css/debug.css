@@ -1,18 +1,18 @@
 :root {
     color-scheme: dark;
-    --ink-950: #0c0e0b;
-    --ink-900: #141711;
-    --surface: #1d211a;
-    --surface-raised: #282d23;
-    --line: #495042;
-    --line-subtle: #343a30;
-    --text: #f3f1e8;
-    --muted: #b8baab;
-    --muted-strong: #d5d5c8;
-    --signal: #d4bc57;
-    --signal-muted: #7e733d;
-    --rust: #df664d;
-    --rust-dark: #512a24;
+    --ink-950: #0c0d0d;
+    --ink-900: #141616;
+    --surface: #1f2221;
+    --surface-raised: #2d302e;
+    --line: #747773;
+    --line-subtle: #3b3e3c;
+    --text: #f5f3ed;
+    --muted: #bbb9af;
+    --muted-strong: #dedbd1;
+    --signal: #e2ad36;
+    --signal-muted: #867445;
+    --rust: #df4e4d;
+    --rust-dark: #552827;
     --north: #e54927;
     --south: #50a0f0;
     --success: #92c77b;
@@ -32,11 +32,10 @@ body {
     margin: 0;
     min-height: 100vh;
     background:
-        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px),
-        radial-gradient(circle at 78% -15%, #3b412c 0, transparent 32rem),
+        repeating-linear-gradient(125deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
+        radial-gradient(ellipse at 22% 24%, rgba(84, 98, 75, 0.2), transparent 30rem),
+        radial-gradient(ellipse at 80% 72%, rgba(105, 25, 25, 0.12), transparent 34rem),
         var(--ink-950);
-    background-size: 26px 26px, 26px 26px, auto, auto;
 }
 
 a {
@@ -54,18 +53,33 @@ a {
 
 .command-bar {
     align-items: center;
-    background: linear-gradient(110deg, #11150f, #1d2219 64%, #252819);
-    border-bottom: 1px solid var(--line);
+    background:
+        linear-gradient(90deg, rgba(32, 41, 36, 0.8), rgba(22, 26, 27, 0.96) 44%, #101313 84%),
+        repeating-linear-gradient(28deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 7px);
+    border-bottom: 3px solid #090a0a;
     display: flex;
     gap: 1.5rem;
     justify-content: space-between;
-    min-height: 4.75rem;
-    padding: 0.7rem clamp(1rem, 3vw, 2.5rem);
+    min-height: 9.4rem;
+    padding: 1.4rem clamp(1rem, 4vw, 4.75rem);
     position: relative;
+    overflow: hidden;
+}
+
+.command-bar::before {
+    background:
+        linear-gradient(118deg, transparent 0 18%, rgba(231, 220, 196, 0.18) 18.1% 22%, transparent 22.2% 42%),
+        radial-gradient(ellipse at 27% 66%, rgba(184, 172, 142, 0.28), transparent 23%),
+        linear-gradient(172deg, transparent 0 66%, rgba(10, 11, 11, 0.72) 66.2%),
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 5px);
+    content: "";
+    inset: 0;
+    opacity: 0.88;
+    position: absolute;
 }
 
 .command-bar::after {
-    background: linear-gradient(90deg, var(--signal), transparent 32%);
+    background: linear-gradient(90deg, var(--rust), #f2e5db 24%, rgba(242, 229, 219, 0.24) 48%, transparent 72%);
     bottom: -1px;
     content: "";
     height: 2px;
@@ -78,6 +92,9 @@ a {
     display: grid;
     line-height: 1;
     text-decoration: none;
+    position: relative;
+    text-shadow: 0 0.12rem 0.8rem rgba(0, 0, 0, 0.75);
+    z-index: 1;
 }
 
 .brand-kicker,
@@ -94,11 +111,11 @@ a {
 
 .brand-name {
     font-family: "Arial Narrow", "Roboto Condensed", ui-sans-serif, sans-serif;
-    font-size: 1.22rem;
+    font-size: clamp(1.5rem, 2.5vw, 2.15rem);
     font-stretch: condensed;
     font-weight: 800;
-    letter-spacing: 0.055em;
-    margin-top: 0.16rem;
+    letter-spacing: 0.035em;
+    margin-top: 0.22rem;
     text-transform: uppercase;
 }
 
@@ -110,13 +127,16 @@ a {
     font-size: 0.82rem;
     gap: 0.6rem 1.1rem;
     justify-content: end;
+    position: relative;
+    text-shadow: 0 0.1rem 0.5rem #000;
+    z-index: 1;
 }
 
 .environment-badge {
     align-items: center;
     background: rgba(212, 188, 87, 0.12);
     border: 1px solid rgba(212, 188, 87, 0.42);
-    border-radius: 999px;
+    border-radius: 0;
     color: var(--muted-strong);
     display: inline-flex;
     font-size: 0.72rem;
@@ -135,13 +155,30 @@ a {
 .app-layout {
     display: grid;
     grid-template-columns: 15rem minmax(0, 1fr);
-    min-height: calc(100vh - 4.75rem);
+    min-height: calc(100vh - 9.4rem);
 }
 
 nav {
-    background: rgba(17, 20, 15, 0.88);
-    border-right: 1px solid var(--line-subtle);
-    padding: 1.45rem 0.75rem;
+    align-self: start;
+    background:
+        linear-gradient(140deg, rgba(48, 52, 49, 0.94), rgba(25, 27, 27, 0.97)),
+        repeating-linear-gradient(150deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 6px);
+    border: 4px solid #d8d7d0;
+    box-shadow: 0 0.6rem 1.5rem rgba(0, 0, 0, 0.32);
+    margin: 1rem 0.8rem;
+    padding: 0.6rem;
+}
+
+.nav-title {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.26);
+    color: var(--text);
+    font-family: "Arial Narrow", "Roboto Condensed", ui-sans-serif, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.025em;
+    margin: 0.15rem 0.15rem 0.7rem;
+    padding: 0.1rem 0.2rem 0.5rem;
+    text-transform: uppercase;
 }
 
 .nav-label {
@@ -149,42 +186,41 @@ nav {
     margin: 1.1rem 0.7rem 0.45rem;
 }
 
-.nav-label:first-child {
-    margin-top: 0.15rem;
-}
-
 nav a {
+    background: linear-gradient(90deg, #0d0e0e, #171919);
     border-left: 2px solid transparent;
-    color: var(--muted);
+    color: #f0eee7;
     display: block;
     font-size: 0.9rem;
     font-weight: 650;
-    margin: 0.12rem 0;
-    padding: 0.65rem 0.75rem;
+    margin: 0.16rem 0;
+    padding: 0.45rem 0.68rem;
     text-decoration: none;
     transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
 nav a:hover {
-    background: rgba(243, 241, 232, 0.055);
+    background: linear-gradient(90deg, #3f3e3b, #282a29);
     color: var(--text);
 }
 
 nav a[aria-current="page"] {
-    background: linear-gradient(90deg, rgba(212, 188, 87, 0.17), transparent);
-    border-left-color: var(--signal);
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #df4e4d, #bc3e40);
+    border-left-color: #f5dfd3;
     color: var(--text);
 }
 
 main {
     margin: 0 auto;
-    max-width: 1380px;
-    padding: clamp(1.5rem, 4vw, 3.75rem);
+    max-width: 1500px;
+    padding: clamp(1.35rem, 3vw, 2.4rem);
     width: 100%;
 }
 
 .page-heading {
-    border-bottom: 1px solid var(--line-subtle);
+    border-bottom: 2px solid rgba(218, 216, 208, 0.36);
     margin-bottom: 1.75rem;
     padding-bottom: 1.25rem;
 }
@@ -198,7 +234,7 @@ main {
 }
 
 .page-heading h1 {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-size: clamp(1.65rem, 3.2vw, 2.25rem);
     line-height: 1.06;
     margin: 0.18rem 0 0.46rem;
     text-transform: uppercase;
@@ -230,9 +266,11 @@ main {
 
 .metric,
 .panel {
-    background: linear-gradient(145deg, rgba(39, 45, 34, 0.96), rgba(25, 29, 22, 0.96));
-    border: 1px solid var(--line);
-    box-shadow: 0 0.75rem 2.4rem rgba(0, 0, 0, 0.16);
+    background:
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
+        linear-gradient(145deg, rgba(39, 42, 40, 0.98), rgba(16, 18, 18, 0.98));
+    border: 1px solid #737671;
+    box-shadow: 0 0.75rem 2.4rem rgba(0, 0, 0, 0.24);
 }
 
 .metric {
@@ -242,7 +280,7 @@ main {
 }
 
 .metric::before {
-    background: var(--signal-muted);
+    background: #bdbbb3;
     content: "";
     height: 2px;
     left: 0;
@@ -252,7 +290,7 @@ main {
 }
 
 .metric-ready::before {
-    background: var(--signal);
+    background: var(--rust);
 }
 
 .metric span,
@@ -281,6 +319,7 @@ main {
 
 .metric.incomplete {
     border-style: dashed;
+    opacity: 0.88;
 }
 
 .panel {
@@ -296,20 +335,26 @@ main {
 }
 
 .briefing-panel {
-    border-left: 3px solid var(--signal);
+    border-left: 4px solid var(--rust);
 }
 
 .section-heading {
-    border-bottom: 1px solid var(--line-subtle);
+    background:
+        repeating-linear-gradient(168deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #dad7cf, #b9b8b2 72%, transparent 72.2%);
+    border-bottom: 0;
+    clip-path: polygon(0 0, 100% 0, 96% 100%, 0 100%);
     margin-bottom: 1rem;
-    padding-bottom: 0.7rem;
+    padding: 0.37rem 1.1rem 0.42rem;
 }
 
 .section-heading .eyebrow {
+    color: #565752;
     margin: 0 0 0.22rem;
 }
 
 .section-heading h2 {
+    color: #141515;
     font-size: 1.2rem;
     margin: 0;
     text-transform: uppercase;
@@ -333,8 +378,10 @@ td {
 }
 
 th {
-    background: rgba(10, 12, 9, 0.45);
-    color: var(--muted-strong);
+    background:
+        repeating-linear-gradient(160deg, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px 5px),
+        #bdbbb4;
+    color: #151616;
     font-size: 0.7rem;
     font-weight: 760;
     letter-spacing: 0.1em;
@@ -346,7 +393,7 @@ tbody tr {
 }
 
 tbody tr:hover {
-    background: rgba(243, 241, 232, 0.035);
+    background: rgba(230, 226, 215, 0.08);
 }
 
 tr:last-child td {
@@ -377,9 +424,9 @@ code {
 }
 
 .tag {
-    background: rgba(212, 188, 87, 0.1);
-    border-color: rgba(212, 188, 87, 0.45);
-    color: var(--signal);
+    background: rgba(226, 173, 54, 0.12);
+    border-color: rgba(226, 173, 54, 0.55);
+    color: #ffd678;
     margin-right: 0.25rem;
 }
 
@@ -442,8 +489,10 @@ code {
 }
 
 button {
-    background: #30382c;
-    border: 1px solid #69725b;
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #343735, #242625);
+    border: 1px solid #91918a;
     border-radius: 0;
     color: var(--text);
     cursor: pointer;
@@ -455,27 +504,37 @@ button {
 }
 
 button:hover {
-    background: #414b37;
-    border-color: var(--signal);
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #5a5b56, #393b39);
+    border-color: #f0eee5;
 }
 
 .button.primary {
-    background: #5d5930;
-    border-color: var(--signal);
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.09) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #e05351, #b73b40);
+    border-color: #f18378;
 }
 
 .button.primary:hover {
-    background: #716b37;
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.11) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #f16661, #cc4547);
 }
 
 .danger {
-    background: var(--rust-dark);
-    border-color: #985348;
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #652c2b, #3c2020);
+    border-color: #a95a52;
 }
 
 .danger:hover {
-    background: #6d352c;
-    border-color: var(--rust);
+    background:
+        repeating-linear-gradient(169deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #863534, #552324);
+    border-color: #f08a7c;
 }
 
 .button-draft {
@@ -584,6 +643,7 @@ dd:last-child {
         align-items: flex-start;
         flex-direction: column;
         gap: 0.55rem;
+        min-height: 8rem;
     }
 
     .command-bar-meta {
@@ -595,12 +655,21 @@ dd:last-child {
     }
 
     nav {
-        border-bottom: 1px solid var(--line-subtle);
-        border-right: 0;
+        border: 2px solid #d8d7d0;
         display: flex;
         gap: 0.25rem;
+        margin: 0.6rem;
         overflow-x: auto;
-        padding: 0.55rem;
+        padding: 0.4rem;
+    }
+
+    .nav-title {
+        align-self: center;
+        border-bottom: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.26);
+        margin: 0 0.3rem 0 0;
+        padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+        white-space: nowrap;
     }
 
     .nav-label {
@@ -657,7 +726,9 @@ dd:last-child {
     }
 
     .table-panel tr {
-        background: linear-gradient(145deg, rgba(39, 45, 34, 0.96), rgba(25, 29, 22, 0.96));
+        background:
+            repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
+            linear-gradient(145deg, rgba(39, 42, 40, 0.98), rgba(16, 18, 18, 0.98));
         border: 1px solid var(--line);
         margin-bottom: 0.75rem;
         padding: 0.4rem 0;

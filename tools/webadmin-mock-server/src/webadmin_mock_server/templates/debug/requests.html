@@ -4,14 +4,14 @@
   <section class="page-heading">
     <p class="eyebrow">Sanitized telemetry</p>
     <h1>Recent requests</h1>
-    <p>Only endpoint identity, method, response status, and duration are retained.</p>
+    <p>Only request path, method, response status, and duration are retained.</p>
   </section>
   <section class="panel table-panel telemetry-panel" aria-label="Sanitized request telemetry">
     <table>
       <thead><tr><th>Endpoint</th><th>Method</th><th>Status</th><th>Duration</th></tr></thead>
       <tbody>
         {% for record in request_records %}
-          <tr><td data-label="Endpoint"><code>{{ record.endpoint_id }}</code></td><td data-label="Method"><span class="method">{{ record.method }}</span></td><td data-label="Status"><span class="response-status">{{ record.status }}</span></td><td data-label="Duration"><span class="duration">{{ record.duration_ms }} ms</span></td></tr>
+          <tr><td data-label="Endpoint"><code>{{ record.path }}</code></td><td data-label="Method"><span class="method">{{ record.method }}</span></td><td data-label="Status"><span class="response-status">{{ record.status }}</span></td><td data-label="Duration"><span class="duration">{{ record.duration_ms }} ms</span></td></tr>
         {% else %}
           <tr><td colspan="4" class="empty">No mock requests have been recorded</td></tr>
         {% endfor %}

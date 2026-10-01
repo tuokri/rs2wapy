@@ -33,15 +33,15 @@ The `/` redirect is transport plumbing only. It directs browsers to
 
 `/__debug__/` is opt-in and is never a WebAdmin compatibility route. It renders
 the seeded dashboard, player table, safe state projection, and bounded request
-metadata. It intentionally omits cookies, tokens, credentials, raw headers,
-query data, and request bodies.
+metadata. Request telemetry shows paths but intentionally omits cookies, tokens,
+credentials, raw headers, query data, and request bodies.
 
 The dark-only panel is a modern, CSS-only reinterpretation of RS2 WebAdmin's
-operations-console visual language: charcoal surfaces, warm text, rust and
-olive signal colours, and semantic North/South team colours. It does not copy
-or distribute RS2 images, logos, stylesheets, or external font/asset requests.
-Its no-op controls are visibly labelled as drafts. Responsive layouts, visible
-keyboard focus, and reduced-motion support are required panel behavior.
+cinematic banner, distressed charcoal surfaces, pale section strips, red action
+cues, and semantic North/South team colours. It does not copy or distribute RS2
+images, logos, stylesheets, or external font/asset requests. Its no-op controls
+are visibly labelled as drafts. Responsive layouts, visible keyboard focus, and
+reduced-motion support are required panel behavior.
 
 The player buttons use HTMX to render a no-op feedback fragment. They do not
 change state yet. This establishes layout and partial-response behavior before

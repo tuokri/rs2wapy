@@ -19,6 +19,12 @@ async def test_root_redirects_to_webadmin_base_path() -> None:
     assert response.headers["location"] == "/ServerAdmin/"
 
 
+def test_mock_server_enables_sanic_access_logging() -> None:
+    server = create_mock_server()
+
+    assert server.app.config.ACCESS_LOG is True
+
+
 @pytest.mark.anyio
 @pytest.mark.parametrize(
     ("path", "endpoint_id"),
@@ -60,7 +66,7 @@ async def test_debug_panel_is_opt_in() -> None:
 
     assert disabled_response.status == 404
     assert enabled_response.status == 200
-    assert "Mock Command" in enabled_response.text
+    assert "Mock Server Control Panel" in enabled_response.text
     assert "Development only" in enabled_response.text
     assert "http://" not in enabled_response.text
     assert "https://" not in enabled_response.text
@@ -101,6 +107,20 @@ async def test_debug_actions_are_noop_feedback_flows(action: str) -> None:
     after = server.debug.snapshot()
     assert after.players == before.players
     assert after.players[0].name == "Test player"
+
+
+@pytest.mark.anyio
+async def test_request_inspector_uses_paths_without_query_data() -> None:
+    server = create_mock_server(enable_debug_panel=True)
+
+    _, route_response = await server.app.asgi_client.get("/ServerAdmin/current?credential=private")
+    _, inspector_response = await server.app.asgi_client.get("/__debug__/requests")
+
+    assert route_response.status == 501
+    assert inspector_response.status == 200
+    assert "/ServerAdmin/current" in inspector_response.text
+    assert "credential=private" not in inspector_response.text
+    assert server.debug.snapshot().request_records[0].path == "/ServerAdmin/current"
 
 
 def test_seed_is_copied_into_independent_runtime_state() -> None:

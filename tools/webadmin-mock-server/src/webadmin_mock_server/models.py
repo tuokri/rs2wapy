@@ -62,7 +62,7 @@ class MockSeed:
 class RequestRecord:
     """Sanitized request metadata displayed by the development-only inspector."""
 
-    endpoint_id: str
+    path: str
     method: str
     status: int
     duration_ms: float
@@ -111,12 +111,10 @@ class MockState:
             request_records=tuple(self.request_records),
         )
 
-    def record_request(self, endpoint_id: str, method: str, status: int, started_at: float) -> None:
+    def record_request(self, path: str, method: str, status: int, started_at: float) -> None:
         """Store only safe request metadata for the debug-panel inspector."""
         duration_ms = (monotonic() - started_at) * 1000
-        self.request_records.append(
-            RequestRecord(endpoint_id, method, status, round(duration_ms, 2))
-        )
+        self.request_records.append(RequestRecord(path, method, status, round(duration_ms, 2)))
 
 
 @dataclass(frozen=True, slots=True)

@@ -2,9 +2,18 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 
 from loguru import logger
+
+
+class _SanicAccessLogHandler(logging.Handler):
+    """Forward Sanic's standard-library access records to the Loguru sink."""
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Emit one Sanic access record through the configured Loguru logger."""
+        logger.log(record.levelname, record.getMessage())
 
 
 def configure_logging() -> None:
@@ -17,3 +26,7 @@ def configure_logging() -> None:
         "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
         "<level>{message}</level>",
     )
+    sanic_access_logger = logging.getLogger("sanic.access")
+    sanic_access_logger.handlers = [_SanicAccessLogHandler()]
+    sanic_access_logger.propagate = False
+    sanic_access_logger.setLevel(logging.INFO)

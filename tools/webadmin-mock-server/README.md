@@ -15,15 +15,22 @@ uv run webadmin-mock-server --debug-panel
 ```
 
 The mock listens on `http://127.0.0.1:8081`. Its optional non-WebAdmin debug
-panel is available at `http://127.0.0.1:8081/__debug__/`.
+panel is available at `http://127.0.0.1:8081/__debug__/`. Sanic access logging
+is enabled by default. Add `--reload` during local mock development to restart
+the server when its source changes:
+
+```bash
+uv run webadmin-mock-server --debug-panel --reload
+```
 
 ## Debug panel design
 
 The optional debug panel is a dark-only, CSS-only modern reinterpretation of
-RS2 WebAdmin's operations-console mood. It uses original styles rather than
-bundled RS2 art, logos, stylesheets, or remote font and asset requests. The
-debug panel is not a WebAdmin compatibility surface; its visual language and
-routes can evolve independently of `/ServerAdmin/` fidelity work.
+RS2 WebAdmin's cinematic banner, distressed charcoal panels, high-contrast
+navigation, and red action cues. It uses original styles rather than bundled
+RS2 art, logos, stylesheets, or remote font and asset requests. The debug panel
+is not a WebAdmin compatibility surface; its visual language and routes can
+evolve independently of `/ServerAdmin/` fidelity work.
 
 It remains intentionally visual-only: controls are labelled as drafts and
 return no-op feedback until the typed mock control plane is implemented.
