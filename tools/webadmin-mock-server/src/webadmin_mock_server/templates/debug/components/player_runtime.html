@@ -1,0 +1,33 @@
+<div id="player-runtime" aria-live="polite">
+  <div id="action-feedback">
+    {% if action_message %}
+      <div class="notice {{ action_state }}" role="status">{{ action_message }}</div>
+    {% endif %}
+  </div>
+  <section class="panel table-panel" aria-label="Seeded runtime players">
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Player ID</th><th>Platform</th><th>Team</th><th>Flags</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for player in players %}
+          <tr>
+            <td data-label="Name"><strong>{{ player.name }}</strong></td>
+            <td data-label="Player ID"><code>{{ player.player_id }}</code></td>
+            <td data-label="Platform"><span class="tag">{{ "Steam" if player.identity_kind == "steam" else "EGS" }}</span></td>
+            <td data-label="Team"><span class="team {{ "team-north" if player.team | lower == "north" else "team-south" if player.team | lower == "south" else "team-neutral" }}">{{ player.team }}</span></td>
+            <td data-label="Flags">{% if player.is_admin %}<span class="tag">Admin</span>{% endif %}{% if player.is_bot %}<span class="tag">Bot</span>{% endif %}{% if not player.is_admin and not player.is_bot %}<span class="muted">—</span>{% endif %}</td>
+            <td data-label="Status"><span class="status {{ "online" if player.connected else "offline" }}">{{ "connected" if player.connected else "disconnected" }}</span></td>
+            <td class="actions">
+              <button hx-post="{{ debug_base_path }}actions/edit-player" hx-target="#action-feedback" hx-swap="innerHTML">Edit <span class="button-draft">Draft</span></button>
+              <button hx-post="{{ debug_base_path }}actions/move-team" hx-target="#action-feedback" hx-swap="innerHTML">Move team <span class="button-draft">Draft</span></button>
+              <button class="danger" hx-post="{{ debug_base_path }}actions/remove-player" hx-target="#action-feedback" hx-swap="innerHTML">Remove <span class="button-draft">Draft</span></button>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" class="empty">No players were provided by this mock seed</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -32,8 +32,9 @@ RS2 art, logos, stylesheets, or remote font and asset requests. The debug panel
 is not a WebAdmin compatibility surface; its visual language and routes can
 evolve independently of `/ServerAdmin/` fidelity work.
 
-It remains intentionally visual-only: controls are labelled as drafts and
-return no-op feedback until the typed mock control plane is implemented.
+The player-add flow is implemented. Its edit, move-team, and remove controls
+remain visibly labelled no-op drafts until their matching typed control-plane
+operations are implemented.
 
 For rs2wapy tests, create a seeded app through `create_mock_server()` and pass
 `server.app` to a Sanic test client or test fixture. Starting another mock
@@ -49,6 +50,16 @@ server = create_mock_server(
     enable_debug_panel=True,
 )
 ```
+
+The optional debug panel can add a player after startup. It can generate a
+SteamID64 (and matching UE3 hexadecimal unique ID) or a synthetic EGS-like
+numeric ID, plus a compact multiplayer-style username. EGS IDs are synthetic:
+the SDK does not disclose Tripwire's private allocation algorithm. Select Bot
+to force one `BOT ` prefix onto the resulting name. Every runtime-only player
+disappears when the mock server is recreated.
+
+Generated usernames intentionally vary between compact handles, multi-word
+names, and common player-name punctuation such as `_`, `-`, `#`, and `!`.
 
 Run the package checks with:
 

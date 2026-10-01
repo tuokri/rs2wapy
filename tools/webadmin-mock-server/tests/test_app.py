@@ -93,7 +93,7 @@ async def test_debug_panel_renders_seeded_players_and_redacts_unique_ids() -> No
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("action", ("add-player", "edit-player", "remove-player", "move-team"))
+@pytest.mark.parametrize("action", ("edit-player", "remove-player", "move-team"))
 async def test_debug_actions_are_noop_feedback_flows(action: str) -> None:
     player = PlayerSeed("player-1", "unique-1", "Test player")
     server = create_mock_server(MockSeed(players=(player,)), enable_debug_panel=True)
@@ -107,6 +107,110 @@ async def test_debug_actions_are_noop_feedback_flows(action: str) -> None:
     after = server.debug.snapshot()
     assert after.players == before.players
     assert after.players[0].name == "Test player"
+
+
+@pytest.mark.anyio
+async def test_debug_add_player_creates_runtime_player() -> None:
+    server = create_mock_server(enable_debug_panel=True)
+
+    _, response = await server.app.asgi_client.post(
+        "/__debug__/actions/add-player",
+        data={
+            "player_id": "76561198021283933",
+            "name": "Debug player",
+            "team": "South",
+            "connected": "on",
+            "is_admin": "on",
+        },
+    )
+
+    assert response.status == 200
+    assert "Added player Debug player" in response.text
+    assert "Debug player" in response.text
+    snapshot = server.debug.snapshot()
+    assert len(snapshot.players) == 1
+    assert snapshot.players[0].player_id == "76561198021283933"
+    assert snapshot.players[0].name == "Debug player"
+    assert snapshot.players[0].team == "South"
+    assert snapshot.players[0].is_admin is True
+    assert snapshot.players[0].connected is True
+    assert snapshot.players[0].unique_id == "0x0110000103A3105D"
+    assert snapshot.players[0].identity_kind == "steam"
+
+
+@pytest.mark.anyio
+async def test_debug_add_player_generates_steam_identity_and_bot_name() -> None:
+    server = create_mock_server(enable_debug_panel=True)
+
+    _, response = await server.app.asgi_client.post(
+        "/__debug__/actions/add-player",
+        data={
+            "identity_kind": "steam",
+            "team": "North",
+            "generate_id": "on",
+            "generate_name": "on",
+            "is_bot": "on",
+        },
+    )
+
+    assert response.status == 200
+    player = server.debug.snapshot().players[0]
+    assert player.player_id.isdecimal()
+    assert 76_561_197_960_265_728 <= int(player.player_id) < 76_561_202_255_233_024
+    assert player.unique_id == f"0x{int(player.player_id):016X}"
+    assert player.identity_kind == "steam"
+    assert player.name.startswith("BOT ")
+    assert player.name.count("BOT ") == 1
+
+
+@pytest.mark.anyio
+async def test_debug_add_player_generates_egs_identity_and_forces_one_bot_prefix() -> None:
+    server = create_mock_server(enable_debug_panel=True)
+
+    _, response = await server.app.asgi_client.post(
+        "/__debug__/actions/add-player",
+        data={
+            "identity_kind": "egs",
+            "name": "BOT xX Quiet Fox #42",
+            "team": "South",
+            "generate_id": "on",
+            "is_bot": "on",
+        },
+    )
+
+    assert response.status == 200
+    player = server.debug.snapshot().players[0]
+    assert 100_000 <= int(player.player_id) <= 1_999_999
+    assert player.unique_id == f"mock-egs-{player.player_id}"
+    assert player.identity_kind == "egs"
+    assert player.name == "BOT xX Quiet Fox #42"
+
+
+@pytest.mark.anyio
+async def test_debug_add_player_rejects_duplicate_player_ids() -> None:
+    seed = MockSeed(players=(PlayerSeed("player-1", "unique-1", "Seeded player"),))
+    server = create_mock_server(seed, enable_debug_panel=True)
+
+    _, response = await server.app.asgi_client.post(
+        "/__debug__/actions/add-player",
+        data={"player_id": "player-1", "name": "Duplicate player", "team": "North"},
+    )
+
+    assert response.status == 422
+    assert "already exists" in response.text
+    snapshot = server.debug.snapshot()
+    assert len(snapshot.players) == 1
+    assert snapshot.players[0].name == "Seeded player"
+
+
+def test_debug_controller_adds_runtime_players() -> None:
+    server = create_mock_server()
+
+    server.debug.add_player(PlayerSeed("player-1", "unique-1", "Joined player", team="North"))
+
+    snapshot = server.debug.snapshot()
+    assert len(snapshot.players) == 1
+    assert snapshot.players[0].name == "Joined player"
 
 
 @pytest.mark.anyio

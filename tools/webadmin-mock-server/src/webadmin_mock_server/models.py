@@ -5,8 +5,11 @@ from __future__ import annotations
 from collections import deque
 from dataclasses import dataclass
 from time import monotonic
+from typing import Literal
 
 from sanic import Sanic
+
+PlayerIdentityKind = Literal["steam", "egs"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,6 +23,7 @@ class PlayerSeed:
     is_admin: bool = False
     is_bot: bool = False
     connected: bool = True
+    identity_kind: PlayerIdentityKind = "steam"
 
 
 @dataclass(slots=True)
@@ -33,6 +37,7 @@ class Player:
     is_admin: bool
     is_bot: bool
     connected: bool
+    identity_kind: PlayerIdentityKind
 
     @classmethod
     def from_seed(cls, seed: PlayerSeed) -> Player:
@@ -45,6 +50,7 @@ class Player:
             is_admin=seed.is_admin,
             is_bot=seed.is_bot,
             connected=seed.connected,
+            identity_kind=seed.identity_kind,
         )
 
 
@@ -100,6 +106,7 @@ class MockState:
                 is_admin=player.is_admin,
                 is_bot=player.is_bot,
                 connected=player.connected,
+                identity_kind=player.identity_kind,
             )
             for player in self.players.values()
         )
@@ -116,16 +123,34 @@ class MockState:
         duration_ms = (monotonic() - started_at) * 1000
         self.request_records.append(RequestRecord(path, method, status, round(duration_ms, 2)))
 
+    def add_player(self, seed: PlayerSeed) -> None:
+        """Add one externally joined player to the current runtime state."""
+        if not seed.player_id.strip():
+            raise ValueError("Player ID is required")
+        if not seed.unique_id.strip():
+            raise ValueError("Unique ID is required")
+        if not seed.name.strip():
+            raise ValueError("Player name is required")
+        if not seed.team.strip():
+            raise ValueError("Player team is required")
+        if seed.player_id in self.players:
+            raise ValueError("A player with that player ID already exists")
+        self.players[seed.player_id] = Player.from_seed(seed)
+
 
 @dataclass(frozen=True, slots=True)
 class MockDebugController:
-    """Read-only test-side control-plane placeholder for future external events."""
+    """Test-side control plane for external gameplay events."""
 
     _state: MockState
 
     def snapshot(self) -> MockStateSnapshot:
         """Expose a detached state view without allowing direct mutation."""
         return self._state.snapshot()
+
+    def add_player(self, player: PlayerSeed) -> None:
+        """Simulate a player joining after the mock server has been seeded."""
+        self._state.add_player(player)
 
 
 @dataclass(frozen=True, slots=True)

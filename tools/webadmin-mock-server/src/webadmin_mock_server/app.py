@@ -15,10 +15,16 @@ from sanic.response import HTTPResponse
 from sanic.response import html
 from sanic.response import redirect
 
+from webadmin_mock_server.generators import PlayerIdentityKind
+from webadmin_mock_server.generators import bot_name
+from webadmin_mock_server.generators import generate_player_id
+from webadmin_mock_server.generators import generate_player_name
+from webadmin_mock_server.generators import unique_id_for_player_id
 from webadmin_mock_server.models import MockDebugController
 from webadmin_mock_server.models import MockSeed
 from webadmin_mock_server.models import MockServer
 from webadmin_mock_server.models import MockState
+from webadmin_mock_server.models import PlayerSeed
 
 PACKAGE_DIRECTORY = Path(__file__).resolve().parent
 TEMPLATES_DIRECTORY = PACKAGE_DIRECTORY / "templates"
@@ -69,6 +75,60 @@ def _not_implemented(request: Request, endpoint_id: str) -> HTTPResponse:
     return _record_response(request, response, started_at)
 
 
+def _form_value(request: Request, name: str) -> str:
+    """Return one stripped scalar form value without retaining submitted data."""
+    form = request.form
+    if form is None:
+        return ""
+    value = form.get(name)
+    return value.strip() if isinstance(value, str) else ""
+
+
+def _form_has_value(request: Request, name: str) -> bool:
+    """Return whether a submitted form contains one named value."""
+    form = request.form
+    return form is not None and name in form
+
+
+def _identity_kind_from_request(request: Request) -> PlayerIdentityKind:
+    """Read and validate the selected external account-ID family."""
+    identity_kind = _form_value(request, "identity_kind") or "steam"
+    if identity_kind == "steam":
+        return "steam"
+    if identity_kind == "egs":
+        return "egs"
+    raise ValueError("Player ID type must be Steam or EGS")
+
+
+def _added_player_from_request(request: Request, state: MockState) -> PlayerSeed:
+    """Create a safe runtime player from the debug panel's add-player form."""
+    player_id = _form_value(request, "player_id")
+    name = _form_value(request, "name")
+    team = _form_value(request, "team")
+    identity_kind = _identity_kind_from_request(request)
+    if _form_has_value(request, "generate_id"):
+        player_id = generate_player_id(identity_kind, set(state.players))
+    if _form_has_value(request, "generate_name"):
+        name = generate_player_name()
+    if not player_id or not name or not team:
+        raise ValueError("Player ID, player name, and team are required")
+    if player_id in state.players:
+        raise ValueError("A player with that player ID already exists")
+    is_bot = _form_has_value(request, "is_bot")
+    if is_bot:
+        name = bot_name(name)
+    return PlayerSeed(
+        player_id=player_id,
+        unique_id=unique_id_for_player_id(player_id, identity_kind),
+        name=name,
+        team=team,
+        is_admin=_form_has_value(request, "is_admin"),
+        is_bot=is_bot,
+        connected=_form_has_value(request, "connected"),
+        identity_kind=identity_kind,
+    )
+
+
 def _debug_context(request: Request, page: str) -> dict[str, object]:
     """Build safe, read-only context for a debug-panel page."""
     state: MockState = request.app.ctx.mock_state
@@ -95,6 +155,7 @@ def _debug_context(request: Request, page: str) -> dict[str, object]:
                     "is_admin": player.is_admin,
                     "is_bot": player.is_bot,
                     "connected": player.connected,
+                    "identity_kind": player.identity_kind,
                 }
                 for player in snapshot.players
             ],
@@ -148,7 +209,7 @@ def create_mock_server(
 
         @app.get(f"{DEBUG_BASE_PATH}players")
         async def debug_players(request: Request) -> HTTPResponse:
-            """Render seeded players and intentionally unavailable controls."""
+            """Render seeded players and available debug controls."""
             started_at = monotonic()
             response = _render("debug/players.html", context=_debug_context(request, "players"))
             return _record_response(request, response, started_at)
@@ -169,9 +230,33 @@ def create_mock_server(
 
         @app.post(f"{DEBUG_BASE_PATH}actions/<action_name:str>")
         async def debug_action(request: Request, action_name: str) -> HTTPResponse:
-            """Provide an HTMX feedback flow without changing runtime state."""
+            """Run the implemented debug actions or report a draft action."""
             started_at = monotonic()
-            allowed_actions = {"add-player", "edit-player", "remove-player", "move-team"}
+            state: MockState = request.app.ctx.mock_state
+            if action_name == "add-player":
+                try:
+                    player = _added_player_from_request(request, state)
+                    state.add_player(player)
+                except ValueError as error:
+                    response = _render(
+                        "debug/components/player_runtime.html",
+                        status=422,
+                        players=state.snapshot().players,
+                        action_message=str(error),
+                        action_state="error",
+                        debug_base_path=DEBUG_BASE_PATH,
+                    )
+                else:
+                    response = _render(
+                        "debug/components/player_runtime.html",
+                        players=state.snapshot().players,
+                        action_message=f"Added player {player.name}",
+                        action_state="success",
+                        debug_base_path=DEBUG_BASE_PATH,
+                    )
+                return _record_response(request, response, started_at)
+
+            allowed_actions = {"edit-player", "remove-player", "move-team"}
             if action_name not in allowed_actions:
                 response = _render(
                     "debug/components/not_implemented.html",

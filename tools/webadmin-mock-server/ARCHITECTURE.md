@@ -13,9 +13,9 @@ app = server.app
 snapshot = server.debug.snapshot()
 ```
 
-`server.debug` is deliberately read-only in this boilerplate. It is the future
-typed control-plane boundary for simulating external gameplay events such as a
-player joining, leaving, or changing team. Future debug-panel controls and
+`server.debug` is the typed control-plane boundary for simulating external
+gameplay events. It currently provides `add_player(PlayerSeed(...))`, which
+simulates a post-seed player join. Future debug-panel controls and
 WebAdmin-compatible route handlers must share the same state/domain operations.
 
 ## Compatibility boundary
@@ -43,13 +43,22 @@ images, logos, stylesheets, or external font/asset requests. Its no-op controls
 are visibly labelled as drafts. Responsive layouts, visible keyboard focus, and
 reduced-motion support are required panel behavior.
 
-The player buttons use HTMX to render a no-op feedback fragment. They do not
-change state yet. This establishes layout and partial-response behavior before
-the future control plane is implemented.
+The Add player form uses HTMX to create a player in the in-memory runtime state
+and replace the player table partial. It accepts a manually supplied identity
+or generates one at submit time. Steam generation produces a public individual
+SteamID64 and follows the SDK's `SteamId64ToUniqueId` conversion: the same
+64-bit integer formatted as `0x` plus 16 uppercase hexadecimal digits. EGS
+generation creates a deliberately synthetic six- or seven-digit number in the
+range observed on live servers. The SDK exposes no Tripwire EGS allocation
+algorithm, so the mock stores its distinct `mock-egs-<number>` projection rather
+than claim it is a real Epic identifier. Generated names are intentionally
+allowed to use spaces and common player-name punctuation. Bot creation always
+normalizes the resulting runtime name to exactly one `BOT ` prefix. Edit,
+move-team, and remove remain no-op draft controls.
 
 ## Deferred work
 
 - login, cookies, sessions, and legacy response shells;
 - stateful WebAdmin route behavior from `webadmin-api-docs/contract.yaml`;
-- control-plane player add/remove/connect/team operations;
-- debug-panel write actions, bans, policies, chats, and session inspectors.
+- control-plane player remove/connect/team operations;
+- debug-panel write actions beyond add-player, bans, policies, chats, and session inspectors.
