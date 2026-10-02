@@ -288,7 +288,8 @@ class Sanitizer:
     """Replace live identifiers with stable aliases for one capture run."""
 
     input_value_pattern = re.compile(
-        r"(?P<prefix><input\b[^>]*\bname=(?P<quote>[\"'])(?P<name>[^\"']+)(?P=quote)[^>]*\bvalue=(?P<value_quote>[\"']))(?P<value>[^\"']*)(?P<suffix>(?P=value_quote))",
+        r"(?P<prefix><input\b[^>]*\bname=(?P<quote>[\"'])(?P<name>[^\"']+)"
+        r"(?P=quote)[^>]*\bvalue=(?P<value_quote>[\"']))(?P<value>[^\"']*)(?P<suffix>(?P=value_quote))",
         re.IGNORECASE,
     )
     ipv4_pattern = re.compile(r"(?<![\w.])(?:\d{1,3}\.){3}\d{1,3}(?![\w.])")
