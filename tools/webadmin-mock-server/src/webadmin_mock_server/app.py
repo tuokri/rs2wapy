@@ -232,16 +232,16 @@ def create_mock_server(
         async def debug_action(request: Request, action_name: str) -> HTTPResponse:
             """Run the implemented debug actions or report a draft action."""
             started_at = monotonic()
-            state: MockState = request.app.ctx.mock_state
+            state_: MockState = request.app.ctx.mock_state
             if action_name == "add-player":
                 try:
-                    player = _added_player_from_request(request, state)
-                    state.add_player(player)
+                    player = _added_player_from_request(request, state_)
+                    state_.add_player(player)
                 except ValueError as error:
                     response = _render(
                         "debug/components/player_runtime.jinja",
                         status=422,
-                        players=state.snapshot().players,
+                        players=state_.snapshot().players,
                         action_message=str(error),
                         action_state="error",
                         debug_base_path=DEBUG_BASE_PATH,
@@ -250,7 +250,7 @@ def create_mock_server(
                 else:
                     response = _render(
                         "debug/components/player_runtime.jinja",
-                        players=state.snapshot().players,
+                        players=state_.snapshot().players,
                         action_message=f"Added player {player.name}",
                         action_state="success",
                         debug_base_path=DEBUG_BASE_PATH,
