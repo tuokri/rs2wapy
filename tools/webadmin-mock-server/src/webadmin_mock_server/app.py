@@ -34,7 +34,7 @@ DEBUG_BASE_PATH = "/__debug__/"
 
 _templates = Environment(
     loader=FileSystemLoader(TEMPLATES_DIRECTORY),
-    autoescape=select_autoescape(("html", "xml")),
+    autoescape=select_autoescape(("html", "xml", "jinja")),
     trim_blocks=True,
     lstrip_blocks=True,
 )
