@@ -80,6 +80,7 @@ jobs:
           uv run pytest -s --cov=rs2wapy -vv
           --cov-report html:cov_html
           --cov-report xml:coverage.xml
+          && uv run pytest -s -vv tools/
 
       - name: Store test reports
         uses: actions/upload-artifact@v7
