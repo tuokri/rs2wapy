@@ -67,7 +67,7 @@ def _not_implemented(request: Request, endpoint_id: str) -> HTTPResponse:
     """Return a clear non-compatibility response for a selected route stub."""
     started_at = monotonic()
     response = _render(
-        "compat/not_implemented.html",
+        "compat/not_implemented.jinja",
         status=501,
         endpoint_id=endpoint_id,
         request_method=request.method,
@@ -203,7 +203,7 @@ def create_mock_server(
             """Render a read-only summary of the seeded mock state."""
             started_at = monotonic()
             response = _render(
-                "debug/dashboard.html", context=_debug_context(request, "dashboard")
+                "debug/dashboard.jinja", context=_debug_context(request, "dashboard")
             )
             return _record_response(request, response, started_at)
 
@@ -211,21 +211,21 @@ def create_mock_server(
         async def debug_players(request: Request) -> HTTPResponse:
             """Render seeded players and available debug controls."""
             started_at = monotonic()
-            response = _render("debug/players.html", context=_debug_context(request, "players"))
+            response = _render("debug/players.jinja", context=_debug_context(request, "players"))
             return _record_response(request, response, started_at)
 
         @app.get(f"{DEBUG_BASE_PATH}state")
         async def debug_state(request: Request) -> HTTPResponse:
-            """Render a safe projection of currently modelled runtime state."""
+            """Render a safe projection of the currently modelled runtime state."""
             started_at = monotonic()
-            response = _render("debug/state.html", context=_debug_context(request, "state"))
+            response = _render("debug/state.jinja", context=_debug_context(request, "state"))
             return _record_response(request, response, started_at)
 
         @app.get(f"{DEBUG_BASE_PATH}requests")
         async def debug_requests(request: Request) -> HTTPResponse:
             """Render bounded sanitized request metadata."""
             started_at = monotonic()
-            response = _render("debug/requests.html", context=_debug_context(request, "requests"))
+            response = _render("debug/requests.jinja", context=_debug_context(request, "requests"))
             return _record_response(request, response, started_at)
 
         @app.post(f"{DEBUG_BASE_PATH}actions/<action_name:str>")
@@ -239,7 +239,7 @@ def create_mock_server(
                     state.add_player(player)
                 except ValueError as error:
                     response = _render(
-                        "debug/components/player_runtime.html",
+                        "debug/components/player_runtime.jinja",
                         status=422,
                         players=state.snapshot().players,
                         action_message=str(error),
@@ -249,7 +249,7 @@ def create_mock_server(
                     )
                 else:
                     response = _render(
-                        "debug/components/player_runtime.html",
+                        "debug/components/player_runtime.jinja",
                         players=state.snapshot().players,
                         action_message=f"Added player {player.name}",
                         action_state="success",
@@ -261,12 +261,12 @@ def create_mock_server(
             allowed_actions = {"edit-player", "remove-player", "move-team"}
             if action_name not in allowed_actions:
                 response = _render(
-                    "debug/components/not_implemented.html",
+                    "debug/components/not_implemented.jinja",
                     action_name="unknown debug action",
                 )
                 return _record_response(request, response, started_at)
             response = _render(
-                "debug/components/not_implemented.html",
+                "debug/components/not_implemented.jinja",
                 action_name=action_name.replace("-", " "),
             )
             return _record_response(request, response, started_at)

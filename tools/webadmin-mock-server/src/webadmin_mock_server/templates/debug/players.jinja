@@ -1,4 +1,4 @@
-{% extends "debug/base.html" %}
+{% extends "debug/base.jinja" %}
 {% block title %}Players{% endblock %}
 {% block content %}
   <section class="page-heading page-heading-row">
@@ -23,5 +23,5 @@
       <button class="button primary" type="submit">Create mock player</button>
     </form>
   </details>
-  {% include "debug/components/player_runtime.html" %}
+  {% include "debug/components/player_runtime.jinja" %}
 {% endblock %}
