@@ -1,1 +1,3 @@
 rs2wapy/_version.py export-subst
+
+tools/webadmin-mock-server/src/webadmin_mock_server/static/debug/vendor/htmx/* text eol=lf
