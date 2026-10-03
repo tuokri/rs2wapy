@@ -129,4 +129,5 @@ dmypy.json
 
 # Dynamic version file
 rs2wapy/_version.py
+
 .uv-python/
