@@ -96,15 +96,15 @@ cleanup, and final readback.
 
 ## Roles, notation, and non-negotiable safety rules
 
-| Name | Meaning |
-| --- | --- |
-| `ADMIN_FULL` | Authorized full WebAdmin administrator used by the probe. |
+| Name            | Meaning                                                                    |
+|-----------------|----------------------------------------------------------------------------|
+| `ADMIN_FULL`    | Authorized full WebAdmin administrator used by the probe.                  |
 | `ADMIN_LIMITED` | A disposable MultiAdmin account with intentionally restricted permissions. |
-| `PLAYER_A` | Controlled non-admin human player. |
-| `PLAYER_B` | Second controlled human player. |
-| `BOT_N` | Controlled bot used for table/squad/paging variations. |
-| `RUN_MARKER` | Unique, non-sensitive identifier such as `mock-doc-YYYYMMDD-N`. |
-| Snapshot | Sanitized before-state capture plus a precise restoration procedure. |
+| `PLAYER_A`      | Controlled non-admin human player.                                         |
+| `PLAYER_B`      | Second controlled human player.                                            |
+| `BOT_N`         | Controlled bot used for table/squad/paging variations.                     |
+| `RUN_MARKER`    | Unique, non-sensitive identifier such as `mock-doc-YYYYMMDD-N`.            |
+| Snapshot        | Sanitized before-state capture plus a precise restoration procedure.       |
 
 1. Never store credentials, cookies, form tokens, raw player IDs, IP addresses,
    or raw captures in the repository.
@@ -175,13 +175,13 @@ list; bots are also absent unless a scenario says otherwise.
 
 ### 1.1 Authentication and HTTP-state matrix
 
-| Scenario | Agent sequence | Expected evidence |
-| --- | --- | --- |
-| A1 | GET each protected route without a session | Login page with HTTP 200 versus 401/403/redirect behavior. |
-| A2 | Login with omitted token, omitted username, omitted password, and malformed `password_hash` | Validation/error shape without deliberately supplying a wrong password. |
-| A3 | Login with `remember` values exposed by the page; restart a cookie jar; logout | `authcred`/session cookie scope, max-age, reuse, and invalidation. |
-| A4 | Two independent authenticated cookie jars; logout one | Session isolation and unaffected second session. |
-| A5 | GET/POST route/method matrix for active endpoints, trailing slash, unknown child route | Rendered 404/405/login behavior and headers. |
+| Scenario | Agent sequence                                                                              | Expected evidence                                                       |
+|----------|---------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| A1       | GET each protected route without a session                                                  | Login page with HTTP 200 versus 401/403/redirect behavior.              |
+| A2       | Login with omitted token, omitted username, omitted password, and malformed `password_hash` | Validation/error shape without deliberately supplying a wrong password. |
+| A3       | Login with `remember` values exposed by the page; restart a cookie jar; logout              | `authcred`/session cookie scope, max-age, reuse, and invalidation.      |
+| A4       | Two independent authenticated cookie jars; logout one                                       | Session isolation and unaffected second session.                        |
+| A5       | GET/POST route/method matrix for active endpoints, trailing slash, unknown child route      | Rendered 404/405/login behavior and headers.                            |
 
 > **HUMAN REQUIRED — do not change credentials during this phase**
 >
@@ -253,13 +253,13 @@ than merely an in-memory session; use a human-approved snapshot and restore.
 
 ### 3.1 Current-game, travel, and console
 
-| Scenario | Endpoint/flow | Restore condition |
-| --- | --- | --- |
-| C1 | `/current` notes save → GET readback | Restore original notes. |
-| C2 | `/current/change action=update` | Compare option/mutator fragment; no lasting change. |
-| C3 | `/current/change action=change` → repeated `/current/change/check` | Return to baseline map/game type and wait for `ok`. |
-| C4 | `/current action=resetCampaign` | Only with a disposable campaign baseline; restore it. |
-| C5 | `/console` harmless help/version/status and unknown command | No game/admin command; capture output/error form. |
+| Scenario | Endpoint/flow                                                      | Restore condition                                     |
+|----------|--------------------------------------------------------------------|-------------------------------------------------------|
+| C1       | `/current` notes save → GET readback                               | Restore original notes.                               |
+| C2       | `/current/change action=update`                                    | Compare option/mutator fragment; no lasting change.   |
+| C3       | `/current/change action=change` → repeated `/current/change/check` | Return to baseline map/game type and wait for `ok`.   |
+| C4       | `/current action=resetCampaign`                                    | Only with a disposable campaign baseline; restore it. |
+| C5       | `/console` harmless help/version/status and unknown command        | No game/admin command; capture output/error form.     |
 
 > **HUMAN REQUIRED — approve travel/reset window**
 >
@@ -329,17 +329,17 @@ for browser-shaped requests. The following extended-action rows now refer to
 the separate non-JavaScript form fallback, `POST /current/players`, which is
 still pending live verification.
 
-| Scenario | Action | Required verification and cleanup |
-| --- | --- | --- |
-| P1 | `kickfromrole` | Capture action XML and role/squad/current-page change; let player choose/recover role. |
-| P2 | `swapteam` | Verify player row, team totals, and squad consequences; restore original team. |
-| P3 | `whisper` | Capture success/error XML; use a non-sensitive `RUN_MARKER` payload. |
-| P4 | `attachalias`, `attachnote` | Read tracking detail; delete alias/note and verify removal. |
-| P5 | `enabletracking`, `disabletracking` | Read policy tracking state after each transition; leave disabled unless baseline says otherwise. |
-| P6 | `makemember`, `cancelmembership` | Read members page; remove membership and verify. |
-| P7 | stale `playerkey`, unknown action, empty reason, invalid expiry | For `/data`, capture the legacy no-player/error or kick fallback exactly; no unknown action should be assumed harmless. |
-| P8 | admin/dev target denial branches | Use a controlled admin/dev player; verify no state change. |
-| P9 | finite ID-ban expiry | Prefer one-hour/one-day disposable ban, revoke immediately, and verify rejoin. |
+| Scenario | Action                                                          | Required verification and cleanup                                                                                       |
+|----------|-----------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| P1       | `kickfromrole`                                                  | Capture action XML and role/squad/current-page change; let player choose/recover role.                                  |
+| P2       | `swapteam`                                                      | Verify player row, team totals, and squad consequences; restore original team.                                          |
+| P3       | `whisper`                                                       | Capture success/error XML; use a non-sensitive `RUN_MARKER` payload.                                                    |
+| P4       | `attachalias`, `attachnote`                                     | Read tracking detail; delete alias/note and verify removal.                                                             |
+| P5       | `enabletracking`, `disabletracking`                             | Read policy tracking state after each transition; leave disabled unless baseline says otherwise.                        |
+| P6       | `makemember`, `cancelmembership`                                | Read members page; remove membership and verify.                                                                        |
+| P7       | stale `playerkey`, unknown action, empty reason, invalid expiry | For `/data`, capture the legacy no-player/error or kick fallback exactly; no unknown action should be assumed harmless. |
+| P8       | admin/dev target denial branches                                | Use a controlled admin/dev player; verify no state change.                                                              |
+| P9       | finite ID-ban expiry                                            | Prefer one-hour/one-day disposable ban, revoke immediately, and verify rejoin.                                          |
 
 ### 4.2 One-player policy and squad flows
 
