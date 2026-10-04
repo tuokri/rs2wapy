@@ -1,0 +1,150 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "two-player-session-ban-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-ban-before.request.json",
+      "response": "two-player-session-ban-before.html"
+    },
+    {
+      "name": "two-player-session-bans-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-bans-before.request.json",
+      "response": "two-player-session-bans-before.html"
+    },
+    {
+      "name": "two-player-session-ban-action",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-ban-action.request.json",
+      "response": "two-player-session-ban-action.html"
+    },
+    {
+      "name": "two-player-session-ban-after-action",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-ban-after-action.request.json",
+      "response": "two-player-session-ban-after-action.html"
+    },
+    {
+      "name": "two-player-session-bans-after-action",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-bans-after-action.request.json",
+      "response": "two-player-session-bans-after-action.html"
+    },
+    {
+      "name": "session-ban-revoke",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-ban-revoke.request.json",
+      "response": "session-ban-revoke.html"
+    },
+    {
+      "name": "session-bans-after-revoke",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-bans-after-revoke.request.json",
+      "response": "session-bans-after-revoke.html"
+    },
+    {
+      "name": "two-player-session-ban-after-revoke",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-ban-after-revoke.request.json",
+      "response": "two-player-session-ban-after-revoke.html"
+    },
+    {
+      "name": "two-player-session-ban-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-session-ban-logout.request.json",
+      "response": "two-player-session-ban-logout.html"
+    }
+  ],
+  "failures": []
+}

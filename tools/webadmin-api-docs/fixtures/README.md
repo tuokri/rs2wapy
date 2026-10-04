@@ -43,6 +43,57 @@ request and its observed no-transition response.
 from two independent authenticated sessions with both controlled players present.
 `phase5-chat-live-cursors/` records two held session cursors receiving all-chat
 markers, excluding team-chat markers, and returning empty second polls.
+`phase5-webadmin-chat-send/` records WebAdmin-originated all-chat and team-0
+chat form posts; controlled-client reports verified all-chat visibility to both
+clients and team-0 visibility only to the controlled team-0 client.
+`phase5-player-form-swapteam/` records a two-player direct-form team-swap
+request and its observed no-transition response.
+`phase5-player-form-whisper/` records a direct-form whisper with `__Input`;
+the controlled recipient confirmed the harmless marker and remained connected.
+`phase5-two-player-kick/` records a browser-shaped kick that removes only the
+authorized target while the controlled observer remains connected.
+`phase5-post-kick-reconnect/` records two independent read-only sessions after
+the target's manual reconnect, with both controlled players present.
+`phase5-two-player-session-ban/` records a target-only session ban, mandatory
+revoke, and continued controlled-observer presence.
+`phase5-post-session-ban-reconnect/` records two independent read-only
+sessions after the target's manual reconnect, with both controlled players
+present.
+`phase5-two-player-permanent-ban/` records a target permanent-ID-ban action
+result, immediate mandatory cleanup, and continued controlled-observer
+presence. Its immediate full player-table read retains the target despite the
+action XML's `<kicked>` result, documenting a stale-read behavior.
+`phase5-post-permanent-ban-reconnect/` records two independent read-only
+sessions after the target's manual reconnect, with both controlled players
+present.
+`phase5-two-player-role-kick/` and
+`phase5-two-player-role-kick-commander/` record direct-form role-kick attempts
+with player/current/squad before-and-after state. The latter occupied-role
+attempt returned legacy next-death wording but immediately removed the
+controlled commander from their role.
+`phase5-post-role-kick/` records two independent read-only sessions after the
+controlled target returned to role selection as a grunt; both players remained
+present.
+`phase5-stale-player-key/` records the legacy player-action no-op response for
+a syntactically plausible but nonexistent player key, with both controlled
+players confirmed present afterward.
+`phase5-post-reciprocal-kills/` records two independent WebAdmin read-only
+views after the controlled players killed each other once, preserving rendered
+scoreboard, player, squad, and chat state. The captured before/after rows put
+the players on opposite teams; the fixture does not isolate score deltas.
+`phase5-toxic-players-after-teamkills/` records the empty Toxic Players page
+after those reciprocal enemy kills; it does not test team-kill toxicity.
+`phase5-team-kill-baseline/` and `phase5-one-team-kill-after/` capture an
+immediate same-team, same-squad before/after pair. Autobalance was disabled in
+the operator log for this pair. The rendered delta is one additional death,
+no kill-count increment, and a 10-point reduction on the apparent killer row;
+do not generalize it beyond this server/profile or infer identity from sorted
+sanitized row order.
+`phase5-squad-reset/` records the human-authorized direct-form reset of a
+custom squad name. `phase5-post-squad-reset-restore/` records two independent
+read-only sessions after the human restored that name in-game.
+`phase5-squad-data-route/` records the authenticated full-HTML 404 returned
+for the bundled squad page's actionless AJAX target, `/current/squads/data`.
 
 - `index.json`: sanitized capture metadata, status, response headers, and file
   names

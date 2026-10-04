@@ -1,0 +1,9 @@
+{
+  "form": {
+    "__Input": "ww",
+    "action": "whisper",
+    "playerkey": "{{PLAYER_KEY_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players"
+}

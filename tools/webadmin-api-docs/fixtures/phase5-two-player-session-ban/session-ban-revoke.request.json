@@ -1,0 +1,9 @@
+{
+  "form": {
+    "__Submitter": "",
+    "__UniqueId": "{{UNIQUE_ID_3}}",
+    "action": "revoke"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/session"
+}

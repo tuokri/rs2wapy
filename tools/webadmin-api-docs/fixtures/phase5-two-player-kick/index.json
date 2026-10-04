@@ -1,0 +1,85 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "two-player-kick-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-kick-before.request.json",
+      "response": "two-player-kick-before.html"
+    },
+    {
+      "name": "two-player-kick-action",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "two-player-kick-action.request.json",
+      "response": "two-player-kick-action.html"
+    },
+    {
+      "name": "two-player-kick-after",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-kick-after.request.json",
+      "response": "two-player-kick-after.html"
+    },
+    {
+      "name": "two-player-kick-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-kick-logout.request.json",
+      "response": "two-player-kick-logout.html"
+    }
+  ],
+  "failures": []
+}

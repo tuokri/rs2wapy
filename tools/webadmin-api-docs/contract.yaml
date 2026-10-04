@@ -46,6 +46,26 @@ fixtures:
   phase4_player_form_swapteam: fixtures/phase4-player-form-swapteam/index.json
   phase5_two_player_readonly: fixtures/phase5-two-player-readonly/index.json
   phase5_chat_live_cursors: fixtures/phase5-chat-live-cursors/index.json
+  phase5_webadmin_chat_send: fixtures/phase5-webadmin-chat-send/index.json
+  phase5_player_form_swapteam: fixtures/phase5-player-form-swapteam/index.json
+  phase5_player_form_whisper: fixtures/phase5-player-form-whisper/index.json
+  phase5_two_player_kick: fixtures/phase5-two-player-kick/index.json
+  phase5_post_kick_reconnect: fixtures/phase5-post-kick-reconnect/index.json
+  phase5_two_player_session_ban: fixtures/phase5-two-player-session-ban/index.json
+  phase5_post_session_ban_reconnect: fixtures/phase5-post-session-ban-reconnect/index.json
+  phase5_two_player_permanent_ban: fixtures/phase5-two-player-permanent-ban/index.json
+  phase5_post_permanent_ban_reconnect: fixtures/phase5-post-permanent-ban-reconnect/index.json
+  phase5_two_player_role_kick: fixtures/phase5-two-player-role-kick/index.json
+  phase5_two_player_role_kick_commander: fixtures/phase5-two-player-role-kick-commander/index.json
+  phase5_post_role_kick: fixtures/phase5-post-role-kick/index.json
+  phase5_stale_player_key: fixtures/phase5-stale-player-key/index.json
+  phase5_post_reciprocal_kills: fixtures/phase5-post-reciprocal-kills/index.json
+  phase5_toxic_players_after_teamkills: fixtures/phase5-toxic-players-after-teamkills/index.json
+  phase5_squad_reset: fixtures/phase5-squad-reset/index.json
+  phase5_post_squad_reset_restore: fixtures/phase5-post-squad-reset-restore/index.json
+  phase5_squad_data_route: fixtures/phase5-squad-data-route/index.json
+  phase5_team_kill_baseline: fixtures/phase5-team-kill-baseline/index.json
+  phase5_one_team_kill_after: fixtures/phase5-one-team-kill-after/index.json
   placeholders_are_relation_preserving: true
 states:
   - unauthenticated
@@ -102,9 +122,13 @@ endpoints:
     response: full-html
     dom: ["#players", "#notesForm", "#resetCampaign"]
     fields: [sortby, reverse, action]
+    behavior:
+      controlled_team_kill_profile: victim-deaths-plus-one-killer-kills-unchanged-apparent-killer-score-minus-ten
+      controlled_team_kill_preconditions: same-team-same-squad-autobalance-disabled
+      player_identity_across_sanitized_sorted_snapshots: requires-explicit-correlation
     writes:
       reset-campaign: source-confirmed
-    fixture: get-current
+    fixtures: [get-current, session-a-current]
     verification: live-verified
   - id: current-data
     path: /current/data
@@ -122,15 +146,17 @@ endpoints:
     path: /current/players
     methods: [GET, POST]
     auth: required
-    fields: [action, playerkey, __ExpNumber, __ExpUnit, __IsAdmin]
+    fields: [action, playerkey, __Input, __ExpNumber, __ExpUnit, __IsAdmin]
     response: full-html
     dom: ["#players", "__PlayerId_N", "__PlayerKey_N", "__PlayerName_N", "__Action_N"]
     writes:
       makemember: live-verified-restored
       cancelmembership: live-verified-restored
-      swapteam: live-verified-no-transition-in-one-player-state
-    fixtures: [get-current-players, form-membership-create, form-membership-after-create-members, form-membership-cancel, form-membership-final-members, form-swapteam-action, form-swapteam-after-action, session-a-players, session-b-players]
-    verification: live-verified-read-membership-roundtrip-and-swapteam-noop
+      swapteam: live-verified-no-transition-in-one-and-two-player-states
+      whisper: live-verified-direct-form-player-visible
+      kickfromrole: live-verified-immediate-non-flying-role-removal
+    fixtures: [get-current-players, form-membership-create, form-membership-after-create-members, form-membership-cancel, form-membership-final-members, form-swapteam-action, form-swapteam-after-action, phase5-form-swapteam-action, phase5-form-swapteam-after-action, form-whisper-action, form-whisper-after, two-player-role-kick-action, two-player-role-kick-after-players, session-a-players, session-b-players]
+    verification: live-verified-read-membership-roundtrip-swapteam-noop-whisper-and-immediate-role-kick
   - id: players-data
     path: /current/players/data
     methods: [POST]
@@ -153,7 +179,11 @@ endpoints:
       browser_result_handling:
         kicked: remove-row-with-matching-playerkey
         text: relabel-toggletext-action-for-matching-playerkey
-    fixtures: [get-current-players-data, player-mutevoice, player-unmutevoice, player-sessionban, banid-submit, banid-after-policy, permanent-ban-revoke, permanent-bans-after-revoke, get-current-players]
+      two_player_kick: target-removed-observer-remains-and-target-reconnects
+      two_player_sessionban: target-removed-session-record-created-revoked-observer-remains-and-target-reconnects
+      two_player_banid: kicked-result-observer-remains-immediate-full-player-table-may-be-stale-and-target-reconnects
+      nonexistent_playerkey: nop-and-no-player-state-change
+    fixtures: [get-current-players-data, player-mutevoice, player-unmutevoice, player-sessionban, banid-submit, banid-after-policy, permanent-ban-revoke, permanent-bans-after-revoke, two-player-kick-action, two-player-kick-after, two-player-session-ban-action, two-player-session-bans-after-action, two-player-permanent-ban-action, two-player-permanent-ban-after-action, stale-player-key-action, stale-player-key-after, session-a-players, session-b-players, get-current-players]
     verification: live-verified
   - id: squads
     path: /current/squads
@@ -161,7 +191,12 @@ endpoints:
     auth: required
     fields: [action, squadteam, squadnumber, squadname]
     response: full-html
-    fixture: get-current-squads
+    writes:
+      resetsquadname: live-verified-human-restored
+    behavior:
+      reset_name: no-webadmin-rename-or-restore-operation
+      bundled_ajax_data_route: authenticated-full-html-404
+    fixtures: [get-current-squads, squad-reset-before, squad-reset-action, squad-reset-after, squad-data-actionless-post, session-a-squads, session-b-squads]
     verification: live-verified
   - id: chat
     path: /current/chat
@@ -169,10 +204,12 @@ endpoints:
     auth: required
     fields: [message, teamsay, rnd, ajax]
     response: full-html
-    fixtures: [session-a-chat, session-a-chat-data-baseline, session-b-chat, session-b-chat-data-baseline, chat-a-marker-poll, chat-a-post-marker-poll, chat-b-marker-poll, chat-b-post-marker-poll]
+    fixtures: [session-a-chat, session-a-chat-data-baseline, session-b-chat, session-b-chat-data-baseline, chat-a-marker-poll, chat-a-post-marker-poll, chat-b-marker-poll, chat-b-post-marker-poll, webadmin-chat-all, webadmin-chat-team]
     behavior:
       human-all-chat: visible-to-fresh-admin-sessions-in-newest-first-order
       human-team-chat: absent-from-observed-admin-chat-polls
+      webadmin-all-chat: visible-to-both-controlled-clients
+      webadmin-team-0-chat: visible-to-controlled-team-0-client-only
       second-poll-after-read: empty
     dom: ["#chatlog", "#chatform", ".chatmessage"]
     fixture: chat-post
@@ -285,7 +322,10 @@ endpoints:
     auth: required
     fields: [action, playerkey, __PlayerName, __Submitter]
     response: full-html
-    fixture: get-policy-toxicplayers
+    fixture: [get-policy-toxicplayers, toxic-players-page]
+    behavior:
+      reciprocal_enemy_kills: no-toxic-player-entry
+      team_kill_threshold: untested
     verification: live-verified
   - id: policy-tracking
     path: /policy/tracking

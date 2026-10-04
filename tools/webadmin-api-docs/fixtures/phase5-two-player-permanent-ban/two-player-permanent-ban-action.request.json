@@ -1,0 +1,13 @@
+{
+  "form": {
+    "__ExpNumber": "1",
+    "__ExpUnit": "Never",
+    "__NotifyPlayers": "0",
+    "__Reason": "RS2 WebAdmin documentation probe",
+    "action": "banid",
+    "ajax": "1",
+    "playerkey": "{{PLAYER_KEY_2}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players/data"
+}

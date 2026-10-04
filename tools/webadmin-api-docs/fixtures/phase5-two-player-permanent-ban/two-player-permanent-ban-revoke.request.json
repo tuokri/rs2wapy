@@ -1,0 +1,9 @@
+{
+  "form": {
+    "__Submitter": "",
+    "action": "revoke",
+    "uniqueid": "{{UNIQUE_ID_3}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/bans"
+}

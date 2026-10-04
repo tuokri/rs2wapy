@@ -1,0 +1,10 @@
+{
+  "form": {
+    "action": "resetsquadname",
+    "squadname": "hi gpt :)",
+    "squadnumber": "0",
+    "squadteam": "1"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/squads"
+}

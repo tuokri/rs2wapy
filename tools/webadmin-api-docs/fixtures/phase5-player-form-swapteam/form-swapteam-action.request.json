@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "swapteam",
+    "playerkey": "{{PLAYER_KEY_2}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players"
+}

@@ -1,0 +1,98 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "webadmin-chat-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "webadmin-chat-before.request.json",
+      "response": "webadmin-chat-before.html"
+    },
+    {
+      "name": "webadmin-chat-all",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "webadmin-chat-all.request.json",
+      "response": "webadmin-chat-all.html"
+    },
+    {
+      "name": "webadmin-chat-team",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "webadmin-chat-team.request.json",
+      "response": "webadmin-chat-team.html"
+    },
+    {
+      "name": "webadmin-chat-after",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "webadmin-chat-after.request.json",
+      "response": "webadmin-chat-after.html"
+    },
+    {
+      "name": "webadmin-chat-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "webadmin-chat-logout.request.json",
+      "response": "webadmin-chat-logout.html"
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,9 @@
+{
+  "form": {
+    "action": "kick",
+    "ajax": "1",
+    "playerkey": "{{PLAYER_KEY_4}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players/data"
+}

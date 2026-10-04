@@ -1,0 +1,85 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "stale-player-key-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "stale-player-key-before.request.json",
+      "response": "stale-player-key-before.html"
+    },
+    {
+      "name": "stale-player-key-action",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "stale-player-key-action.request.json",
+      "response": "stale-player-key-action.html"
+    },
+    {
+      "name": "stale-player-key-after",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "stale-player-key-after.request.json",
+      "response": "stale-player-key-after.html"
+    },
+    {
+      "name": "stale-player-key-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "stale-player-key-logout.request.json",
+      "response": "stale-player-key-logout.html"
+    }
+  ],
+  "failures": []
+}

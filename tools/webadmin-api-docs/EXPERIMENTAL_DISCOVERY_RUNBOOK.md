@@ -1,16 +1,17 @@
 # RS2 WebAdmin Experimental Discovery Runbook
 
 **Date:** 2026-09-26 (UTC)
-**Last updated:** 2026-09-30 (UTC)
+**Last updated:** 2026-10-04 (UTC)
 
-## Discovery checkpoint — pause here (updated 2026-09-30 UTC)
+## Discovery checkpoint — pause here (updated 2026-10-04 UTC)
 
-The current live-discovery block is paused at a clean two-player boundary. All
-WebAdmin sessions used for the cursor observations have been logged out; no
-membership, alias, note, ban, policy, map, or configuration mutation is
-pending. The next prepared probe sends WebAdmin-originated chat markers and
-has **not** been executed yet. Do not repeat completed scenarios merely to
-reconstruct their evidence.
+The current live-discovery block is paused immediately after a timed map
+transition interrupted a reproducibility capture. All WebAdmin sessions used
+for the completed observations have been logged out. No ban, session ban,
+alias, note, policy, map, or configuration mutation is pending. The live
+`fluudah` account intentionally remains a permanent Admin member; do not
+remove that membership without explicit authorization. Do not repeat completed
+scenarios merely to reconstruct their evidence.
 
 ### Completed evidence
 
@@ -49,32 +50,132 @@ reconstruct their evidence.
   `whisper` was submitted with a harmless marker but fell through to an
   ordinary kick. Source inspection explains this behavior. The mock contract
   now records the browser-wire behavior as authoritative.
+- WebAdmin-originated chat is now live-verified with both controlled clients.
+  The all-chat marker `wa` was visible to both. The team-0 marker `wt` was
+  visible only to the controlled client on team 0.
+- A two-player direct-form `POST /current/players` `swapteam` request is
+  captured. It again returned normal HTML without changing the controlled
+  player's rendered team; no cleanup action was necessary.
+- A direct-form `POST /current/players` `whisper` with `__Input=ww` is
+  captured. The controlled recipient confirmed visibility and remained
+  connected. This safe path is distinct from the browser AJAX route, whose
+  unrecognised `whisper` action falls through to a kick.
+- A two-player browser-shaped kick is captured. It removed the authorized
+  target from the player table while the controlled observer remained present.
+  After manual reconnect, two independent read-only sessions confirmed both
+  controlled players again.
+- A two-player browser-shaped session ban is captured. It removed the
+  authorized target, created a session-ban record, and left the controlled
+  observer present. The probe revoked the record immediately; after manual
+  reconnect, two independent read-only sessions again confirmed both players.
+- A two-player browser-shaped permanent ID-ban returned the expected
+  `<kicked>` XML result and removal message, while the immediately fetched
+  full player table still showed the target. The observer remained present;
+  the temporary ID-ban cleanup completed before the human reconnection
+  checkpoint, and two independent read-only sessions then confirmed both
+  players. Treat the immediate full-table response as potentially stale; the
+  browser removes its row from the action XML, while the separate one-player
+  lifecycle fixture proves ID-ban record creation and revocation.
+- A two-player direct-form `kickfromrole` is captured for an occupied commander
+  role. Its full-HTML response says the player will be kicked from the role on
+  their next death, but the controlled player immediately reported return to
+  role selection as a grunt, without a server disconnect. SDK inspection shows
+  immediate enforcement except for a flying helicopter pilot, whose removal is
+  deferred until a safe landing/bail-out. A post-transition two-session
+  read-only crawl confirmed both players remained present.
+- A browser-shaped legacy `kick` request with a syntactically plausible but
+  nonexistent player key returned `<nop/>` rather than `<kicked>`; both
+  controlled players remained present. This is the safe stale-key branch for
+  mock error handling.
+- A current player was made a member from the Players form, updated through
+  the Members form with Admin enabled, and manually reconnected. The live
+  player table then rendered that player as Admin. A browser-shaped
+  `sessionban` against that logged administrator returned `<nop/>`, left the
+  administrator and observer connected, and created no session-ban row. A
+  same-name historical Members entry with a different game account ID did not
+  confer admin status to the live connection; model membership by account ID.
+  A timed map transition invalidated the subsequent sanitized reproduction
+  capture, so retain this result as observed evidence and rerun its dedicated
+  capture only after the server is stable.
+- A current player was made a member from the Players form, updated through
+  the Members form with Admin enabled, and manually reconnected. The live
+  player table then rendered that player as Admin. A browser-shaped
+  `sessionban` against that logged administrator returned `<nop/>`, left the
+  administrator and observer connected, and created no session-ban row. A
+  same-name historical Members entry with a different game account ID did not
+  confer admin status to the live connection; model membership by account ID.
+- With a captured same-team, same-squad baseline and autobalance disabled, one
+  controlled team kill produced one additional victim death. The apparent
+  killer row's score fell by 10 while its rendered kill count did not increase.
+  This is an observed result for this server/profile, not a universal scoring
+  rule; fixture sanitization and sorting mean per-player identity must be
+  preserved by a future delta probe rather than inferred from row position.
+- After the controlled players killed each other once, two independent
+  read-only sessions captured the rendered current-game/player/squad/chat
+  state. The before and after player rows place them on opposite teams, with
+  one additional kill and death each. Other score and role state also changed
+  over the capture interval, so this fixture must not attribute a score delta
+  to either kill or represent team-kill behavior.
+- A read-only Toxic Players page capture after those reciprocal enemy kills
+  remained empty. This does not test the team-kill threshold; do not escalate
+  toward an unknown threshold without separate authorization.
+- A human-authorized direct-form `resetsquadname` reset a rendered custom
+  squad name. The endpoint exposed no rename/restore operation, so the human
+  restored the original name manually; a two-session read confirmed that
+  restoration. Model reset as an irreversible server-side mutation from the
+  WebAdmin API perspective.
+- The bundled squad page's browser AJAX target, `/current/squads/data`, is not
+  registered on this server. An authenticated actionless POST returned the
+  normal full-HTML 404 page; the direct `/current/squads` form is authoritative.
 
 ### Resume with
 
-1. Have both controlled players join or remain connected. Confirm they can
-   report visibility of the next WebAdmin-originated all-chat and team-chat
-   messages.
-2. Do **not** use the browser-shaped `/current/players/data` route for
+1. **RESUME MARKER — start here next session.** Wait until the map has fully
+   stabilized. Then have both controlled players join manually and confirm
+   they appear in a fresh `/current/players` read. Rerun
+   `tools/admin_target_sessionban_probe.py` with the live Admin member as the
+   target and the other controlled player as observer, writing a new sanitized
+   `phase5-admin-sessionban-denied` fixture. It must return `<nop/>`, retain
+   both players, and leave no session-ban row; otherwise stop and investigate.
+   Add that fixture to the verifier, contract, API reference, and fixture
+   README only after it validates.
+2. Only after that capture is valid, begin the next new discovery chain. Have
+   both controlled players remain connected before any disruptive interaction
+   probe. Confirm `PLAYER_A` can reconnect after a temporary role or
+   moderation action and `PLAYER_B` can remain connected throughout it.
+3. Do **not** use the browser-shaped `/current/players/data` route for
    `kickfromrole`, team swap, tracking, membership, alias/note, or whisper:
    on this build it kicks the target. Its completed failed fixture is retained
    as evidence but is deliberately excluded from the validated fixture set.
-3. The controlled player currently renders as tracked and has an existing
+4. The controlled player currently renders as tracked and has an existing
    tracking-table entry, but exposes neither `enabletracking` nor
    `disabletracking`; do not alter that pre-existing record. Record this as a
    tracking precondition unavailable rather than manufacturing a new baseline.
-4. Run `tools/webadmin_chat_send_probe.py`, which sends `wa` to all chat and
-   `wt` to team `0`; collect visibility reports from both players. Then retest
-   direct-form `swapteam`. Defer remaining Phase 4 role/whisper paths until
-   their role or recipient preconditions exist. Every disruptive test still
-   requires a fresh human reconnect checkpoint.
+5. Defer role paths until their role preconditions exist. Every disruptive test
+   still requires a fresh human reconnect checkpoint. Before a future
+   two-player ID-ban repeat, capture the bans page after the action and model
+   the immediate full-table target row as stale rather than as an action
+   failure.
 
 The current validated checkpoint fixture sets include `phase4-player-readonly`,
 `phase4-player-actions`, `phase4-banid-roundtrip`,
 `phase4-post-banid-reconnect`, `phase4-player-form-membership`,
 `phase4-tracking-alias-roundtrip`, `phase4-tracking-note-roundtrip`, and
-`phase4-player-form-swapteam`, and `phase5-two-player-readonly`. The raw
-server log remains operator-only and is not a repository fixture.
+`phase4-player-form-swapteam`, `phase5-two-player-readonly`,
+`phase5-webadmin-chat-send`, `phase5-player-form-swapteam`, and
+`phase5-player-form-whisper`, `phase5-two-player-kick`, and
+`phase5-post-kick-reconnect`, `phase5-two-player-session-ban`, and
+`phase5-post-session-ban-reconnect`, `phase5-two-player-permanent-ban`, and
+`phase5-post-permanent-ban-reconnect`, `phase5-two-player-role-kick`,
+`phase5-two-player-role-kick-commander`, and `phase5-post-role-kick`. The raw
+server log remains operator-only and is not a repository fixture. The
+validated stale-key and gameplay-state sets are `phase5-stale-player-key` and
+`phase5-post-reciprocal-kills`; the negative toxic-player set is
+`phase5-toxic-players-after-teamkills`; squad reset/restoration is recorded in
+`phase5-squad-reset` and `phase5-post-squad-reset-restore`; the squad AJAX
+404 is recorded in `phase5-squad-data-route`. The controlled team-kill
+baseline/delta sets are `phase5-team-kill-baseline` and
+`phase5-one-team-kill-after`.
 
 ## Purpose and completion target
 
@@ -110,22 +211,32 @@ cleanup, and final readback.
    or raw captures in the repository.
 2. Before every mutation, capture the affected page and prove that the
    disposable record does not already exist.
-3. Use `RUN_MARKER` in every disposable policy entry, note, alias, map list,
+3. Before drawing any conclusion from a player-affecting action, capture the
+   rendered player and current-game scoreboards plus squads, and explicitly
+   record each controlled player's team and squad. This is a live server:
+   autobalance, map travel, role changes, score events, and player actions can
+   change the state between steps. Do not infer team-kill, score, squad, or
+   player-action semantics from a state whose preconditions were not captured.
+4. Use `RUN_MARKER` in every disposable policy entry, note, alias, map list,
    campaign object, or workshop test object.
-4. Immediately restore bans, session bans, policies, membership/tracking data,
+5. Immediately restore bans, session bans, policies, membership/tracking data,
    map selection, settings, and configuration changes. Verify restoration with
    a fresh GET, not merely the POST response.
-5. If cleanup fails or its outcome is unknown, stop all further mutations,
+6. If cleanup fails or its outcome is unknown, stop all further mutations,
    inspect the live state, restore it manually, and record the incident. Do
    not continue on the assumption that cleanup succeeded.
-6. Do not test arbitrary console commands, real Workshop downloads, shared-IP
+7. Do not test arbitrary console commands, real Workshop downloads, shared-IP
    bans, production credentials, or destructive campaign reset unless the
    human explicitly authorizes that exact operation and has a restore plan.
-7. Keep the baseline plaintext-auth and MultiAdmin/SHA-1-auth test passes
+8. Keep the baseline plaintext-auth and MultiAdmin/SHA-1-auth test passes
    separate. Record the active authentication mode in every fixture index.
-8. Treat a timed map change as an external interruption. Refresh `/current`
+9. Treat a timed map change as an external interruption. Refresh `/current`
    before a multi-request mutation, do not start one near the end of a round,
    and re-authenticate/re-establish state if travel occurs during a sequence.
+   To diagnose a suspected transition, capture `/current` and record the
+   current map/game type plus the rendered scoreboard before interpreting a
+   missing player, changed team/squad, or unexpected action response as an
+   endpoint result.
 
 ## Standard sequence template
 
@@ -134,6 +245,11 @@ Use this template for every numbered scenario below.
 1. **Agent:** identify the exact endpoint, form, expected source/template
    behavior, sanitization rules, and cleanup operation before making a write.
 2. **Agent:** capture a sanitized baseline GET and assert any precondition.
+   For player/gameplay scenarios, snapshot player rows, current-game
+   scoreboard, and squads, including controlled-player team/squad membership.
+   If a timed map change is suspected, make this `/current` snapshot the first
+   diagnostic artifact and compare its map/game/scoreboard state with the
+   pre-transition snapshot before continuing.
 3. **Human required:** complete the indicated player/server/configuration
    checkpoint.
 4. **Agent:** submit one narrowly scoped request and capture the response.

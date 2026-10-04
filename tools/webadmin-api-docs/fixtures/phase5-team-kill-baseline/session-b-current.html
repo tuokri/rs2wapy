@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Current Game</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/current</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Current Game</h2>
+<p id="pageDescription">The current game status.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+
+<div id="content">
+
+
+
+<fieldset id="notesField" title="Here you can leave some notes. They will be stored on the server so other administrators can see and edit them.">
+<legend>Notes</legend>
+<form action="/ServerAdmin/current" method="post" id="notesForm">
+<div>
+<textarea id="notes" name="notes" rows="5" cols="80" style="width:100%;"></textarea>
+</div>
+<div id="notectrl">
+<button type="submit" name="action" value="save">Save</button>
+</div>
+</form>
+</fieldset>
+
+<table width="100%">
+<colgroup>
+	<col width="50%"/>
+	<col width="50%"/>
+</colgroup>
+<tr>
+<td>
+
+<form action="/ServerAdmin/current" method="post" id="resetCampaign">
+
+<h3>Current Game</h3>
+<dl id="currentGame">
+	<dt>Server Name</dt>
+	<dd>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+	<span class="ranked "><span>Ranked: Yes</span></span>
+	</dd>
+	<br>
+<!--	<dt>Cheat Protection</dt>
+	<dd>VAC: <%server.vac%></dd> -->
+	<dt>Game Type</dt>
+	<dd>Territories<br /><code>ROGame.ROGameInfoTerritories</code></dd>
+	<dt>Map</dt>
+	<dd><code>VNTE-Hill937</code><br />Hill 937</dd>
+	<dt>Mutators</dt>
+	<dd></dd>
+	<dt>Realism Mode</dt>
+	<dd>Standard</dd>
+	<dt>MP Campaign Active</dt>
+    <dd>No&nbsp;&nbsp;&nbsp;&nbsp;<button type="submit" name="action" value="resetCampaign" style="display: none;">Reset Campaign</button></dd>
+</dl>
+
+</form>
+
+</td>
+<td>
+
+<h3>Rules</h3>
+<dl id="currentRules">
+<dt>Time Limit</dt>
+<dd>2100 seconds<br />939 seconds remaining</dd>
+<dt>Round Limit</dt>
+<dd>1 of 1</dd>
+<dt>Players (Max)</dt>
+<dd>2 (64)</dd>
+<dt>Spectators (Max)</dt>
+<dd>0 (2)</dd>
+<dt>Members (Max)</dt>
+<dd>0 (--)</dd>
+
+</dl>
+</td>
+</tr>
+</table>
+
+<h3>Teams</h3>
+<table id="teams" class="grid">
+<thead>
+<tr>
+    <th>&#160;</th>
+    <th>Name</th>
+    <th>Size</th>
+    <th>Attacking</th>
+    <th>Rounds Won</th>
+    <th>Team Score</th>
+    <!--<th>Kills</th>-->
+    <th>Territories</th>
+</tr>
+</thead>
+<tbody>
+<tr class="even">
+  <td style="background: #E54927; color: #E54927;">0&#160;</td>
+  <td>North</td>
+  <td class="right">0</td>
+  <td>No</td>
+  <td class="right">0</td>
+  <td class="right">5</td>
+  <!--<td class="right"><%team.killcount%></td>-->
+  <td class="right"></td>
+</tr>
+<tr class="odd">
+  <td style="background: #50A0F0; color: #50A0F0;">1&#160;</td>
+  <td>South</td>
+  <td class="right">2</td>
+  <td>Yes</td>
+  <td class="right">0</td>
+  <td class="right">142</td>
+  <!--<td class="right"><%team.killcount%></td>-->
+  <td class="right"></td>
+</tr>
+
+</tbody>
+</table>
+
+
+<h3>Players</h3>
+<table id="players" class="grid">
+<thead>
+<tr>
+	<th>&#160;</th>
+	<th><a href="/ServerAdmin/current?sortby=name&amp;reverse=" class="sortable ">Player name</a></th>
+	<th><a href="/ServerAdmin/current?sortby=role&amp;reverse=" class="sortable ">Role</a></th>
+	<th><a href="/ServerAdmin/current?sortby=score&amp;reverse=" class="sortable sorted">Score</a></th>
+	<th><a href="/ServerAdmin/current?sortby=kills&amp;reverse=" class="sortable ">Kills</a></th>
+	<th><a href="/ServerAdmin/current?sortby=deaths&amp;reverse=" class="sortable ">Deaths</a></th>
+	<th><a href="/ServerAdmin/current?sortby=kdratio&amp;reverse=" class="sortable ">K/D ratio</a></th>
+	<th><a href="/ServerAdmin/current?sortby=ping&amp;reverse=" class="sortable ">Ping</a></th>
+	<!-- <th>Bot</th> -->
+	<th>Admin</th>
+	<th title="Spectator">Spec.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="even">
+  <td style="background: #50A0F0; color: #50A0F0;">1&#160;</td>
+  <td>{{PLAYER_1}}</td>
+  <td class="right">GRUNT</td>
+  <td class="right">75</td>
+  <td class="right">1</td>
+  <td class="right">4</td>
+  <td class="right">0.250</td>
+  <td class="right" title="Packet loss: ">12</td>
+  <!-- <td class="center"><%player.bot%></td> -->
+  <td class="center">No</td>
+  <td class="center">No</td>
+</tr>
+<tr class="odd">
+  <td style="background: #50A0F0; color: #50A0F0;">1&#160;</td>
+  <td>{{PLAYER_2}}</td>
+  <td class="right">GRENADIER</td>
+  <td class="right">72</td>
+  <td class="right">1</td>
+  <td class="right">4</td>
+  <td class="right">0.250</td>
+  <td class="right" title="Packet loss: ">8</td>
+  <!-- <td class="center"><%player.bot%></td> -->
+  <td class="center">No</td>
+  <td class="center">No</td>
+</tr>
+
+</tbody>
+</table>
+
+<script type="text/javascript">
+//<![CDATA[
+var pageUri = '/ServerAdmin/current';
+//]]>
+</script>
+<script type="text/javascript" src="/images/current.js?gzip"></script>
+
+</div>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+
