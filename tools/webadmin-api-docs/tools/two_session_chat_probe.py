@@ -42,7 +42,8 @@ from webadmin_api_docs.cli import exit_with_status
 from webadmin_api_docs.logging import configure_logging
 from webadmin_api_docs.logging import logger
 
-MARKERS = ("a1", "a2", "b1", "b2")
+ALL_CHAT_MARKERS = ("a1", "b1")
+TEAM_CHAT_MARKERS = ("a2", "b2")
 
 
 def renamed(captures: list[Capture], prefix: str) -> list[Capture]:
@@ -69,14 +70,30 @@ def run(args: ToolArguments) -> int:
                 f"{prefix}-first-poll", "current/chat/data", {"ajax": "1"}
             )
             captures.append(first_poll)
-            missing = [marker for marker in MARKERS if marker not in first_poll.body]
-            if missing:
+            missing_all_chat = [
+                marker
+                for marker in ALL_CHAT_MARKERS
+                if marker not in first_poll.body
+            ]
+            if missing_all_chat:
                 failures.append(
                     {
                         "route": f"{prefix}-first-poll",
-                        "error": "one or more expected human chat markers were absent",
+                        "error": "one or more expected all-chat markers were absent",
                     }
                 )
+            team_markers = [
+                marker
+                for marker in TEAM_CHAT_MARKERS
+                if marker in first_poll.body
+            ]
+            if team_markers:
+                logger.info(
+                    "team-chat markers visible in the WebAdmin poll: {}",
+                    ", ".join(team_markers),
+                )
+            else:
+                logger.info("team-chat markers were not visible in the WebAdmin poll")
             captures.append(
                 probe.request(
                     f"{prefix}-second-poll", "current/chat/data", {"ajax": "1"}

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import replace
 from pathlib import Path
 
@@ -72,8 +73,11 @@ def run(args: ToolArguments) -> int:
                 )
             )
 
-        logger.info("chat cursors are ready; waiting for the human marker checkpoint")
-        input()
+        logger.info(
+            "chat cursors are ready; waiting {} seconds for the human marker checkpoint",
+            args.wait_seconds,
+        )
+        time.sleep(args.wait_seconds)
 
         logger.info("polling marker visibility and cursor advancement")
         for prefix, probe in probes:
@@ -88,7 +92,17 @@ def run(args: ToolArguments) -> int:
                         "error": "one or more expected all-chat markers were absent",
                     }
                 )
-            elif any(marker not in first_poll.body for marker in TEAM_CHAT_MARKERS):
+            visible_team_markers = [
+                marker
+                for marker in TEAM_CHAT_MARKERS
+                if marker in first_poll.body
+            ]
+            if visible_team_markers:
+                logger.info(
+                    "team-chat markers visible in the WebAdmin chat poll: {}",
+                    ", ".join(visible_team_markers),
+                )
+            else:
                 logger.info("team-chat markers were not visible in the WebAdmin chat poll")
             captures.append(
                 probe.request(
@@ -124,11 +138,13 @@ def run(args: ToolArguments) -> int:
 @click.option("--output", type=click.Path(path_type=Path), required=True)
 @click.option("--username", default=os.environ.get("RS2_WEBADMIN_USERNAME"))
 @click.option("--password", default=os.environ.get("RS2_WEBADMIN_PASSWORD"))
+@click.option("--wait-seconds", type=click.IntRange(min=1), default=300)
 def main(
     base_url: str,
     output: Path,
     username: str | None,
     password: str | None,
+    wait_seconds: int,
 ) -> None:
     """Hold two chat sessions open across a human marker-send checkpoint."""
     configure_logging()
@@ -139,6 +155,7 @@ def main(
                 output=output,
                 username=username or "",
                 password=password or "",
+                wait_seconds=wait_seconds,
             )
         )
     )

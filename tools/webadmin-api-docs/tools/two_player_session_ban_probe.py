@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 
 import click
@@ -43,6 +44,79 @@ from webadmin_api_docs.cli import ToolArguments
 from webadmin_api_docs.cli import exit_with_status
 from webadmin_api_docs.logging import configure_logging
 from webadmin_api_docs.logging import logger
+
+
+def revoke_blank_session_ban_rows(probe: WebAdminProbe) -> list[Capture]:
+    """Remove unnamed session-ban residue left by the server after revoke."""
+    page = probe.request(
+        "session-bans-before-blank-row-cleanup",
+        "policy/session",
+    )
+    captures = [page]
+    blank_ids: list[str] = []
+    for row in re.findall(
+        r"<tr>(.*?)</tr>",
+        page.body,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        unique_match = re.search(
+            r'<input[^>]+name=["\']__UniqueId_\d+["\'][^>]+value=["\']([^"\']*)',
+            row,
+            re.IGNORECASE,
+        )
+        player_match = re.search(
+            r'<input[^>]+name=["\']__PlayerName_\d+["\'][^>]+value=["\']([^"\']*)',
+            row,
+            re.IGNORECASE,
+        )
+        if (
+            unique_match
+            and player_match
+            and not player_match.group(1).strip()
+            and unique_match.group(1)
+        ):
+            blank_ids.append(unique_match.group(1))
+
+    for index, unique_id in enumerate(dict.fromkeys(blank_ids), start=1):
+        captures.append(
+            probe.request(
+                f"session-ban-blank-row-revoke-{index}",
+                "policy/session",
+                {
+                    "action": "revoke",
+                    "__UniqueId": unique_id,
+                    "__Submitter": "",
+                },
+            )
+        )
+
+    final = probe.request(
+        "session-bans-after-blank-row-cleanup",
+        "policy/session",
+    )
+    captures.append(final)
+    remaining_blank_rows = False
+    for row in re.findall(
+        r"<tr>(.*?)</tr>",
+        final.body,
+        re.IGNORECASE | re.DOTALL,
+    ):
+        unique_match = re.search(
+            r'<input[^>]+name=["\']__UniqueId_\d+["\'][^>]+value=["\']([^"\']*)',
+            row,
+            re.IGNORECASE,
+        )
+        player_match = re.search(
+            r'<input[^>]+name=["\']__PlayerName_\d+["\'][^>]+value=["\']([^"\']*)',
+            row,
+            re.IGNORECASE,
+        )
+        if unique_match and player_match and not player_match.group(1).strip():
+            remaining_blank_rows = True
+            break
+    if remaining_blank_rows:
+        raise RuntimeError("blank unnamed session-ban row remains after cleanup")
+    return captures
 
 
 def run(args: ToolArguments) -> int:
@@ -107,6 +181,7 @@ def run(args: ToolArguments) -> int:
         if probe is not None and submitted:
             try:
                 captures.extend(revoke_session_ban(probe, unique_id))
+                captures.extend(revoke_blank_session_ban_rows(probe))
                 after_revoke = probe.request(
                     "two-player-session-ban-after-revoke", "current/players"
                 )
