@@ -41,8 +41,42 @@ including generated note-ID discovery and zero-note restoration.
 request and its observed no-transition response.
 `phase5-two-player-readonly/` records current/player/squad/chat baseline reads
 from two independent authenticated sessions with both controlled players present.
-`phase5-chat-live-cursors/` records two held session cursors receiving all-chat
-markers, excluding team-chat markers, and returning empty second polls.
+`phase5-admin-target-prebaseline/` records a fresh stable-map two-player
+read-only baseline immediately before the live Admin session-ban denial.
+`phase5-admin-sessionban-denied/` records a browser-shaped session-ban request
+against a live in-game Admin member, the `<nop/>` result, unchanged player
+presence, an empty session-ban table before and after, and the cleanup readback.
+`phase5-chat-live-cursors/` records the earlier cursor probes and empty poll
+behavior; the 2026-11-20 held-human-marker capture supersedes its team-chat
+negative observation.
+`phase5-chat-human-markers-held-20261120/` records a correctly held two-session
+baseline and first-poll capture for human all-chat and team-chat markers
+`a1`, `a2`, `b1`, and `b2`; both first polls contain all four markers and each
+second poll is empty.
+`phase5-two-player-readonly-20261120/` records a fresh stable-map
+North/South and squad baseline for both controlled players.
+`phase5-stale-player-key-20261120/` confirms the nonexistent player-key legacy
+action returns `<nop/>` plus "Unable to find the requested player." and leaves
+both controlled players present.
+`phase5-squad-data-route-20261120/` confirms an actionless `/current/squads/data`
+POST returns a full-HTML 404 without changing the squad page.
+`phase5-toxic-players-after-teamkills-20261120/` confirms the Toxic Players table
+remains empty with both controlled players present.
+`phase5-two-player-kick-20261120/` records the authorized browser-shaped kick
+of `PLAYER_B`, its `<kicked>` XML result, removal from the immediate player
+table, and continued presence of `PLAYER_A`.
+`phase5-post-kick-reconnect-20261120/` records two independent read-only sessions
+after `PLAYER_B` reconnected and the server was restarted for the reconnect.
+`phase5-two-player-session-ban-20261120/` records the target-only session-ban
+action, active-ban row, mandatory revoke, observer retention, and player readback.
+`phase5-post-session-ban-reconnect-20261120/` records both controlled players
+after reconnect and the source-explained `ZeroNetID` session-ban dummy observed
+at that point.
+`phase5-two-player-session-ban-cleanup-repeat-20261120/` is a failed diagnostic
+repeat. It reproducibly reached `<kicked>` plus ban/revoke, but the server left
+a source-explained blank unnamed `/policy/session` row after standard and
+enhanced cleanup. The row is a `ZeroNetID` storage dummy: it has no player name,
+Steam ID 0, no admin, timestamp, or reason, and `RevokeSessionBan` ignores it.
 `phase5-webadmin-chat-send/` records WebAdmin-originated all-chat and team-0
 chat form posts; controlled-client reports verified all-chat visibility to both
 clients and team-0 visibility only to the controlled team-0 client.

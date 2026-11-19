@@ -25,3 +25,8 @@ The adapter uses BeautifulSoup parser selectors rather than a stable wire
 schema. Fixtures are therefore acceptance inputs: mock responses must preserve
 element IDs, named controls, table headings/order, and empty-list text rather
 than merely return semantically equivalent HTML.
+
+Pagination boundaries, exact live page sizes, and overflow behavior remain
+`prerequisite-unavailable` until the synthetic large-list database pass in
+Phase 7 is completed. Existing fixtures prove small/some empty states; they do
+not prove last-page clamping or identity preservation across large result sets.

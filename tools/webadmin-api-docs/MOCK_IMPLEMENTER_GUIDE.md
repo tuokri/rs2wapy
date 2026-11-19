@@ -41,9 +41,14 @@ boundary, and optional debug panel are intentional starting points.
    messages, and shared HTML shell
 3. Add static assets and Jinja templates or response helpers for the exact
    documented HTML, fragments, XML, redirects, and content types
-4. Implement endpoint families in `contract.yaml` priority order, translating
+4. For `/policy/session`, model revoking the last named session ban as a legacy
+   `ZeroNetID` dummy row, not an empty table. The row has no player name/admin/
+   timestamp/reason and Steam ID `0`; revoke requests for `ZeroNetID` are no-ops.
+   A simplified mock may show the normal empty state only if it explicitly
+   labels that behavior as simplified rather than build-7258-compatible.
+5. Implement endpoint families in `contract.yaml` priority order, translating
    form input into documented in-memory state transitions
-5. Extend the existing optional `/__debug__/` panel when it makes test setup or
+6. Extend the existing optional `/__debug__/` panel when it makes test setup or
    state inspection clearer; it may use modern UI techniques but must never
    change WebAdmin routes
 

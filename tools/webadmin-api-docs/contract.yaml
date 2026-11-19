@@ -66,12 +66,42 @@ fixtures:
   phase5_squad_data_route: fixtures/phase5-squad-data-route/index.json
   phase5_team_kill_baseline: fixtures/phase5-team-kill-baseline/index.json
   phase5_one_team_kill_after: fixtures/phase5-one-team-kill-after/index.json
+  phase5_admin_target_prebaseline: fixtures/phase5-admin-target-prebaseline/index.json
+  phase5_admin_sessionban_denied: fixtures/phase5-admin-sessionban-denied/index.json
+  phase5_chat_human_markers_held_20261120: fixtures/phase5-chat-human-markers-held-20261120/index.json
+  phase5_two_player_readonly_20261120: fixtures/phase5-two-player-readonly-20261120/index.json
+  phase5_stale_player_key_20261120: fixtures/phase5-stale-player-key-20261120/index.json
+  phase5_squad_data_route_20261120: fixtures/phase5-squad-data-route-20261120/index.json
+  phase5_toxic_players_after_teamkills_20261120: fixtures/phase5-toxic-players-after-teamkills-20261120/index.json
+  phase5_two_player_kick_20261120: fixtures/phase5-two-player-kick-20261120/index.json
+  phase5_post_kick_reconnect_20261120: fixtures/phase5-post-kick-reconnect-20261120/index.json
+  phase5_two_player_session_ban_20261120: fixtures/phase5-two-player-session-ban-20261120/index.json
+  phase5_post_session_ban_reconnect_20261120: fixtures/phase5-post-session-ban-reconnect-20261120/index.json
   placeholders_are_relation_preserving: true
 states:
   - unauthenticated
   - authenticated
   - travelling
   - logged_out
+large_list_pagination_discovery:
+  verification: prerequisite-unavailable
+  status: deferred-synthetic-database-snapshot-required
+  routes:
+    - /current/players
+    - /policy/tracking
+    - /policy/bans
+    - /policy/session
+    - /policy/members
+    - /policy/toxicplayers
+  boundary_sets: [zero, one, below-page-size, exact-page-size, above-page-size, two-pages, large-overflow]
+  controls: [firstpage, previouspage, nextpage, lastpage, __FirstVisibleRowIndex, __CurrentTabIndex, sortby, reverse]
+  evidence_required:
+    - exact-live-page-size
+    - first-and-last-page-clamping
+    - out-of-range-and-empty-final-page
+    - row-identity-across-pages
+    - duplicate-and-unknown-key-handling
+    - cleanup-and-fresh-readback
 endpoints:
   - id: app-root
     path: /
@@ -172,6 +202,7 @@ endpoints:
       banid-permanent: live-verified-revoked-reconnect-confirmed
       extended-actions: legacy-handler-falls-through-to-kick
       sessionban-admin-target: live-verified-denied
+    fixtures: [admin-sessionban-before-players, admin-sessionban-action, admin-sessionban-after-players, admin-sessionban-before-session-bans, admin-sessionban-after-session-bans, admin-sessionban-cleanup-check]
     behavior:
       non_admin_or_developer_target: kicked-and-session-ban-created
       banid_with_never_expiry: kicked-and-persistent-id-ban-created
@@ -206,8 +237,10 @@ endpoints:
     response: full-html
     fixtures: [session-a-chat, session-a-chat-data-baseline, session-b-chat, session-b-chat-data-baseline, chat-a-marker-poll, chat-a-post-marker-poll, chat-b-marker-poll, chat-b-post-marker-poll, webadmin-chat-all, webadmin-chat-team]
     behavior:
-      human-all-chat: visible-to-fresh-admin-sessions-in-newest-first-order
-      human-team-chat: absent-from-observed-admin-chat-polls
+      human-all-chat: visible-to-held-admin-sessions
+      human-team-chat: visible-to-held-admin-sessions-with-team-notice
+      held-marker-order: both-sessions-received-a1-a2-b1-b2-in-the-same-captured-order
+      held-second-poll: empty
       webadmin-all-chat: visible-to-both-controlled-clients
       webadmin-team-0-chat: visible-to-controlled-team-0-client-only
       second-poll-after-read: empty
@@ -314,8 +347,23 @@ endpoints:
     response: full-html
     writes:
       revoke: live-verified
-    fixtures: [get-policy-session, session-bans-before, session-bans-after-action, session-ban-revoke, session-bans-after-revoke]
-    verification: live-verified
+    fixtures: [get-policy-session, session-bans-before, session-bans-after-action, session-ban-revoke, session-bans-after-revoke, two-player-session-bans-before, two-player-session-ban-action, two-player-session-bans-after-action, two-player-session-ban-after-revoke]
+    behavior:
+      revoke_last_named_ban: live-verified
+      post_revoke_row: blank-unnamed-row-with-zero-netid
+      dummy_storage:
+        mechanism: SafeRemoveSessionBannedId-replaces-last-entry-with-ZeroNetID
+        source: ROGame.Classes.ROAccessControl
+      dummy_rendering:
+        mechanism: ROPolicySessionBans-iterates-session-banned-array
+        template: policy_sessionbans_row.inc
+        source: WebAdmin.Classes.ROPolicySessionBans
+      dummy_revoke:
+        result: ignored
+        source: ROTracking.RevokeSessionBan
+      active_ban_for_real_player: false
+      retry_cleanup: live-verified-dummy-row-remains
+    verification: live-verified-source-explained-legacy-dummy-row
   - id: policy-toxic-players
     path: /policy/toxicplayers
     methods: [GET, POST]

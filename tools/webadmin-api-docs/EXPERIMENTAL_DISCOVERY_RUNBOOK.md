@@ -1,17 +1,17 @@
 # RS2 WebAdmin Experimental Discovery Runbook
 
 **Date:** 2026-09-26 (UTC)
-**Last updated:** 2026-10-04 (UTC)
+**Last updated:** 2026-11-20 (UTC)
 
-## Discovery checkpoint — pause here (updated 2026-10-04 UTC)
+## Discovery checkpoint — paused on session-ban cleanup (updated 2026-11-20 UTC)
 
-The current live-discovery block is paused immediately after a timed map
-transition interrupted a reproducibility capture. All WebAdmin sessions used
-for the completed observations have been logged out. No ban, session ban,
-alias, note, policy, map, or configuration mutation is pending. The live
-`fluudah` account intentionally remains a permanent Admin member; do not
-remove that membership without explicit authorization. Do not repeat completed
-scenarios merely to reconstruct their evidence.
+Discovery is paused after a repeat session-ban test. All WebAdmin sessions used
+for the completed observations have been logged out. The repeat probe submitted
+and revoked a session ban for `PLAYER_B`, but this server build left a
+blank unnamed session-ban row that remained after both the normal revoke and
+the probe's attempted blank-row cleanup. The live `PLAYER_A` account remains a
+permanent Admin member; do not remove that membership without explicit
+authorization. Do not repeat completed scenarios merely to reconstruct evidence.
 
 ### Completed evidence
 
@@ -42,9 +42,11 @@ scenarios merely to reconstruct their evidence.
 - Two controlled players are now live-verified in independent WebAdmin session
   captures, including current, player, squad, chat-page, and chat-data
   baseline responses.
-- Held two-session chat cursors received the human all-chat markers in the
-  same newest-first order; neither received human team-chat markers, and each
-  immediate second poll was empty.
+- A correctly held two-session chat capture established cursors before human
+  sends. Both sessions received human all-chat markers `a1` and `b1` and
+  team-chat markers `a2` and `b2` in the same captured order; both team
+  markers included `(Team)` and team color, and each immediate second poll was
+  empty.
 - The player action menu is misleading on this build: its bundled JavaScript
   posts to `/current/players/data`, which remains on the legacy handler.
   `whisper` was submitted with a harmless marker but fell through to an
@@ -68,6 +70,14 @@ scenarios merely to reconstruct their evidence.
   authorized target, created a session-ban record, and left the controlled
   observer present. The probe revoked the record immediately; after manual
   reconnect, two independent read-only sessions again confirmed both players.
+- A 2026-11-20 session-ban repeat reproduced a blank unnamed residue in
+  `/policy/session` after standard revoke. The enhanced cleanup probe attempted
+  to revoke that residue and the row still remained. SDK inspection explains
+  that the row is a `ZeroNetID` dummy retained by
+  `ROAccessControl.SafeRemoveSessionBannedId`; the session-ban array is iterated
+  by `ROPolicySessionBans`, and `ROTracking.RevokeSessionBan` ignores the dummy.
+  It is not an active ban for a real player, but exact mock compatibility requires
+  modeling or explicitly simplifying this post-revoke row.
 - A two-player browser-shaped permanent ID-ban returned the expected
   `<kicked>` XML result and removal message, while the immediately fetched
   full player table still showed the target. The observer remained present;
@@ -130,28 +140,28 @@ scenarios merely to reconstruct their evidence.
 
 ### Resume with
 
-1. **RESUME MARKER — start here next session.** Wait until the map has fully
-   stabilized. Then have both controlled players join manually and confirm
-   they appear in a fresh `/current/players` read. Rerun
-   `tools/admin_target_sessionban_probe.py` with the live Admin member as the
-   target and the other controlled player as observer, writing a new sanitized
-   `phase5-admin-sessionban-denied` fixture. It must return `<nop/>`, retain
-   both players, and leave no session-ban row; otherwise stop and investigate.
-   Add that fixture to the verifier, contract, API reference, and fixture
-   README only after it validates.
-2. Only after that capture is valid, begin the next new discovery chain. Have
-   both controlled players remain connected before any disruptive interaction
-   probe. Confirm `PLAYER_A` can reconnect after a temporary role or
-   moderation action and `PLAYER_B` can remain connected throughout it.
-3. Do **not** use the browser-shaped `/current/players/data` route for
+1. **PAUSE/RESUME MARKER — 2026-11-20 (UTC).** When discovery resumes, first
+   confirm that `PLAYER_B` manually reconnected after the repeat
+   session-ban probe and that `PLAYER_A` remains connected. Capture a fresh
+   `/current`, `/current/players`, `/current/squads`, and `/policy/session`
+   baseline before any mutation.
+2. Record the `/policy/session` state as a live baseline on resume. The blank
+   unnamed row shown in `phase5-two-player-session-ban-cleanup-repeat-20261120`
+   is now source-explained as a `ZeroNetID` dummy, not an active real-player
+   ban. Preserve whether the live server renders it or suppresses it, and obtain
+   human approval before any server restart or manual recovery action.
+3. Resume the session-ban/permanent-ban role-kick chain only after the baseline
+   is clean or the unresolved residue is explicitly accepted. Fresh reconnect
+   checkpoints are required after each disruptive action.
+4. Do **not** use the browser-shaped `/current/players/data` route for
    `kickfromrole`, team swap, tracking, membership, alias/note, or whisper:
    on this build it kicks the target. Its completed failed fixture is retained
    as evidence but is deliberately excluded from the validated fixture set.
-4. The controlled player currently renders as tracked and has an existing
+5. The controlled player currently renders as tracked and has an existing
    tracking-table entry, but exposes neither `enabletracking` nor
    `disabletracking`; do not alter that pre-existing record. Record this as a
    tracking precondition unavailable rather than manufacturing a new baseline.
-5. Defer role paths until their role preconditions exist. Every disruptive test
+6. Defer role paths until their role preconditions exist. Every disruptive test
    still requires a fresh human reconnect checkpoint. Before a future
    two-player ID-ban repeat, capture the bans page after the action and model
    the immediate full-table target row as stale rather than as an action
@@ -162,6 +172,14 @@ The current validated checkpoint fixture sets include `phase4-player-readonly`,
 `phase4-post-banid-reconnect`, `phase4-player-form-membership`,
 `phase4-tracking-alias-roundtrip`, `phase4-tracking-note-roundtrip`, and
 `phase4-player-form-swapteam`, `phase5-two-player-readonly`,
+`phase5-admin-target-prebaseline`, `phase5-admin-sessionban-denied`,
+`phase5-chat-human-markers-held-20261120`,
+`phase5-two-player-readonly-20261120`,
+`phase5-stale-player-key-20261120`,
+`phase5-squad-data-route-20261120`,
+`phase5-toxic-players-after-teamkills-20261120`,
+`phase5-two-player-kick-20261120`,
+`phase5-post-kick-reconnect-20261120`,
 `phase5-webadmin-chat-send`, `phase5-player-form-swapteam`, and
 `phase5-player-form-whisper`, `phase5-two-player-kick`, and
 `phase5-post-kick-reconnect`, `phase5-two-player-session-ban`, and
@@ -191,9 +209,10 @@ changes. Every new result must be marked `live-verified`,
 `live-verified-denied`, `not-exposed`, or `prerequisite-unavailable` in the
 contract.
 
-This is an estimated **80–110 stateful scenarios**, not 80–110 individual
+This is an estimated **90–125 stateful scenarios**, not 90–125 individual
 requests. A scenario normally means baseline read, operation, readback,
-cleanup, and final readback.
+cleanup, and final readback. The dedicated synthetic large-list/pagination
+phase is estimated to require 8–12 of those scenarios.
 
 ## Roles, notation, and non-negotiable safety rules
 
@@ -589,7 +608,60 @@ baseline plaintext-auth evidence.
 > non-MultiAdmin configuration. Restore it if required, restart the server, and
 > confirm baseline plaintext login behavior and baseline 404 behavior again.
 
-## Phase 7 — Evidence integration and exit criteria
+## Phase 7 — Synthetic large-list and database pagination discovery
+
+Target: **8–12 stateful scenarios**. This phase is deferred until the server
+can be isolated on a disposable database/configuration snapshot and populated
+with synthetic records. It is required for complete pagination and large-list
+documentation, but is separate from normal player/moderation testing.
+
+> **HUMAN REQUIRED — provide a disposable pagination test profile**
+>
+> Create a restorable snapshot of the server databases/configuration used by
+> tracking, members, ID bans, session bans, and toxic-player state. Supply a
+> supported fake-data generator or operator procedure that creates synthetic
+> records without using real players, public IP addresses, real Steam/Epic
+> identities, or real ban policy entries. A normal server database backup and
+> exact restore procedure are mandatory before seeding.
+
+### 7.1 Seed and boundary matrix
+
+- **Agent:** record the current/empty state and exact row/page count controls
+  for every target route before seeding.
+- **Agent:** generate and capture boundary sets for at least:
+  0 records, 1 record, one record below the observed page size, exactly the
+  observed page size, one record above it, two pages, and a deliberately
+  large/overflow set approved by the human.
+- **Agent:** test `firstpage`, `previouspage`, `nextpage`, `lastpage`,
+  `__FirstVisibleRowIndex`, `__CurrentTabIndex`, sort fields, and reverse
+  sorting around each boundary. Record clamping, index drift, empty-final-page
+  behavior, stale row identity, and duplicate/unknown record keys.
+- **Agent:** preserve synthetic aliases and relation-preserving placeholders in
+  fixtures; never commit generated names, IDs, IP addresses, or database dumps.
+- **Agent:** remove synthetic records in `finally` cleanup and restore the exact
+  database/configuration snapshot. Verify restoration with fresh reads and,
+  if the profile persisted across restart, a server restart.
+
+### 7.2 Target route families
+
+Test the route families below independently so failure in one database does not
+invalidate the others:
+
+| Route family | Synthetic-data scenario | Required evidence |
+| --- | --- | --- |
+| `/current/players` | Generate enough controlled bots or fixture-backed rows to exceed the live page size without affecting public players. | First/last page, sorting and reverse sorting, player-key stability across pages, spectator/bot rendering, final-page/empty-state behavior. |
+| `/policy/tracking` | Generate synthetic tracking records with aliases, notes, and active/revoked punk entries. | Page size, tabs, `__FirstVisibleRowIndex`, detail-dialog IDs, note/alias identity across pages, and stale/delete behavior. |
+| `/policy/bans` | Generate synthetic unique-ID bans with every supported ID type and finite/Never expiry variants. | Page size, duplicate/unknown IDs, revoke/edit selection, sorting/paging, and identity preservation after revoke. |
+| `/policy/session` | Generate synthetic session-ban records or the same supported fixture mechanism, where explicit human authorization permits it. | Page-size behavior, multiple revoke selection, comma-separated IDs, unknown/expired records, and the `ZeroNetID` dummy-row transition. |
+| `/policy/members` | Generate synthetic member records with tabs, expiry variants, and Admin/non-Admin flags. | Tab persistence, first/previous/next/last paging, update/delete behavior, duplicate IDs, and stale display-name/name-ID distinctions. |
+| `/policy/toxicplayers` | Generate synthetic toxic entries only if a controlled, reversible mechanism exists. | Page size, sorting/paging, add/remove identity, and whether creation is source-only or live-supported. |
+
+If no supported fake-data seeding mechanism exists for a route, record
+`prerequisite-unavailable` rather than modifying a real database directly or
+inferring behavior from source. Do not use this phase to probe real bans,
+real account identities, shared IPs, or unrelated users.
+
+## Phase 8 — Evidence integration and exit criteria
 
 After each completed phase:
 
