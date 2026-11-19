@@ -200,3 +200,9 @@ The above are just simple examples of how to use the library. In the future,
 the library will be able to automate all tasks which RS2 WebAdmin offers.
 You can check the status of currently implemented WebAdmin features here:
 https://github.com/tuokri/rs2wapy/issues/9.
+
+## Development TODOs
+
+- Clean up this entire document (and other docs).
+- Replace `mypy` with `ty`.
+- Use Conventional Commits style in the future: https://www.conventionalcommits.org/en/v1.0.0/.
