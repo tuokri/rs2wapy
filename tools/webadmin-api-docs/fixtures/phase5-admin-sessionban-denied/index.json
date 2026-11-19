@@ -1,0 +1,124 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "admin-sessionban-before-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-before-players.request.json",
+      "response": "admin-sessionban-before-players.html"
+    },
+    {
+      "name": "admin-sessionban-before-session-bans",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-before-session-bans.request.json",
+      "response": "admin-sessionban-before-session-bans.html"
+    },
+    {
+      "name": "admin-sessionban-action",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/xml",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-action.request.json",
+      "response": "admin-sessionban-action.html"
+    },
+    {
+      "name": "admin-sessionban-after-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-after-players.request.json",
+      "response": "admin-sessionban-after-players.html"
+    },
+    {
+      "name": "admin-sessionban-after-session-bans",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-after-session-bans.request.json",
+      "response": "admin-sessionban-after-session-bans.html"
+    },
+    {
+      "name": "admin-sessionban-cleanup-check",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-cleanup-check.request.json",
+      "response": "admin-sessionban-cleanup-check.html"
+    },
+    {
+      "name": "admin-sessionban-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "admin-sessionban-logout.request.json",
+      "response": "admin-sessionban-logout.html"
+    }
+  ],
+  "failures": []
+}

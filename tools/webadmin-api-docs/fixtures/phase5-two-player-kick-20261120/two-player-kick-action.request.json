@@ -1,0 +1,11 @@
+{
+  "form": {
+    "__NotifyPlayers": "0",
+    "__Reason": "RS2 WebAdmin documentation probe",
+    "action": "kick",
+    "ajax": "1",
+    "playerkey": "{{PLAYER_KEY_1}}"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/current/players/data"
+}
