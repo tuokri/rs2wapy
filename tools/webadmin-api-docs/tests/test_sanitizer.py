@@ -74,7 +74,7 @@ def test_member_name_field_is_sanitized_as_a_player_name() -> None:
 
     sanitized = sanitizer.sanitize_text(
         '<input type="hidden" name="__MemberName_1" '
-        'id="__MemberName_1" value="fluudah"/>'
+        'id="__MemberName_1" value="member-alpha"/>'
     )
 
     assert 'value="{{PLAYER_1}}"' in sanitized
