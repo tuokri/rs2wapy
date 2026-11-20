@@ -72,6 +72,47 @@ action, active-ban row, mandatory revoke, observer retention, and player readbac
 `phase5-post-session-ban-reconnect-20261120/` records both controlled players
 after reconnect and the source-explained `ZeroNetID` session-ban dummy observed
 at that point.
+`phase5-post-pause-readonly-20261120/` records the resumed stable-map baseline
+with both controlled players visible in two independent sessions and an empty
+`/policy/session` table.
+`phase5-two-player-permanent-ban-20261120/` records the temporary permanent-ID
+ban, active banned-ID row, immediate revoke, and observer retention.
+`phase5-post-permanent-ban-reconnect-20261120/` records two independent
+read-only sessions after the target reconnects and the banned-ID table is empty.
+`phase5-post-teamjoin-readonly-20261120/` records the active-round baseline after
+both controlled players joined teams, with North/South roster state and no squads.
+`phase5-player-form-swapteam-20261120/` records a direct-form team-swap request
+that returned a success message but left the target's rendered team unchanged;
+no restore request was sent.
+`phase5-player-form-whisper-20261120/` records the direct-form whisper marker
+`ww` to `PLAYER_B`; the server returned a success message and the controlled
+recipient confirmed receipt and remained connected.
+`phase1-readonly-resume-20261120/` records a fresh 34-route read-only crawl,
+including all settings subpages, map cycles, campaign, workshop, policy, and
+the existing rendered 404 at `/policy/hashbans`.
+`phase3-welcome-settings-20261120/` records a fresh MOTD marker save/readback
+and exact welcome-form restore, including `TBVal=1` and enabled toggle behavior.
+`phase3-mapcycle-roundtrip-20261120/` records create/save, activation,
+baseline restoration, disposable-cycle deletion, and final exact one-cycle
+readback for `/settings/maplist`.
+`phase3-general-settings-20261120/` records the reversible live general-settings
+round trip changing advertisement interval from 30 to 31 and restoring 30 with
+a fresh readback.
+`phase3-gameplay-settings-20261120/` records the reversible gameplay-settings
+round trip changing `FriendlyFireArtilleryPunishScale` 0.1000→0.2000 and
+restoring 0.1000 with fresh readbacks.
+`phase3-gametype-settings-20261120/` records a reversible Territories
+`settings_RoundLimit` round trip 1→2→1 with live readbacks.
+`phase3-system-settings-20261120/` records a reversible WebAdmin
+`settings_ChatRefresh` round trip 5000→5010→5000 with live readbacks.
+`phase5-post-mapcycle-readonly-20261120/` records the new-map baseline after
+automatic travel to Hill 937, including both controlled-player rows and clean ban tables.
+`phase5-role-ready-readonly-20261120/` records one controlled Commander on
+North, the other controlled player on South, no squads, and the full current/players/squads baseline.
+`phase5-two-player-role-kick-20261120/` records direct-form `kickfromrole`
+against the occupied Commander. It returned next-death wording, immediately
+rendered the target as RIFLEMAN, left both players connected, and showed a
+North squad appear in the after-squad read.
 `phase5-two-player-session-ban-cleanup-repeat-20261120/` is a failed diagnostic
 repeat. It reproducibly reached `<kicked>` plus ban/revoke, but the server left
 a source-explained blank unnamed `/policy/session` row after standard and

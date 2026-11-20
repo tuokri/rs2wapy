@@ -78,6 +78,47 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
   by `ROPolicySessionBans`, and `ROTracking.RevokeSessionBan` ignores the dummy.
   It is not an active ban for a real player, but exact mock compatibility requires
   modeling or explicitly simplifying this post-revoke row.
+- The 2026-11-20 post-pause baseline captured both controlled players in two
+  independent sessions and showed an empty `/policy/session` table with no named
+  or dummy rows.
+- A post-pause temporary permanent-ID-ban lifecycle verified `<kicked>`, active
+  banned-ID creation, immediate revoke, empty fresh ban state, observer retention,
+  and successful manual reconnect of the target.
+- A 2026-11-20 post-team-join baseline verified North/South team assignment for
+  both controlled players and showed no squads while the round timer was active.
+- A 2026-11-20 read-only 34-route crawl refreshed settings, campaign, map-cycle,
+  workshop, policy, and current-game captures. It found 37 HTTP 200 responses
+  and the existing rendered `/policy/hashbans` 404.
+- A 2026-11-20 welcome-screen round trip saved a marker MOTD, verified it by a
+  fresh GET, restored the exact baseline form, and confirmed `TBVal=1` under an
+  enabled welcome-screen checkbox.
+- A 2026-11-20 map-cycle round trip created cycle #2, activated it, restored
+  cycle #1 as active with the exact baseline text, deleted cycle #2, and proved
+  a fresh final GET contained only the original active cycle.
+- A 2026-11-20 general-settings round trip changed advertisement interval
+  30→31, verified the live page, restored 30, and verified exact readback.
+- A 2026-11-20 gameplay-settings round trip changed
+  `FriendlyFireArtilleryPunishScale` 0.1000→0.2000, verified the live page,
+  restored 0.1000, and verified exact readback. The probe includes a
+  60-second remaining-match safety guard.
+- A 2026-11-20 gametype-settings round trip changed Territories
+  `settings_RoundLimit` 1→2, verified the live page, restored 1, and verified
+  exact readback.
+- A 2026-11-20 system-settings round trip changed `settings_ChatRefresh`
+  5000→5010, verified the live page, restored 5000, and verified exact readback.
+- A 2026-11-20 post-team-join baseline and post-map-cycle baseline captured
+  North/South roster state, team join stability, the Hill 937 map, and clean
+  banned-ID/session-ban tables.
+- A 2026-11-20 Commander role-kick captured an occupied North `COMMANDER`
+  before action and a direct-form full-HTML response saying the player would be
+  kicked on next death. The immediate readback showed `RIFLEMAN`, an
+  North `ALPHA` squad appeared, and both controlled players remained connected.
+- A 2026-11-20 direct-form team-swap request returned "has swapped team" but
+  the immediate full player-table read retained the target on the original team,
+  so no restore request was sent.
+- A 2026-11-20 direct-form whisper sent marker `ww` to `PLAYER_B`; the server
+  returned success, the recipient confirmed receipt, and both controlled players
+  remained connected.
 - A two-player browser-shaped permanent ID-ban returned the expected
   `<kicked>` XML result and removal message, while the immediately fetched
   full player table still showed the target. The observer remained present;
@@ -140,15 +181,12 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
 
 ### Resume with
 
-1. **PAUSE/RESUME MARKER — 2026-11-20 (UTC).** When discovery resumes, first
-   confirm that `PLAYER_B` manually reconnected after the repeat
-   session-ban probe and that `PLAYER_A` remains connected. Capture a fresh
-   `/current`, `/current/players`, `/current/squads`, and `/policy/session`
-   baseline before any mutation.
-2. Record the `/policy/session` state as a live baseline on resume. The blank
-   unnamed row shown in `phase5-two-player-session-ban-cleanup-repeat-20261120`
-   is now source-explained as a `ZeroNetID` dummy, not an active real-player
-   ban. Preserve whether the live server renders it or suppresses it, and obtain
+1. **PAUSE/RESUME MARKER PROGRESS — 2026-11-20 (UTC).** The post-pause baseline
+   captured both controlled players in two independent sessions and confirmed
+   that `/policy/session` is empty with neither named nor dummy rows.
+2. Record the `/policy/session` state as a live baseline. The previously observed
+   blank unnamed row was source-explained as a `ZeroNetID` dummy, not an active
+   real-player ban. It is not currently rendering; preserve this result and obtain
    human approval before any server restart or manual recovery action.
 3. Resume the session-ban/permanent-ban role-kick chain only after the baseline
    is clean or the unresolved residue is explicitly accepted. Fresh reconnect

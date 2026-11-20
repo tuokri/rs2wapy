@@ -77,6 +77,22 @@ fixtures:
   phase5_post_kick_reconnect_20261120: fixtures/phase5-post-kick-reconnect-20261120/index.json
   phase5_two_player_session_ban_20261120: fixtures/phase5-two-player-session-ban-20261120/index.json
   phase5_post_session_ban_reconnect_20261120: fixtures/phase5-post-session-ban-reconnect-20261120/index.json
+  phase5_post_pause_readonly_20261120: fixtures/phase5-post-pause-readonly-20261120/index.json
+  phase5_two_player_permanent_ban_20261120: fixtures/phase5-two-player-permanent-ban-20261120/index.json
+  phase5_post_permanent_ban_reconnect_20261120: fixtures/phase5-post-permanent-ban-reconnect-20261120/index.json
+  phase1_readonly_resume_20261120: fixtures/phase1-readonly-resume-20261120/index.json
+  phase3_welcome_settings_20261120: fixtures/phase3-welcome-settings-20261120/index.json
+  phase3_mapcycle_roundtrip_20261120: fixtures/phase3-mapcycle-roundtrip-20261120/index.json
+  phase3_general_settings_20261120: fixtures/phase3-general-settings-20261120/index.json
+  phase3_gameplay_settings_20261120: fixtures/phase3-gameplay-settings-20261120/index.json
+  phase3_gametype_settings_20261120: fixtures/phase3-gametype-settings-20261120/index.json
+  phase3_system_settings_20261120: fixtures/phase3-system-settings-20261120/index.json
+  phase5_post_mapcycle_readonly_20261120: fixtures/phase5-post-mapcycle-readonly-20261120/index.json
+  phase5_post_teamjoin_readonly_20261120: fixtures/phase5-post-teamjoin-readonly-20261120/index.json
+  phase5_role_ready_readonly_20261120: fixtures/phase5-role-ready-readonly-20261120/index.json
+  phase5_two_player_role_kick_20261120: fixtures/phase5-two-player-role-kick-20261120/index.json
+  phase5_player_form_swapteam_20261120: fixtures/phase5-player-form-swapteam-20261120/index.json
+  phase5_player_form_whisper_20261120: fixtures/phase5-player-form-whisper-20261120/index.json
   placeholders_are_relation_preserving: true
 states:
   - unauthenticated
@@ -185,7 +201,9 @@ endpoints:
       swapteam: live-verified-no-transition-in-one-and-two-player-states
       whisper: live-verified-direct-form-player-visible
       kickfromrole: live-verified-immediate-non-flying-role-removal
-    fixtures: [get-current-players, form-membership-create, form-membership-after-create-members, form-membership-cancel, form-membership-final-members, form-swapteam-action, form-swapteam-after-action, phase5-form-swapteam-action, phase5-form-swapteam-after-action, form-whisper-action, form-whisper-after, two-player-role-kick-action, two-player-role-kick-after-players, session-a-players, session-b-players]
+      direct-swapteam-20261120: live-verified-success-message-with-unchanged-rendered-team
+      direct-whisper-20261120: live-verified-player-received-ww-and-continued-connected
+    fixtures: [get-current-players, form-membership-create, form-membership-after-create-members, form-membership-cancel, form-membership-final-members, form-swapteam-action, form-swapteam-after-action, phase5-form-swapteam-action, phase5-form-swapteam-after-action, form-whisper-action, form-whisper-after, two-player-role-kick-action, two-player-role-kick-after-players, two-player-role-kick-before-current, two-player-role-kick-after-current, two-player-role-kick-before-squads, two-player-role-kick-after-squads, form-swapteam-before, form-swapteam-action, form-swapteam-after-action, form-whisper-before, form-whisper-action, form-whisper-after, session-a-players, session-b-players]
     verification: live-verified-read-membership-roundtrip-swapteam-noop-whisper-and-immediate-role-kick
   - id: players-data
     path: /current/players/data
@@ -411,16 +429,20 @@ endpoints:
     auth: required
     fields: [settings_Property, liveAdjust, action]
     response: full-html
-    fixture: get-settings-general
-    verification: live-verified
+    writes:
+      advertisement_interval: live-verified-30-to-31-readback-restored-to-30
+    fixtures: [get-settings-general, general-settings-baseline, general-settings-change, general-settings-after-change, general-settings-restore, general-settings-after-restore]
+    verification: live-verified-save-readback-restored
   - id: settings-gameplay
     path: /settings/general/gameplay
     methods: [GET, POST]
     auth: required
     fields: [settings_Property, liveAdjust, action]
     response: full-html
-    fixture: get-settings-general-gameplay
-    verification: live-verified
+    writes:
+      artillery-punish-scale: live-verified-0.1000-to-0.2000-readback-restored-to-0.1000
+    fixtures: [get-settings-general-gameplay, gameplay-settings-baseline, gameplay-settings-change, gameplay-settings-after-change, gameplay-settings-restore, gameplay-settings-after-restore]
+    verification: live-verified-save-readback-restored
   - id: settings-passwords
     path: /settings/general/passwords
     methods: [GET, POST]
@@ -450,8 +472,10 @@ endpoints:
     auth: required
     fields: [gametype, settings_Property, liveAdjust, action]
     response: full-html
-    fixture: get-settings-gametypes
-    verification: live-verified
+    writes:
+      round-limit: live-verified-1-to-2-readback-restored-to-1
+    fixtures: [get-settings-gametypes, gametype-settings-baseline, gametype-settings-change, gametype-settings-after-change, gametype-settings-restore, gametype-settings-after-restore]
+    verification: live-verified-save-readback-restored
   - id: settings-mutators
     path: /settings/mutators
     methods: [GET, POST]
@@ -466,8 +490,17 @@ endpoints:
     auth: required
     fields: [maplistidx, gametype, mapcycle, action, delete, activate]
     response: full-html
-    fixture: get-settings-maplist
-    verification: live-verified
+    writes:
+      create-save: live-verified-restored
+      activate: live-verified-restored
+      delete: live-verified-restored
+    behavior:
+      create-index: new-cycle-appends-at-next-index
+      active-selector: exactly-one-cycle-marked-active
+      restore: baseline-cycle-and-active-index-restore-exact-mapcycle
+      delete-new-cycle: baseline-remains-active-and-only-baseline-cycle-remains
+    fixtures: [get-settings-maplist, mapcycle-baseline, mapcycle-create, mapcycle-after-create, mapcycle-test-index-read, mapcycle-activate, mapcycle-after-activate, mapcycle-restore-baseline, mapcycle-after-restore, mapcycle-delete-test, mapcycle-final]
+    verification: live-verified-create-activate-restore-delete-roundtrip
   - id: settings-serveractors
     path: /settings/serveractors
     methods: [GET, POST]
@@ -482,8 +515,10 @@ endpoints:
     auth: required
     fields: [settings_Property, action]
     response: full-html
-    fixture: get-settings-system
-    verification: live-verified
+    writes:
+      chat-refresh: live-verified-5000-to-5010-readback-restored-to-5000
+    fixtures: [get-settings-system, system-settings-baseline, system-settings-change, system-settings-after-change, system-settings-restore, system-settings-after-restore]
+    verification: live-verified-save-readback-restored
   - id: settings-campaign
     path: /settings/campaign
     methods: [GET, POST]
