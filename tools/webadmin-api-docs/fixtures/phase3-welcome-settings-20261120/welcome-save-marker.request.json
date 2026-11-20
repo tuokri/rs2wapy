@@ -1,0 +1,17 @@
+{
+  "form": {
+    "BannerLink": "",
+    "ClanMotto": "Rising Storm 2: Vietnam Server",
+    "ClanMottoColor": "#FFFFFF",
+    "ServerMOTD": "mock-doc-20260926-welcome",
+    "ServerMOTDColor": "#FFFFFF",
+    "TBVal": "1",
+    "WebLink": "https://discord.gg/rs2vietnam",
+    "WebLinkColor": "#FFFFFF",
+    "action": "save",
+    "liveAdjust": "1",
+    "tglWelcomeScreen": "1"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/general/welcome"
+}

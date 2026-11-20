@@ -1,0 +1,202 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "mapcycle-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-baseline.request.json",
+      "response": "mapcycle-baseline.html"
+    },
+    {
+      "name": "mapcycle-create",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-create.request.json",
+      "response": "mapcycle-create.html"
+    },
+    {
+      "name": "mapcycle-after-create",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-after-create.request.json",
+      "response": "mapcycle-after-create.html"
+    },
+    {
+      "name": "mapcycle-test-index-read",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-test-index-read.request.json",
+      "response": "mapcycle-test-index-read.html"
+    },
+    {
+      "name": "mapcycle-activate",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-activate.request.json",
+      "response": "mapcycle-activate.html"
+    },
+    {
+      "name": "mapcycle-after-activate",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-after-activate.request.json",
+      "response": "mapcycle-after-activate.html"
+    },
+    {
+      "name": "mapcycle-restore-baseline",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-restore-baseline.request.json",
+      "response": "mapcycle-restore-baseline.html"
+    },
+    {
+      "name": "mapcycle-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-after-restore.request.json",
+      "response": "mapcycle-after-restore.html"
+    },
+    {
+      "name": "mapcycle-delete-test",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-delete-test.request.json",
+      "response": "mapcycle-delete-test.html"
+    },
+    {
+      "name": "mapcycle-final",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-final.request.json",
+      "response": "mapcycle-final.html"
+    },
+    {
+      "name": "mapcycle-cleanup-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-cleanup-restore.request.json",
+      "response": "mapcycle-cleanup-restore.html"
+    },
+    {
+      "name": "mapcycle-cleanup-final",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/maplist",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-cleanup-final.request.json",
+      "response": "mapcycle-cleanup-final.html"
+    },
+    {
+      "name": "mapcycle-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "mapcycle-logout.request.json",
+      "response": "mapcycle-logout.html"
+    }
+  ],
+  "failures": []
+}

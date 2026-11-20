@@ -1,0 +1,124 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "gameplay-settings-match-timer",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-match-timer.request.json",
+      "response": "gameplay-settings-match-timer.html"
+    },
+    {
+      "name": "gameplay-settings-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/gameplay",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-baseline.request.json",
+      "response": "gameplay-settings-baseline.html"
+    },
+    {
+      "name": "gameplay-settings-change",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/general/gameplay",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-change.request.json",
+      "response": "gameplay-settings-change.html"
+    },
+    {
+      "name": "gameplay-settings-after-change",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/gameplay",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-after-change.request.json",
+      "response": "gameplay-settings-after-change.html"
+    },
+    {
+      "name": "gameplay-settings-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/general/gameplay",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-restore.request.json",
+      "response": "gameplay-settings-restore.html"
+    },
+    {
+      "name": "gameplay-settings-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/gameplay",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-after-restore.request.json",
+      "response": "gameplay-settings-after-restore.html"
+    },
+    {
+      "name": "gameplay-settings-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gameplay-settings-logout.request.json",
+      "response": "gameplay-settings-logout.html"
+    }
+  ],
+  "failures": []
+}

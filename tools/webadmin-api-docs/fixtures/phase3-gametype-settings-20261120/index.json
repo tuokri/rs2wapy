@@ -1,0 +1,124 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "gametype-settings-match-timer",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-match-timer.request.json",
+      "response": "gametype-settings-match-timer.html"
+    },
+    {
+      "name": "gametype-settings-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-baseline.request.json",
+      "response": "gametype-settings-baseline.html"
+    },
+    {
+      "name": "gametype-settings-change",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-change.request.json",
+      "response": "gametype-settings-change.html"
+    },
+    {
+      "name": "gametype-settings-after-change",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-after-change.request.json",
+      "response": "gametype-settings-after-change.html"
+    },
+    {
+      "name": "gametype-settings-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-restore.request.json",
+      "response": "gametype-settings-restore.html"
+    },
+    {
+      "name": "gametype-settings-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/gametypes",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-after-restore.request.json",
+      "response": "gametype-settings-after-restore.html"
+    },
+    {
+      "name": "gametype-settings-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "gametype-settings-logout.request.json",
+      "response": "gametype-settings-logout.html"
+    }
+  ],
+  "failures": []
+}

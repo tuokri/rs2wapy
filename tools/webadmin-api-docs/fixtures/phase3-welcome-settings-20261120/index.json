@@ -1,0 +1,111 @@
+{
+  "captures": [
+    {
+      "name": "welcome-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-login-page.request.json",
+      "response": "welcome-login-page.html"
+    },
+    {
+      "name": "welcome-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-login-submit.request.json",
+      "response": "welcome-login-submit.html"
+    },
+    {
+      "name": "welcome-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-baseline.request.json",
+      "response": "welcome-baseline.html"
+    },
+    {
+      "name": "welcome-save-marker",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-save-marker.request.json",
+      "response": "welcome-save-marker.html"
+    },
+    {
+      "name": "welcome-after-save",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-after-save.request.json",
+      "response": "welcome-after-save.html"
+    },
+    {
+      "name": "welcome-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-restore.request.json",
+      "response": "welcome-restore.html"
+    },
+    {
+      "name": "welcome-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/general/welcome",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-after-restore.request.json",
+      "response": "welcome-after-restore.html"
+    },
+    {
+      "name": "welcome-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "welcome-logout.request.json",
+      "response": "welcome-logout.html"
+    }
+  ],
+  "failures": []
+}

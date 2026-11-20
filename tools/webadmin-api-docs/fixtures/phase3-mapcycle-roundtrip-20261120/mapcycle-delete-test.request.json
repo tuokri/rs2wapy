@@ -1,0 +1,10 @@
+{
+  "form": {
+    "delete": "doit",
+    "gametype": "ROGame.ROGameInfoTerritories",
+    "mapcycle": "VNTE-HueCity\nVNTE-CuChi",
+    "maplistidx": "1"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/maplist"
+}

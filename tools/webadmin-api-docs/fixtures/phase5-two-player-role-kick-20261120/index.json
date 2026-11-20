@@ -1,0 +1,137 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "two-player-role-kick-before-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-before-players.request.json",
+      "response": "two-player-role-kick-before-players.html"
+    },
+    {
+      "name": "two-player-role-kick-before-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-before-current.request.json",
+      "response": "two-player-role-kick-before-current.html"
+    },
+    {
+      "name": "two-player-role-kick-before-squads",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/squads",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-before-squads.request.json",
+      "response": "two-player-role-kick-before-squads.html"
+    },
+    {
+      "name": "two-player-role-kick-action",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-action.request.json",
+      "response": "two-player-role-kick-action.html"
+    },
+    {
+      "name": "two-player-role-kick-after-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-after-players.request.json",
+      "response": "two-player-role-kick-after-players.html"
+    },
+    {
+      "name": "two-player-role-kick-after-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-after-current.request.json",
+      "response": "two-player-role-kick-after-current.html"
+    },
+    {
+      "name": "two-player-role-kick-after-squads",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/squads",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-after-squads.request.json",
+      "response": "two-player-role-kick-after-squads.html"
+    },
+    {
+      "name": "two-player-role-kick-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "two-player-role-kick-logout.request.json",
+      "response": "two-player-role-kick-logout.html"
+    }
+  ],
+  "failures": []
+}

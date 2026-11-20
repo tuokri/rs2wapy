@@ -1,0 +1,85 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "form-whisper-before",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-whisper-before.request.json",
+      "response": "form-whisper-before.html"
+    },
+    {
+      "name": "form-whisper-action",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-whisper-action.request.json",
+      "response": "form-whisper-action.html"
+    },
+    {
+      "name": "form-whisper-after",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-whisper-after.request.json",
+      "response": "form-whisper-after.html"
+    },
+    {
+      "name": "form-whisper-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "form-whisper-logout.request.json",
+      "response": "form-whisper-logout.html"
+    }
+  ],
+  "failures": []
+}

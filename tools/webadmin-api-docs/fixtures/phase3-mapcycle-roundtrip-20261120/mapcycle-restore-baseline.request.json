@@ -1,0 +1,10 @@
+{
+  "form": {
+    "activate": "activate",
+    "gametype": "ROGame.ROGameInfoTerritories",
+    "mapcycle": "VNTE-HueCity\nVNSU-AnLaoValley\nVNSU-SongBe\nVNTE-CuChi\nVNTE-Hill937\nVNSU-HueCity\nVNTE-AnLaoValley\nVNTE-SongBe\nVNTE-LongTan\nVNTE-RungSac\nVNSU-OperationForrest\nVNTE-NinhPhu\nVNTE-OperationForrest\nVNTE-ASau\nVNSU-QuangTri\nVNTE-BorderWatch\nVNTE-Resort\nVNTE-FirebaseGeorgina\nVNTE-QuangTri\nVNTE-Highway14\nVNTE-Mekong\nVNTE-DongHa\nVNTE-Saigon\nVNTE-ApacheSnow\nVNTE-DemilitarizedZone\nVNTE-KheSanh\nVNTE-DaNangAirBase\nVNTE-CuaViet",
+    "maplistidx": "0"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/maplist"
+}

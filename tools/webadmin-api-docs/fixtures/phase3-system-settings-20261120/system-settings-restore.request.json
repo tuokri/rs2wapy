@@ -1,0 +1,28 @@
+{
+  "form": {
+    "action": "save",
+    "liveAdjust": "1",
+    "settings_AdminCommandHandlerClass": "WebAdmin.AdminCommandHandler",
+    "settings_AuthenticationClass": "WebAdmin.MultiWebAdminAuth",
+    "settings_ChatRefresh": "5000",
+    "settings_MaxAuthFails": "5",
+    "settings_SessionHandlerClass": "",
+    "settings_bAdminConsoleCommandsHack": "1",
+    "settings_bChatLog": "1",
+    "settings_bConsoleEnabled": "1",
+    "settings_bEnableTeamChat": "1",
+    "settings_bHttpAuth": "0",
+    "settings_bUseStrictContentType": "0",
+    "settings_chatLogFilename": "Chatlog_%i_%p",
+    "settings_chatLogIncludeTimeStamp": "1",
+    "settings_chatLogUnique": "1",
+    "settings_denyConsoleCommands": "say\nobj\ndebug\nflush\nset\nget engine.accesscontrol",
+    "settings_denyUrlOptions": "GamePassword\nAdminPassword\nPort\nQueryPort",
+    "settings_hideNews": "0",
+    "settings_sessionOctetValidation": "3",
+    "settings_sessionOctetValidation_raw": "3",
+    "settings_startpage": "/current"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/system"
+}
