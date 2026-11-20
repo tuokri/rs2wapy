@@ -1,0 +1,23 @@
+{
+  "form": {
+    "__CurrentTabIndex": "Tab_0",
+    "campaignname": "",
+    "currentTheater": "",
+    "gametype": "",
+    "liveAdjust": "1",
+    "regionCount": "",
+    "save": "save",
+    "settings_CampaignAttackDefendVoteTime": "15.0000",
+    "settings_CampaignFactionVoteTime": "15.0000",
+    "settings_CampaignFirstRegionVoteTime": "45.0000",
+    "settings_CampaignLength": "0",
+    "settings_CampaignRegionMapVoteTime": "15.0000",
+    "settings_CampaignRegionVoteTime": "50.0000",
+    "settings_CampaignSpecialAbilityVoteTime": "15.0000",
+    "settings_CampaignVotingDelay": "30.0000",
+    "settings_bCampaignGame": "0",
+    "viewingTheater": ""
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/campaign"
+}

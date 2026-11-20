@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "save",
+    "serveractors": "IpDrv.WebServer\nRS2WAPY.TestServerActor"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/serveractors"
+}

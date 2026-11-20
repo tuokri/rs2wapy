@@ -1,0 +1,124 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "campaign-settings-match-timer",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-match-timer.request.json",
+      "response": "campaign-settings-match-timer.html"
+    },
+    {
+      "name": "campaign-settings-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/campaign",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-baseline.request.json",
+      "response": "campaign-settings-baseline.html"
+    },
+    {
+      "name": "campaign-settings-change",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/campaign",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-change.request.json",
+      "response": "campaign-settings-change.html"
+    },
+    {
+      "name": "campaign-settings-after-change",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/campaign",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-after-change.request.json",
+      "response": "campaign-settings-after-change.html"
+    },
+    {
+      "name": "campaign-settings-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/campaign",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-restore.request.json",
+      "response": "campaign-settings-restore.html"
+    },
+    {
+      "name": "campaign-settings-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/campaign",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-after-restore.request.json",
+      "response": "campaign-settings-after-restore.html"
+    },
+    {
+      "name": "campaign-settings-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "campaign-settings-logout.request.json",
+      "response": "campaign-settings-logout.html"
+    }
+  ],
+  "failures": []
+}

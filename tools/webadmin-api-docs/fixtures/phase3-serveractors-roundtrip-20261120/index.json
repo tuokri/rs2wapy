@@ -1,0 +1,124 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "serveractors-match-timer",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-match-timer.request.json",
+      "response": "serveractors-match-timer.html"
+    },
+    {
+      "name": "serveractors-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/serveractors",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-baseline.request.json",
+      "response": "serveractors-baseline.html"
+    },
+    {
+      "name": "serveractors-change",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/serveractors",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-change.request.json",
+      "response": "serveractors-change.html"
+    },
+    {
+      "name": "serveractors-after-change",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/serveractors",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-after-change.request.json",
+      "response": "serveractors-after-change.html"
+    },
+    {
+      "name": "serveractors-restore",
+      "method": "POST",
+      "url": "{{BASE_URL}}/settings/serveractors",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-restore.request.json",
+      "response": "serveractors-restore.html"
+    },
+    {
+      "name": "serveractors-after-restore",
+      "method": "GET",
+      "url": "{{BASE_URL}}/settings/serveractors",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-after-restore.request.json",
+      "response": "serveractors-after-restore.html"
+    },
+    {
+      "name": "serveractors-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "serveractors-logout.request.json",
+      "response": "serveractors-logout.html"
+    }
+  ],
+  "failures": []
+}

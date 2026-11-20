@@ -1,0 +1,8 @@
+{
+  "form": {
+    "action": "save",
+    "serveractors": "IpDrv.WebServer"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/settings/serveractors"
+}

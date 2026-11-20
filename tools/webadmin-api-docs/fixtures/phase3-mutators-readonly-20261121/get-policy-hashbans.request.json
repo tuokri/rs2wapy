@@ -1,0 +1,5 @@
+{
+  "form": {},
+  "method": "GET",
+  "url": "{{BASE_URL}}/policy/hashbans"
+}
