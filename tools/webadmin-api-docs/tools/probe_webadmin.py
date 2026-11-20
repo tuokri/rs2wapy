@@ -415,12 +415,22 @@ class Sanitizer:
             value,
         )
         for player_name, alias in self.aliases.get("PLAYER", {}).items():
-            value = value.replace(player_name, alias)
+            value = "".join(
+                part
+                if part.startswith("<") and part.endswith(">")
+                else part.replace(player_name, alias)
+                for part in re.split(r"(<[^>]*>)", value)
+            )
         for admin_name, alias in self.aliases.get("ADMIN", {}).items():
-            value = re.sub(
-                rf"(?<![\w-]){re.escape(admin_name)}(?![\w-])",
-                alias,
-                value,
+            value = "".join(
+                part
+                if part.startswith("<") and part.endswith(">")
+                else re.sub(
+                    rf"(?<![\w-]){re.escape(admin_name)}(?![\w-])",
+                    alias,
+                    part,
+                )
+                for part in re.split(r"(<[^>]*>)", value)
             )
         value = self.unique_id_pattern.sub(
             lambda match: self.alias("UNIQUE_ID", match.group(0)), value
