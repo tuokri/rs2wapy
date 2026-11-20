@@ -51,11 +51,15 @@ CAPTURE_DIRS = (
     FIXTURES / "phase3-travel-roundtrip",
     FIXTURES / "phase3-policy-validation-roundtrip",
     FIXTURES / "phase3-welcome-settings",
+    FIXTURES / "phase3-campaign-settings-20261121",
+    FIXTURES / "phase3-serveractors-roundtrip-20261120",
+    FIXTURES / "phase3-mutators-readonly-20261121",
     FIXTURES / "phase3-mapcycle-roundtrip-20261120",
     FIXTURES / "phase3-general-settings-20261120",
     FIXTURES / "phase3-gameplay-settings-20261120",
     FIXTURES / "phase3-gametype-settings-20261120",
     FIXTURES / "phase3-system-settings-20261120",
+    FIXTURES / "phase3-policy-validation-roundtrip-20261121",
     FIXTURES / "phase5-post-mapcycle-readonly-20261120",
     FIXTURES / "phase3-console-log",
     FIXTURES / "phase4-player-readonly",
@@ -138,6 +142,9 @@ REQUIRED_FILES = (
     ROOT / "tools" / "gameplay_settings_roundtrip_probe.py",
     ROOT / "tools" / "gametype_settings_roundtrip_probe.py",
     ROOT / "tools" / "system_settings_roundtrip_probe.py",
+    ROOT / "tools" / "serveractors_roundtrip_probe.py",
+    ROOT / "tools" / "campaign_settings_roundtrip_probe.py",
+    ROOT / "tools" / "campaign_settings_roundtrip_probe.py",
     ROOT / "tools" / "console_log_probe.py",
     ROOT / "tools" / "player_form_fallback_probe.py",
     ROOT / "tools" / "player_form_membership_probe.py",
@@ -173,8 +180,12 @@ PLAYER_ROW_NAME_PATTERN = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 ADMIN_OPTION_PATTERN = re.compile(
-    r'<option\b[^>]*\bvalue=["\']([^"\']*)["\'][^>]*\bclass=["\']admin(?:Enabled|Disabled)["\'][^>]*>([^<]*)</option>',
+    r'<option\b[^>]*\bvalue=["\']([^"\']*)["\'][^>]*>([^<]*)</option>',
     re.IGNORECASE,
+)
+ADMIN_SELECT_PATTERN = re.compile(
+    r'<select\b[^>]*\bid=["\']adminidlist["\'][^>]*>(.*?)</select>',
+    re.IGNORECASE | re.DOTALL,
 )
 ADMIN_DISPLAY_PATTERN = re.compile(
     r'<input\b[^>]*\bname=["\']displayname["\'][^>]*\bvalue=["\']([^"\']*)',
@@ -226,15 +237,18 @@ def validate_sanitization(directory: Path) -> None:
                     raise ValueError(
                         f"raw player table name found in {path.relative_to(ROOT)}"
                     )
-        for value, text in ADMIN_OPTION_PATTERN.findall(contents):
-            if value and not re.fullmatch(r"\{\{ADMIN_\d+\}\}", value):
-                raise ValueError(
-                    f"raw administrator ID found in {path.relative_to(ROOT)}"
-                )
-            if text.strip() and not re.fullmatch(r"\{\{ADMIN_\d+\}\}", text.strip()):
-                raise ValueError(
-                    f"raw administrator name found in {path.relative_to(ROOT)}"
-                )
+        for select in ADMIN_SELECT_PATTERN.findall(contents):
+            for value, text in ADMIN_OPTION_PATTERN.findall(select):
+                if value and not re.fullmatch(r"\{\{ADMIN_\d+\}\}", value):
+                    raise ValueError(
+                        f"raw administrator ID found in {path.relative_to(ROOT)}"
+                    )
+                if text.strip() and not re.fullmatch(
+                    r"\{\{ADMIN_\d+\}\}", text.strip()
+                ):
+                    raise ValueError(
+                        f"raw administrator name found in {path.relative_to(ROOT)}"
+                    )
         for value in ADMIN_DISPLAY_PATTERN.findall(contents):
             if value and not re.fullmatch(r"\{\{ADMIN_DISPLAY_\d+\}\}", value):
                 raise ValueError(

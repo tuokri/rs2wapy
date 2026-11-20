@@ -1,16 +1,16 @@
 # RS2 WebAdmin Experimental Discovery Runbook
 
 **Date:** 2026-09-26 (UTC)
-**Last updated:** 2026-11-20 (UTC)
+**Last updated:** 2026-11-21 (UTC)
 
-## Discovery checkpoint — paused on session-ban cleanup (updated 2026-11-20 UTC)
+## Discovery checkpoint — server shutdown pause (updated 2026-11-21 UTC)
 
-Discovery is paused after a repeat session-ban test. All WebAdmin sessions used
-for the completed observations have been logged out. The repeat probe submitted
-and revoked a session ban for `PLAYER_B`, but this server build left a
+Discovery is paused for server shutdown. All WebAdmin sessions used for the
+completed observations have been logged out. A repeat session-ban probe
+submitted and revoked a session ban for `PLAYER_B`, and the server later left a
 blank unnamed session-ban row that remained after both the normal revoke and
-the probe's attempted blank-row cleanup. The live `PLAYER_A` account remains a
-permanent Admin member; do not remove that membership without explicit
+the probe's attempted blank-row cleanup. At the resumed baseline, `/policy/session`
+was clean. The live `PLAYER_A` account remains a permanent Admin member; do not remove that membership without explicit
 authorization. Do not repeat completed scenarios merely to reconstruct evidence.
 
 ### Completed evidence
@@ -106,6 +106,15 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
   exact readback.
 - A 2026-11-20 system-settings round trip changed `settings_ChatRefresh`
   5000→5010, verified the live page, restored 5000, and verified exact readback.
+- A 2026-11-20 server-actors round trip appended a disposable test actor,
+  read it back, restored `IpDrv.WebServer`, and proved exact final readback.
+- A 2026-11-21 mutator refresh found no selectable mutators and no mutators
+  available for the live game type. Mutator save/edit remains
+  `prerequisite-unavailable` until a reversible disposable mutator is installed.
+- A 2026-11-21 campaign-settings round trip changed
+  `CampaignRegionVoteTime` 45→50, verified the live page, restored 45, and
+  verified exact readback. Campaign region-map edit/delete/activate/reset remains
+  gated behind a disposable campaign snapshot.
 - A 2026-11-20 post-team-join baseline and post-map-cycle baseline captured
   North/South roster state, team join stability, the Hill 937 map, and clean
   banned-ID/session-ban tables.
@@ -181,25 +190,32 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
 
 ### Resume with
 
-1. **PAUSE/RESUME MARKER PROGRESS — 2026-11-20 (UTC).** The post-pause baseline
-   captured both controlled players in two independent sessions and confirmed
-   that `/policy/session` is empty with neither named nor dummy rows.
-2. Record the `/policy/session` state as a live baseline. The previously observed
-   blank unnamed row was source-explained as a `ZeroNetID` dummy, not an active
-   real-player ban. It is not currently rendering; preserve this result and obtain
-   human approval before any server restart or manual recovery action.
-3. Resume the session-ban/permanent-ban role-kick chain only after the baseline
-   is clean or the unresolved residue is explicitly accepted. Fresh reconnect
-   checkpoints are required after each disruptive action.
-4. Do **not** use the browser-shaped `/current/players/data` route for
+1. **SERVER-SHUTDOWN PAUSE / NEXT RESUME — 2026-11-21 (UTC).** Start the
+   dedicated server and WebAdmin, wait for the match timer/current game to
+   stabilize, then capture `/current`, `/current/players`, `/current/squads`,
+   `/policy/bans`, and `/policy/session` as a fresh baseline.
+2. Recheck the previously observed `ZeroNetID` session-ban dummy. It is now
+   source-explained and was absent in a later post-pause baseline; preserve
+   whether it renders after the restart and server state is reloaded.
+3. Proceed with non-destructive discovery first: read-only tracking/members/
+   paging routes, mutator availability, campaign settings/region maps, and
+   remaining settings subpages.
+4. Before mutator-specific map-change tests, install or seed an approved
+   reversible mutator. Capture no-mutator, single-mutator, multiple-mutator,
+   radio/shared mutator, `urlextra` accepted/rejected, travel, and exact restore
+   behavior.
+5. Defer password changes until a disposable account/recovery path is supplied.
+   Defer campaign region-map reset/delete/activate and destructive Workshop
+   operations until exact snapshots and explicit approval exist.
+6. Do **not** use the browser-shaped `/current/players/data` route for
    `kickfromrole`, team swap, tracking, membership, alias/note, or whisper:
    on this build it kicks the target. Its completed failed fixture is retained
    as evidence but is deliberately excluded from the validated fixture set.
-5. The controlled player currently renders as tracked and has an existing
+7. The controlled player currently renders as tracked and has an existing
    tracking-table entry, but exposes neither `enabletracking` nor
    `disabletracking`; do not alter that pre-existing record. Record this as a
    tracking precondition unavailable rather than manufacturing a new baseline.
-6. Defer role paths until their role preconditions exist. Every disruptive test
+8. Defer role paths until their role preconditions exist. Every disruptive test
    still requires a fresh human reconnect checkpoint. Before a future
    two-player ID-ban repeat, capture the bans page after the action and model
    the immediate full-table target row as stale rather than as an action
@@ -433,6 +449,17 @@ than merely an in-memory session; use a human-approved snapshot and restore.
 | C3       | `/current/change action=change` → repeated `/current/change/check` | Return to baseline map/game type and wait for `ok`.   |
 | C4       | `/current action=resetCampaign`                                    | Only with a disposable campaign baseline; restore it. |
 | C5       | `/console` harmless help/version/status and unknown command        | No game/admin command; capture output/error form.     |
+
+**Deferred map-change matrix:** separately capture `/current/change`,
+`/current/change/data`, and `/current/change/check` after mutators are installed:
+
+- change with one mutator, multiple mutators, radio-group choices, shared
+  mutator values, and no mutator;
+- change with approved URL variables in `urlextra`, including password/port
+  rejection boundaries and one reversible recognized option;
+- compare `action=update` fragments, `action=change` travel URLs, `503` polling,
+  session expiry, and exact baseline restoration;
+- preserve the exact parameter names and state before a final map selection.
 
 > **HUMAN REQUIRED — approve travel/reset window**
 >

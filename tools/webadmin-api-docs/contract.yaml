@@ -87,6 +87,10 @@ fixtures:
   phase3_gameplay_settings_20261120: fixtures/phase3-gameplay-settings-20261120/index.json
   phase3_gametype_settings_20261120: fixtures/phase3-gametype-settings-20261120/index.json
   phase3_system_settings_20261120: fixtures/phase3-system-settings-20261120/index.json
+  phase3_mutators_readonly_20261121: fixtures/phase3-mutators-readonly-20261121/index.json
+  phase3_campaign_settings_20261121: fixtures/phase3-campaign-settings-20261121/index.json
+  phase3_serveractors_roundtrip_20261120: fixtures/phase3-serveractors-roundtrip-20261120/index.json
+  phase3_policy_validation_roundtrip_20261121: fixtures/phase3-policy-validation-roundtrip-20261121/index.json
   phase5_post_mapcycle_readonly_20261120: fixtures/phase5-post-mapcycle-readonly-20261120/index.json
   phase5_post_teamjoin_readonly_20261120: fixtures/phase5-post-teamjoin-readonly-20261120/index.json
   phase5_role_ready_readonly_20261120: fixtures/phase5-role-ready-readonly-20261120/index.json
@@ -287,6 +291,10 @@ endpoints:
     writes:
       update-options: source-confirmed
       start-travel: live-verified-restored
+    deferred_mutator_url_extra_tests:
+      mutator_cases: [none, single, multiple, radio-group, shared-value]
+      urlextra_cases: [password-rejected, port-rejected, approved-option]
+      verification: prerequisite-unavailable
     fixtures: [get-current-change, travel-change-baseline, travel-to-alternate, travel-change-after-alternate, travel-restore, travel-change-after-restore]
     verification: live-verified-empty-server-roundtrip-restored
   - id: current-change-data
@@ -482,8 +490,12 @@ endpoints:
     auth: required
     fields: [mutator, action]
     response: full-html
-    fixture: get-settings-mutators
-    verification: live-verified
+    writes:
+      select-save: prerequisite-unavailable-no-mutators-installed
+    behavior:
+      empty_selector: no-mutable-options-live-verified
+    fixtures: [get-settings-mutators]
+    verification: live-verified-empty-selector
   - id: settings-maplist
     path: /settings/maplist
     methods: [GET, POST]
@@ -507,8 +519,11 @@ endpoints:
     auth: required
     fields: [serveractors, action]
     response: full-html
-    fixture: get-settings-serveractors
-    verification: live-verified
+    writes:
+      add-test-actor: live-verified-readback
+      restore-baseline: live-verified-exact
+    fixtures: [get-settings-serveractors, serveractors-baseline, serveractors-change, serveractors-after-change, serveractors-restore, serveractors-after-restore]
+    verification: live-verified-save-readback-restored
   - id: settings-system
     path: /settings/system
     methods: [GET, POST]
@@ -519,14 +534,30 @@ endpoints:
       chat-refresh: live-verified-5000-to-5010-readback-restored-to-5000
     fixtures: [get-settings-system, system-settings-baseline, system-settings-change, system-settings-after-change, system-settings-restore, system-settings-after-restore]
     verification: live-verified-save-readback-restored
+  - id: settings-system-mutator-cache-rebuild
+    path: /system/allowancecache
+    methods: [POST]
+    auth: required
+    fields: [action]
+    response: full-html
+    writes:
+      rebuild: source-confirmed-sdk-gated-live-mutator-precondition
+    behavior:
+      rebuild-action: action=rebuild
+      live-warning: SDK indicates rebuild while server is empty, then restart is advised
+    verification: not-live-verified
   - id: settings-campaign
     path: /settings/campaign
     methods: [GET, POST]
     auth: required
     fields: [__CurrentTabIndex, settings_Property, campaignname, regionCount, viewingTheater, gametype, save, delete, activate, reset]
     response: full-html
-    fixture: get-settings-campaign
-    verification: live-verified
+    writes:
+      settings-save: live-verified-region-vote-time-45-to-50-restored-to-45
+      region-maps: read-verified-prerequisite-for-live-write
+      delete-activate-reset: source-confirmed-gated
+    fixtures: [get-settings-campaign, campaign-settings-baseline, campaign-settings-change, campaign-settings-after-change, campaign-settings-restore, campaign-settings-after-restore]
+    verification: live-verified-settings-save-readback-restored
 not_exposed:
   - path: /policy/hashbans
     status: 404

@@ -42,3 +42,39 @@ def test_player_alias_replacement_does_not_corrupt_html_tags() -> None:
     assert '<h4 id="adminName">' in sanitized
     assert "</h4>" in sanitized
     assert "<span>{{PLAYER_2}}</span>" in sanitized
+
+
+def test_admin_select_aliases_values_and_text_without_unrelated_options() -> None:
+    sanitizer = Sanitizer("http://localhost:8080/ServerAdmin/")
+    sanitizer.aliases["ADMIN"] = {
+        "Admin": "{{ADMIN_1}}",
+        "codex_admin_test": "{{ADMIN_2}}",
+    }
+
+    sanitized = sanitizer.sanitize_text(
+        '<select id="adminidlist" name="adminid">'
+        '<option value=""> </option>'
+        '<option value="Admin" class="adminEnabled">Admin</option>'
+        '<option value="codex_admin_test" class="adminEnabled">'
+        "codex_admin_test</option>"
+        "</select>"
+        '<select id="gametype" name="gametype">'
+        '<option value="ROGame.ROGameInfoTerritories">Territories</option>'
+        "</select>"
+    )
+
+    assert 'value="{{ADMIN_1}}"' in sanitized
+    assert ">Admin</option>" not in sanitized
+    assert 'value="{{ADMIN_2}}"' in sanitized
+    assert 'value="ROGame.ROGameInfoTerritories"' in sanitized
+
+
+def test_member_name_field_is_sanitized_as_a_player_name() -> None:
+    sanitizer = Sanitizer("http://localhost:8080/ServerAdmin/")
+
+    sanitized = sanitizer.sanitize_text(
+        '<input type="hidden" name="__MemberName_1" '
+        'id="__MemberName_1" value="fluudah"/>'
+    )
+
+    assert 'value="{{PLAYER_1}}"' in sanitized

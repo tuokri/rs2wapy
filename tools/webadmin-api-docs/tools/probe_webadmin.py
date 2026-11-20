@@ -344,7 +344,11 @@ class Sanitizer:
             return "ADMIN"
         if field == "displayname":
             return "ADMIN_DISPLAY"
-        if "playername" in field or field in {"playername", "membername"}:
+        if (
+            "playername" in field
+            or "membername" in field
+            or field in {"playername", "membername"}
+        ):
             return "PLAYER"
         if "playerkey" in field or "squadkey" in field:
             return "PLAYER_KEY"
@@ -414,6 +418,24 @@ class Sanitizer:
             lambda match: match.group(1) + self.alias("PLAYER_KEY", match.group(2)),
             value,
         )
+        for admin_name, alias in self.aliases.get("ADMIN", {}).items():
+            def replace_admin_select(
+                select_match: re.Match[str],
+                raw_name: str = admin_name,
+                replacement: str = alias,
+            ) -> str:
+                return (
+                    select_match.group(1)
+                    + select_match.group(2).replace(raw_name, replacement)
+                    + "</select>"
+                )
+
+            value = re.sub(
+                r'(<select\b[^>]*\bid=["\']adminidlist["\'][^>]*>)(.*?)</select>',
+                replace_admin_select,
+                value,
+                flags=re.IGNORECASE | re.DOTALL,
+            )
         for player_name, alias in self.aliases.get("PLAYER", {}).items():
             value = "".join(
                 part

@@ -105,6 +105,14 @@ restoring 0.1000 with fresh readbacks.
 `settings_RoundLimit` round trip 1→2→1 with live readbacks.
 `phase3-system-settings-20261120/` records a reversible WebAdmin
 `settings_ChatRefresh` round trip 5000→5010→5000 with live readbacks.
+`phase3-serveractors-roundtrip-20261120/` records a reversible server-actors
+save/readback restoring `IpDrv.WebServer` exactly and removing the disposable test actor.
+`phase3-mutators-readonly-20261121/` records the live `/settings/mutators`
+empty-selector state and fresh mutator/change-map availability.
+`phase3-campaign-settings-20261121/` records a reversible campaign setting
+round trip changing `CampaignRegionVoteTime` 45→50→45 with exact readbacks.
+`phase3-policy-validation-roundtrip-20261121/` records malformed/missing policy
+validation, duplicate add, update, delete cleanup, and exact baseline restoration.
 `phase5-post-mapcycle-readonly-20261120/` records the new-map baseline after
 automatic travel to Hill 937, including both controlled-player rows and clean ban tables.
 `phase5-role-ready-readonly-20261120/` records one controlled Commander on
