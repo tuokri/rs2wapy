@@ -104,7 +104,9 @@ behavior. A dedicated synthetic-database pass is required for `/current/players`
 and the tracking, banned-ID, session-ban, member, and toxic-player route
 families. It must measure the live page size and test zero, one, page-size,
 page-size-plus-one, two-page, and approved large/overflow sets before exact
-paging behavior can be claimed.
+paging behavior can be claimed. A 2026-11-21 config-file seed attempt did not
+produce synthetic tracking/member/bans rows in WebAdmin after the level reload;
+the configs were restored and the attempt remains prerequisite-unavailable.
 
 The controlled player-action probe live-verified `mutevoice`, `unmutevoice`,
 the session-ban/revoke lifecycle, ordinary kick, and permanent ID-ban/revoke
