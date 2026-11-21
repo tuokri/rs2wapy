@@ -27,6 +27,10 @@ from email.utils import parsedate_to_datetime
 # localtz = pytz.timezone("Europe/Helsinki")
 
 
+# TODO: fix these in this file (currently suppressed):
+#   [ty:missing-union-attribute]
+#   [ty:invalid-assignment]
+
 def fix_commits():
     try:
         env = os.environ.copy()
@@ -63,7 +67,7 @@ def fix_commits():
         ).astimezone()
 
         for k, v in commits.items():
-            print(k, ":", v.isoformat())
+            print(k, ":", v.isoformat()) # type: ignore[ty:missing-union-attribute]
         print("=" * 80)
 
         hour = 19
@@ -90,7 +94,7 @@ def fix_commits():
             print("current_date :", current_date)
 
             prev_date = current_date
-            current_date = commits[current_hash]
+            current_date = commits[current_hash]  # type: ignore[ty:invalid-assignment]
 
             if current_date.date() > prev_date.date():
                 print("day changed, resetting minutes")
