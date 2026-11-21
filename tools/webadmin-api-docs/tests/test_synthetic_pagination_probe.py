@@ -22,27 +22,33 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tools"))
-
-from probe_webadmin import Capture
-from synthetic_pagination_probe import DEFAULT_BACKUP_DIR
-from synthetic_pagination_probe import build_page_sequence_summary
-from synthetic_pagination_probe import count_route_row_fields
-from synthetic_pagination_probe import count_synthetic_bans_in_html
-from synthetic_pagination_probe import count_synthetic_route_markers
-from synthetic_pagination_probe import extract_hidden_index
-from synthetic_pagination_probe import extract_page_row_keys
-from synthetic_pagination_probe import inspect_synthetic_configs
-from synthetic_pagination_probe import prepare_synthetic_temp_files
-from synthetic_pagination_probe import remove_synthetic_bans
-from synthetic_pagination_probe import remove_synthetic_table_entries
-from synthetic_pagination_probe import synthetic_member_rows
-from synthetic_pagination_probe import synthetic_tracking_rows
-from synthetic_pagination_probe import validate_baseline_backups
+from webadmin_api_docs.tools.probe_webadmin import Capture
+from webadmin_api_docs.tools.synthetic_pagination_probe import DEFAULT_BACKUP_DIR
+from webadmin_api_docs.tools.synthetic_pagination_probe import (
+    build_page_sequence_summary,
+)
+from webadmin_api_docs.tools.synthetic_pagination_probe import count_route_row_fields
+from webadmin_api_docs.tools.synthetic_pagination_probe import (
+    count_synthetic_bans_in_html,
+)
+from webadmin_api_docs.tools.synthetic_pagination_probe import (
+    count_synthetic_route_markers,
+)
+from webadmin_api_docs.tools.synthetic_pagination_probe import extract_hidden_index
+from webadmin_api_docs.tools.synthetic_pagination_probe import extract_page_row_keys
+from webadmin_api_docs.tools.synthetic_pagination_probe import inspect_synthetic_configs
+from webadmin_api_docs.tools.synthetic_pagination_probe import (
+    prepare_synthetic_temp_files,
+)
+from webadmin_api_docs.tools.synthetic_pagination_probe import remove_synthetic_bans
+from webadmin_api_docs.tools.synthetic_pagination_probe import (
+    remove_synthetic_table_entries,
+)
+from webadmin_api_docs.tools.synthetic_pagination_probe import synthetic_member_rows
+from webadmin_api_docs.tools.synthetic_pagination_probe import synthetic_tracking_rows
+from webadmin_api_docs.tools.synthetic_pagination_probe import validate_baseline_backups
 
 
 def test_synthetic_rows_have_unique_markers_and_bans() -> None:
@@ -80,8 +86,7 @@ def test_validate_baseline_backups_rejects_synthetic_markers(
     tmp_path: Path,
 ) -> None:
     (tmp_path / "ROTrackDb.ini").write_text(
-        "[ROGame.TrackDb]\n"
-        'Table_Players=(PlayerNames=("synthetic-tracking-001"))\n',
+        '[ROGame.TrackDb]\nTable_Players=(PlayerNames=("synthetic-tracking-001"))\n',
         encoding="utf-8",
     )
     (tmp_path / "ROMemberDb.ini").write_text(
@@ -117,18 +122,15 @@ def test_page_boundary_helpers() -> None:
         '<input name="__CurrentTabIndex" value="0"/>'
         '<input name="__PlayerName_25" value="synthetic-tracking-026"/>'
         '<input name="__PlayerName_26" value="synthetic-tracking-027"/>'
-        '<span>synthetic-tracking-026</span>'
-        '<span>synthetic-tracking-027</span>'
-        '<span>synthetic-tracking-1000</span>'
+        "<span>synthetic-tracking-026</span>"
+        "<span>synthetic-tracking-027</span>"
+        "<span>synthetic-tracking-1000</span>"
     )
     members = (
         '<input name="__MemberName_25" value="synthetic-member-026"/>'
         '<input name="__MemberName_26" value="synthetic-member-027"/>'
     )
-    bans = (
-        "<td>Synthetic pagination ban</td>"
-        "<td>Synthetic pagination ban</td>"
-    )
+    bans = "<td>Synthetic pagination ban</td><td>Synthetic pagination ban</td>"
 
     assert extract_hidden_index(tracking, "__FirstVisibleRowIndex") == 25
     assert extract_hidden_index(tracking, "__CurrentTabIndex") == 0
@@ -205,9 +207,7 @@ def test_synthetic_cleanup_preserves_real_rows() -> None:
     assert remove_synthetic_table_entries(dirty_members, "synthetic-member") == [
         real_member
     ]
-    assert remove_synthetic_bans(dirty_bans) == [
-        "(Uid=(A=123456,B=17825793))"
-    ]
+    assert remove_synthetic_bans(dirty_bans) == ["(Uid=(A=123456,B=17825793))"]
 
 
 def test_temp_parser_write_preserves_real_rows_and_writes_three_lists(
@@ -223,8 +223,7 @@ def test_temp_parser_write_preserves_real_rows_and_writes_three_lists(
         encoding="utf-8",
     )
     member_source.write_text(
-        "[ROGame.MemberDb]\n"
-        'Table_Members=(MemberId="real-member")\n',
+        '[ROGame.MemberDb]\nTable_Members=(MemberId="real-member")\n',
         encoding="utf-8",
     )
     game_source.write_text(
@@ -254,12 +253,6 @@ def test_temp_parser_write_preserves_real_rows_and_writes_three_lists(
         "members": 3,
         "bans": 3,
     }
-    assert 'PlayerID="real-player"' in temp_files["track"].read_text(
-        encoding="utf-8"
-    )
-    assert 'MemberId="real-member"' in temp_files["members"].read_text(
-        encoding="utf-8"
-    )
-    assert "A=123456,B=17825793" in temp_files["game"].read_text(
-        encoding="utf-8"
-    )
+    assert 'PlayerID="real-player"' in temp_files["track"].read_text(encoding="utf-8")
+    assert 'MemberId="real-member"' in temp_files["members"].read_text(encoding="utf-8")
+    assert "A=123456,B=17825793" in temp_files["game"].read_text(encoding="utf-8")

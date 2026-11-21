@@ -22,13 +22,7 @@
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tools"))
-
-from probe_webadmin import Sanitizer
+from webadmin_api_docs.tools.probe_webadmin import Sanitizer
 
 
 def test_player_alias_replacement_does_not_corrupt_html_tags() -> None:
