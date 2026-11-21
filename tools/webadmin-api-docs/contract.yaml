@@ -91,6 +91,12 @@ fixtures:
   phase3_campaign_settings_20261121: fixtures/phase3-campaign-settings-20261121/index.json
   phase3_serveractors_roundtrip_20261120: fixtures/phase3-serveractors-roundtrip-20261120/index.json
   phase3_policy_validation_roundtrip_20261121: fixtures/phase3-policy-validation-roundtrip-20261121/index.json
+  phase7_pagination_readonly_20261121: fixtures/phase7-pagination-readonly-20261121/index.json
+  phase7_pagination_readonly_20261121_restart: fixtures/phase7-pagination-readonly-20261121-restart/index.json
+  phase7_pagination_synthetic_20261121: fixtures/phase7-pagination-synthetic-20261121/index.json
+  phase7_pagination_synthetic_20261121: fixtures/phase7-pagination-synthetic-20261121/index.json
+  phase5_restarted_readonly_20261121: fixtures/phase5-restarted-readonly-20261121/index.json
+  phase5_resume_20261121: fixtures/phase5-resume-20261121/index.json
   phase5_post_mapcycle_readonly_20261120: fixtures/phase5-post-mapcycle-readonly-20261120/index.json
   phase5_post_teamjoin_readonly_20261120: fixtures/phase5-post-teamjoin-readonly-20261120/index.json
   phase5_role_ready_readonly_20261120: fixtures/phase5-role-ready-readonly-20261120/index.json
@@ -106,6 +112,11 @@ states:
 large_list_pagination_discovery:
   verification: prerequisite-unavailable
   status: deferred-synthetic-database-snapshot-required
+  synthetic_config_attempt_20261121:
+    result: no_live_synthetic_rows_observed
+    server_recovery: configs-restored-and-server-responsive
+    script: tools/seed_synthetic_pagination.ps1
+    retry_required: restart-safe-config-reload-confirmation
   routes:
     - /current/players
     - /policy/tracking
@@ -352,7 +363,7 @@ endpoints:
       missing-policy: inline-error-no-write
       duplicate-allow: accepted
       persisted-allow-edit-select: no-selected-option
-    fixtures: [get-policy, policy-add, policy-delete, policy-after-delete, policy-invalid-mask, policy-missing-policy, policy-validation-add, policy-validation-after-add, policy-validation-duplicate-add, policy-validation-after-duplicate, policy-validation-update, policy-validation-after-update, policy-validation-delete-2, policy-validation-delete-1, policy-validation-after-delete]
+    fixtures: [get-policy, policy-add, policy-delete, policy-after-delete, policy-invalid-mask, policy-missing-policy, policy-validation-add, policy-validation-after-add, policy-validation-duplicate-add, policy-validation-after-duplicate, policy-validation-update, policy-validation-after-update, policy-validation-delete-2, policy-validation-delete-1, policy-validation-after-delete, policy-validation-baseline, policy-validation-duplicate-add, policy-validation-after-duplicate, policy-validation-update, policy-validation-after-update, policy-validation-before-delete-1, policy-validation-delete-2, policy-validation-before-delete-2, policy-validation-delete-1, policy-validation-before-delete-3, policy-validation-after-delete]
     verification: live-verified-validation-update-restored
   - id: policy-bans
     path: /policy/bans

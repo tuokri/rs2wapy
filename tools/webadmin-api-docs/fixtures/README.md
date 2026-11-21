@@ -113,6 +113,18 @@ empty-selector state and fresh mutator/change-map availability.
 round trip changing `CampaignRegionVoteTime` 45→50→45 with exact readbacks.
 `phase3-policy-validation-roundtrip-20261121/` records malformed/missing policy
 validation, duplicate add, update, delete cleanup, and exact baseline restoration.
+`phase5-resume-20261121/` records the first post-shutdown resume baseline
+with both controlled players and clean ban/session-ban tables.
+`phase5-restarted-readonly-20261121/` records the post-recovery two-player
+baseline after synthetic configs were restored and WebAdmin became reachable.
+`phase7-pagination-readonly-20261121/` records small-state
+first/previous/next/last control captures for tracking, members, banned IDs,
+and session bans.
+`phase7-pagination-readonly-20261121-restart/` records the same small-state
+control pass after server recovery and config restoration.
+`phase7-pagination-synthetic-20261121/` records the synthetic seed/reload
+attempt. It found no synthetic tracking/member/bans rows after config restore
+and is prerequisite-unavailable rather than live-verified synthetic pagination.
 `phase5-post-mapcycle-readonly-20261120/` records the new-map baseline after
 automatic travel to Hill 937, including both controlled-player rows and clean ban tables.
 `phase5-role-ready-readonly-20261120/` records one controlled Commander on

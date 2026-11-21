@@ -5,9 +5,11 @@
 
 ## Discovery checkpoint — server shutdown pause (updated 2026-11-21 UTC)
 
-Discovery is paused for server shutdown. All WebAdmin sessions used for the
-completed observations have been logged out. A repeat session-ban probe
-submitted and revoked a session ban for `PLAYER_B`, and the server later left a
+Discovery is paused after a synthetic pagination seed
+attempt knocked WebAdmin offline during config reload. All WebAdmin sessions
+used for the completed observations have been logged out. The three config
+backups were restored immediately, and the temporary seed script was retained
+for a later restart-safe rerun. A repeat session-ban probe submitted and revoked a session ban for `PLAYER_B`, and the server later left a
 blank unnamed session-ban row that remained after both the normal revoke and
 the probe's attempted blank-row cleanup. At the resumed baseline, `/policy/session`
 was clean. The live `PLAYER_A` account remains a permanent Admin member; do not remove that membership without explicit
@@ -115,6 +117,17 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
   `CampaignRegionVoteTime` 45→50, verified the live page, restored 45, and
   verified exact readback. Campaign region-map edit/delete/activate/reset remains
   gated behind a disposable campaign snapshot.
+- A 2026-11-21 policy-validation round trip verified malformed and missing
+  policy errors, duplicate `ALLOW` acceptance, `DENY` update, delete cleanup,
+  and exact baseline restoration.
+- A 2026-11-21 read-only pagination control pass captured baseline,
+  first/previous/next/last controls for tracking, members, banned IDs, and
+  session bans. It established small-state behavior only, not large-list limits.
+- A 2026-11-21 synthetic pagination seed attempt wrote tracking/member/bans
+  test rows to `ROTrackDb.ini`, `ROMemberDb.ini`, and `ROGame.ini`, then a
+  map-change/config reload knocked WebAdmin offline. The three pre-seed config
+  backups were restored immediately; the temporary seed script remains in the
+  workspace for a future server-restart-safe rerun.
 - A 2026-11-20 post-team-join baseline and post-map-cycle baseline captured
   North/South roster state, team join stability, the Hill 937 map, and clean
   banned-ID/session-ban tables.
@@ -190,10 +203,14 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
 
 ### Resume with
 
-1. **SERVER-SHUTDOWN PAUSE / NEXT RESUME — 2026-11-21 (UTC).** Start the
-   dedicated server and WebAdmin, wait for the match timer/current game to
-   stabilize, then capture `/current`, `/current/players`, `/current/squads`,
-   `/policy/bans`, and `/policy/session` as a fresh baseline.
+1. **SERVER-SHUTDOWN PAUSE / NEXT RESUME — 2026-11-21 (UTC).** Before restarting,
+   verify `ROTrackDb.ini`, `ROMemberDb.ini`, and `ROGame.ini` match the backed-up
+   snapshots. Start the dedicated server and WebAdmin, wait for the
+   match timer/current game to stabilize, then capture `/current`,
+   `/current/players`, `/current/squads`, `/policy/bans`, and `/policy/session`.
+   The retained seed script `tools/seed_synthetic_pagination.ps1` is operator-only;
+   restore its three backups before server restart and rerun only after a clean
+   synthetic seed/level reload plan is approved.
 2. Recheck the previously observed `ZeroNetID` session-ban dummy. It is now
    source-explained and was absent in a later post-pause baseline; preserve
    whether it renders after the restart and server state is reloaded.
