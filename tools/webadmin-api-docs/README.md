@@ -48,7 +48,7 @@ of a published rs2wapy distribution.
 At each development checkpoint, run:
 
 ```bash
-uv run mypy .
+uv run ty check .
 uv run ruff check .
 uv run python tools/verify_docs.py
 ```

@@ -1,7 +1,7 @@
 name: Python package builds and tests
 
 # TODO: only generate coverage badge once, if all steps pass!
-# TODO: do we more dynamic keys for ruff, mypy and pytest caches?
+# TODO: do we need more dynamic keys for ruff and pytest caches?
 
 permissions:
   contents: write
@@ -45,12 +45,6 @@ jobs:
         run: |
           uv build
 
-      - name: Store/restore mypy cache
-        uses: actions/cache@v6
-        with:
-          path: ./.mypy_cache
-          key: mypy-cache-${{ matrix.os }}-python-${{ matrix.python-version }}
-
       - name: Store/restore ruff cache
         uses: actions/cache@v6
         with:
@@ -63,11 +57,11 @@ jobs:
           path: ./.pytest_cache
           key: pytest-cache-${{ matrix.os }}-python-${{ matrix.python-version }}
 
-      - name: Run mypy
+      - name: Run ty
         shell: bash
         continue-on-error: true
         run: |
-          uv run mypy . --output=json | jq -r '"::error title=Mypy issue,file=\(.file),line=\(.line),col=\(.column)::\(.message)"'
+          uv run ty check . --output-format github
 
       - name: Run Ruff
         uses: astral-sh/ruff-action@v3

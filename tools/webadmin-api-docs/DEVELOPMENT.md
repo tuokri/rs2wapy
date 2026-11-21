@@ -15,7 +15,7 @@ Use `uv run` for all project commands; do not activate or commit a virtual
 environment. At each meaningful checkpoint, run:
 
 ```bash
-uv run mypy .
+uv run ty check .
 uv run ruff check .
 uv run python tools/verify_docs.py
 ```

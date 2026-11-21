@@ -64,7 +64,7 @@ names, and common player-name punctuation such as `_`, `-`, `#`, and `!`.
 Run the package checks with:
 
 ```bash
-uv run mypy .
+uv run ty check .
 uv run ruff check .
 uv run pytest
 ```

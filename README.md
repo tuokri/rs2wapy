@@ -204,5 +204,4 @@ https://github.com/tuokri/rs2wapy/issues/9.
 ## Development TODOs
 
 - Clean up this entire document (and other docs).
-- Replace `mypy` with `ty`.
 - Use Conventional Commits style in the future: https://www.conventionalcommits.org/en/v1.0.0/.
