@@ -33,6 +33,11 @@ from webadmin_api_docs.sources import SourceConfigurationError
 from webadmin_api_docs.sources import make_setup_plan
 from webadmin_api_docs.sources import sha256_file
 from webadmin_api_docs.sources import validate_zip_members
+from webadmin_api_docs.tools.verify_docs import FIXTURES
+from webadmin_api_docs.tools.verify_docs import REQUIRED_FILES
+from webadmin_api_docs.tools.verify_docs import ROOT
+from webadmin_api_docs.tools.verify_docs import TOOLS
+from webadmin_api_docs.tools.verify_docs import project_root
 
 
 def create_sdk(root: Path) -> Path:
@@ -47,6 +52,16 @@ def create_web_assets(root: Path) -> Path:
     (root / "ServerAdmin" / "login.html").touch()
     (root / "images" / "ro2.css").touch()
     return root
+
+
+def test_verify_docs_resolves_package_project_paths() -> None:
+    expected_root = Path(__file__).resolve().parents[1]
+
+    assert project_root() == expected_root
+    assert ROOT == expected_root
+    assert FIXTURES == expected_root / "fixtures"
+    assert TOOLS == expected_root / "src" / "webadmin_api_docs" / "tools"
+    assert all(path.is_file() for path in REQUIRED_FILES)
 
 
 def test_setup_requires_sdk_before_selecting_download(tmp_path: Path) -> None:

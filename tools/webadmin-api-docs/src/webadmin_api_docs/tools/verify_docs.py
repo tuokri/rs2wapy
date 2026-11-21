@@ -26,6 +26,8 @@ from __future__ import annotations
 
 import json
 import re
+import tomllib
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import click
@@ -35,8 +37,27 @@ from webadmin_api_docs.cli import exit_with_status
 from webadmin_api_docs.logging import configure_logging
 from webadmin_api_docs.logging import logger
 
-ROOT = Path(__file__).resolve().parents[1]
+
+def project_root() -> Path:
+    """Locate the webadmin-api-docs project in a source or editable checkout."""
+    module_path = Path(__file__).resolve()
+    for candidate in (module_path.parent, *module_path.parents):
+        pyproject = candidate / "pyproject.toml"
+        if not pyproject.is_file():
+            continue
+        try:
+            payload = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+        except OSError, tomllib.TOMLDecodeError:
+            continue
+        project = payload.get("project")
+        if isinstance(project, dict) and project.get("name") == "webadmin-api-docs":
+            return candidate.resolve()
+    raise RuntimeError("unable to locate the webadmin-api-docs project root")
+
+
+ROOT = project_root()
 FIXTURES = ROOT / "fixtures"
+TOOLS = ROOT / "src" / "webadmin_api_docs" / "tools"
 CAPTURE_DIRS = (
     FIXTURES / "capture",
     FIXTURES / "policy-roundtrip",
@@ -138,45 +159,45 @@ REQUIRED_FILES = (
     ROOT / "EXPERIMENTAL_DISCOVERY_RUNBOOK.md",
     ROOT / "rs2wapy-coverage.md",
     ROOT / "contract.yaml",
-    ROOT / "tools" / "probe_webadmin.py",
-    ROOT / "tools" / "player_action_probe.py",
-    ROOT / "tools" / "banid_roundtrip_probe.py",
-    ROOT / "tools" / "kick_ban_probe.py",
-    ROOT / "tools" / "multiadmin_probe.py",
-    ROOT / "tools" / "readonly_profile_probe.py",
-    ROOT / "tools" / "multiadmin_permission_probe.py",
-    ROOT / "tools" / "empty_state_probe.py",
-    ROOT / "tools" / "phase3_core_probe.py",
-    ROOT / "tools" / "travel_roundtrip_probe.py",
-    ROOT / "tools" / "policy_validation_probe.py",
-    ROOT / "tools" / "welcome_settings_probe.py",
-    ROOT / "tools" / "mapcycle_roundtrip_probe.py",
-    ROOT / "tools" / "general_settings_roundtrip_probe.py",
-    ROOT / "tools" / "gameplay_settings_roundtrip_probe.py",
-    ROOT / "tools" / "gametype_settings_roundtrip_probe.py",
-    ROOT / "tools" / "system_settings_roundtrip_probe.py",
-    ROOT / "tools" / "serveractors_roundtrip_probe.py",
-    ROOT / "tools" / "campaign_settings_roundtrip_probe.py",
-    ROOT / "tools" / "pagination_readonly_probe.py",
-    ROOT / "tools" / "synthetic_pagination_probe.py",
-    ROOT / "tools" / "console_log_probe.py",
-    ROOT / "tools" / "player_form_fallback_probe.py",
-    ROOT / "tools" / "player_form_membership_probe.py",
-    ROOT / "tools" / "tracking_alias_roundtrip_probe.py",
-    ROOT / "tools" / "tracking_note_roundtrip_probe.py",
-    ROOT / "tools" / "player_form_swapteam_probe.py",
-    ROOT / "tools" / "player_form_whisper_probe.py",
-    ROOT / "tools" / "two_player_kick_probe.py",
-    ROOT / "tools" / "two_player_session_ban_probe.py",
-    ROOT / "tools" / "admin_target_sessionban_probe.py",
-    ROOT / "tools" / "two_player_permanent_ban_probe.py",
-    ROOT / "tools" / "two_player_role_kick_probe.py",
-    ROOT / "tools" / "stale_player_key_probe.py",
-    ROOT / "tools" / "toxic_players_readonly_probe.py",
-    ROOT / "tools" / "squad_reset_probe.py",
-    ROOT / "tools" / "squad_data_route_probe.py",
-    ROOT / "tools" / "two_player_readonly_probe.py",
-    ROOT / "tools" / "two_session_chat_wait_probe.py",
+    TOOLS / "probe_webadmin.py",
+    TOOLS / "player_action_probe.py",
+    TOOLS / "banid_roundtrip_probe.py",
+    TOOLS / "kick_ban_probe.py",
+    TOOLS / "multiadmin_probe.py",
+    TOOLS / "readonly_profile_probe.py",
+    TOOLS / "multiadmin_permission_probe.py",
+    TOOLS / "empty_state_probe.py",
+    TOOLS / "phase3_core_probe.py",
+    TOOLS / "travel_roundtrip_probe.py",
+    TOOLS / "policy_validation_probe.py",
+    TOOLS / "welcome_settings_probe.py",
+    TOOLS / "mapcycle_roundtrip_probe.py",
+    TOOLS / "general_settings_roundtrip_probe.py",
+    TOOLS / "gameplay_settings_roundtrip_probe.py",
+    TOOLS / "gametype_settings_roundtrip_probe.py",
+    TOOLS / "system_settings_roundtrip_probe.py",
+    TOOLS / "serveractors_roundtrip_probe.py",
+    TOOLS / "campaign_settings_roundtrip_probe.py",
+    TOOLS / "pagination_readonly_probe.py",
+    TOOLS / "synthetic_pagination_probe.py",
+    TOOLS / "console_log_probe.py",
+    TOOLS / "player_form_fallback_probe.py",
+    TOOLS / "player_form_membership_probe.py",
+    TOOLS / "tracking_alias_roundtrip_probe.py",
+    TOOLS / "tracking_note_roundtrip_probe.py",
+    TOOLS / "player_form_swapteam_probe.py",
+    TOOLS / "player_form_whisper_probe.py",
+    TOOLS / "two_player_kick_probe.py",
+    TOOLS / "two_player_session_ban_probe.py",
+    TOOLS / "admin_target_sessionban_probe.py",
+    TOOLS / "two_player_permanent_ban_probe.py",
+    TOOLS / "two_player_role_kick_probe.py",
+    TOOLS / "stale_player_key_probe.py",
+    TOOLS / "toxic_players_readonly_probe.py",
+    TOOLS / "squad_reset_probe.py",
+    TOOLS / "squad_data_route_probe.py",
+    TOOLS / "two_player_readonly_probe.py",
+    TOOLS / "two_session_chat_wait_probe.py",
 )
 FORBIDDEN_PATTERNS = {
     "session-cookie": re.compile(r'sessionid="?[a-f0-9]{16,}', re.IGNORECASE),
@@ -226,6 +247,8 @@ def capture_names(directory: Path) -> set[str]:
 
 
 def validate_sanitization(directory: Path) -> None:
+    logger.info("validating: '{}'", directory)
+
     for path in directory.iterdir():
         if not path.is_file():
             continue
@@ -288,8 +311,11 @@ def run() -> int:
         names_by_directory = {
             directory.name: capture_names(directory) for directory in CAPTURE_DIRS
         }
-        for directory in CAPTURE_DIRS:
-            validate_sanitization(directory)
+
+        with ThreadPoolExecutor() as executor:
+            for directory in CAPTURE_DIRS:
+                executor.submit(validate_sanitization, directory)
+
     except (OSError, ValueError, json.JSONDecodeError) as error:
         logger.error("documentation validation error: {}", error)
         return 1
@@ -302,7 +328,9 @@ def run() -> int:
     captured_names = set().union(*names_by_directory.values())
     missing_fixtures = sorted(documented_fixtures - captured_names)
     if missing_fixtures:
-        logger.warning("contract refers to missing captures: {}", ", ".join(missing_fixtures))
+        logger.warning(
+            "contract refers to missing captures: {}", ", ".join(missing_fixtures)
+        )
         return 1
     if {"chat-post", "chat-data-after-post"} - captured_names:
         logger.warning("chat write evidence is missing")
