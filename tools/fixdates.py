@@ -31,8 +31,8 @@ def fix_commits():
     try:
         env = os.environ.copy()
 
-        start = datetime.datetime.strptime("07:00:00", "%H:%M:%S")
-        stop = datetime.datetime.strptime("18:00:00", "%H:%M:%S")
+        start = datetime.datetime.strptime("07:00:00", "%H:%M:%S")  # ruff: ignore[DTZ007]
+        stop = datetime.datetime.strptime("18:00:00", "%H:%M:%S")  # ruff: ignore[DTZ007]
         # start = localtz.localize(start)
         # stop = localtz.localize(stop)
         range_start: datetime.time = start.time()

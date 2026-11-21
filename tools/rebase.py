@@ -33,7 +33,7 @@ def main():
         f.write(data)
         f.truncate()
 
-    print("")
+    print()
     pprint(rebase_commits)
 
 
