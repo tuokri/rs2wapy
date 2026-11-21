@@ -36,11 +36,11 @@ from typing import Any
 import click
 import httpx2
 
-from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
-from webadmin_api_docs.cli import ToolArguments
-from webadmin_api_docs.cli import exit_with_status
-from webadmin_api_docs.logging import configure_logging
-from webadmin_api_docs.logging import logger
+from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS  # type: ignore[import-untyped]
+from webadmin_api_docs.cli import ToolArguments  # type: ignore[import-untyped]
+from webadmin_api_docs.cli import exit_with_status  # type: ignore[import-untyped]
+from webadmin_api_docs.logging import configure_logging  # type: ignore[import-untyped]
+from webadmin_api_docs.logging import logger  # type: ignore[import-untyped]
 
 ROUTE_SEEDS = (
     "",

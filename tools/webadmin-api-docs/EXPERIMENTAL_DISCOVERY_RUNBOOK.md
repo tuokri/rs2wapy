@@ -697,6 +697,18 @@ can be isolated on a disposable database/configuration snapshot and populated
 with synthetic records. It is required for complete pagination and large-list
 documentation, but is separate from normal player/moderation testing.
 
+The `tools/synthetic_pagination_probe.py` utility provides configurable
+config-backed passes (60, 1000, or another approved count). It refuses to overwrite live databases while
+`VNGame.exe` is running; `seed --restart` stops only the known server executable,
+backs up and temp-validates `ROTrackDb.ini`, `ROMemberDb.ini`, and `ROGame.ini`,
+copies the synthetic rows, and restarts the exact live server command.
+
+Observed in the 2026-11-21 live test: 60 rows rendered successfully after a
+restart-safe pass. A 6000-row pass did not restore a healthy WebAdmin listener
+and the live tracking config later became unusable, so the exact baseline
+backups were restored. A clean 1000-row retry survived restart, and config plus
+WebAdmin verification found 1000 synthetic tracking, member, and ban entries.
+
 > **HUMAN REQUIRED — provide a disposable pagination test profile**
 >
 > Create a restorable snapshot of the server databases/configuration used by

@@ -125,6 +125,14 @@ control pass after server recovery and config restoration.
 `phase7-pagination-synthetic-20261121/` records the synthetic seed/reload
 attempt. It found no synthetic tracking/member/bans rows after config restore
 and is prerequisite-unavailable rather than live-verified synthetic pagination.
+`phase7-pagination-synthetic-live-20261121/` records the restart-safe 60-row
+live pass. Config and WebAdmin verification found 60 synthetic tracking rows,
+60 synthetic members, and 60 permanent synthetic bans after VNGame was stopped,
+seeded, and restarted.
+The same capture directory was reused for the 1000-row retry after the 6000-row
+startup attempt failed to restore a healthy WebAdmin listener and left the live
+tracking config unusable. The 1000-row pass survived restart and verified 1000
+synthetic tracking, member, and ban entries.
 `phase5-post-mapcycle-readonly-20261120/` records the new-map baseline after
 automatic travel to Hill 937, including both controlled-player rows and clean ban tables.
 `phase5-role-ready-readonly-20261120/` records one controlled Commander on
