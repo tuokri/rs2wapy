@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.14"
 resolution-markers = [
     "python_full_version >= '3.15'",
@@ -396,6 +396,15 @@ wheels = [
 ]
 
 [[package]]
+name = "udk-configparser"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/ad/494ab516350043ed059ba444605ec020e723d6d19cf9f92d609b5620d083/udk_configparser-1.1.1.tar.gz", hash = "sha256:eb22f98fb9e85b446ef2b7e912fa555ebcb9c93b2b07cb6193848a3e698f7ff8", size = 7949, upload-time = "2023-11-08T13:41:39.903Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/54/ee3d9e2b2a86c070d56e15851274319dd9499b61e94a34d4aff821df8d8c/udk_configparser-1.1.1-py3-none-any.whl", hash = "sha256:981b9913c1ab476741dd1e90911862f4c822a2c6137d509b28ca258ffce18f46", size = 4028, upload-time = "2023-11-08T13:41:38.449Z" },
+]
+
+[[package]]
 name = "webadmin-api-docs"
 version = "0.1.0"
 source = { editable = "." }
@@ -403,6 +412,7 @@ dependencies = [
     { name = "click" },
     { name = "httpx2" },
     { name = "loguru" },
+    { name = "udk-configparser" },
 ]
 
 [package.dev-dependencies]
@@ -417,6 +427,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.5.0" },
     { name = "httpx2", specifier = ">=2.13.1" },
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "udk-configparser", specifier = ">=1.1.1" },
 ]
 
 [package.metadata.requires-dev]

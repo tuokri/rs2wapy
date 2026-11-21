@@ -11,6 +11,7 @@ dependencies = [
     "click>=8.5.0",
     "httpx2>=2.13.1",
     "loguru>=0.7.3",
+    "udk-configparser>=1.1.1",
 ]
 
 [project.scripts]
