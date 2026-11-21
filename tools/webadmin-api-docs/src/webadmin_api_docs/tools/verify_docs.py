@@ -24,7 +24,6 @@
 
 from __future__ import annotations
 
-import concurrent
 import concurrent.futures
 import json
 import re
@@ -283,6 +282,24 @@ def contract_fixture_names(contract: str) -> set[str]:
     return names
 
 
+def validate_sanitization_directories(directories: tuple[Path, ...]) -> None:
+    """Validate directories concurrently and aggregate every worker failure."""
+    errors: list[Exception] = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {
+            executor.submit(validate_sanitization, directory): directory
+            for directory in directories
+        }
+        for future, directory in futures.items():
+            try:
+                future.result()
+            except Exception as exc:  # noqa: BLE001 - worker failures are aggregated
+                exc.add_note(f"Directory: {directory}")
+                errors.append(exc)
+    if errors:
+        raise ExceptionGroup("Sanitization failed", errors)
+
+
 def run() -> int:
     missing = [
         str(path.relative_to(ROOT)) for path in REQUIRED_FILES if not path.is_file()
@@ -296,14 +313,19 @@ def run() -> int:
             directory.name: capture_names(directory) for directory in CAPTURE_DIRS
         }
 
-        futures: list[concurrent.futures.Future[None]] = []
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            for directory in CAPTURE_DIRS:
-                futures.append(executor.submit(validate_sanitization, directory))
+        validate_sanitization_directories(tuple(CAPTURE_DIRS))
 
-        for future in futures:
-            future.result()
-
+    except ExceptionGroup as group:
+        for exc in group.exceptions:
+            notes = getattr(exc, "__notes__", ())
+            suffix = f" ({'; '.join(str(note) for note in notes)})" if notes else ""
+            logger.error(
+                "documentation validation error: {}: {}{}",
+                type(exc).__name__,
+                exc,
+                suffix,
+            )
+        return 1
     except (OSError, ValueError, json.JSONDecodeError) as error:
         logger.error("documentation validation error: {}", error)
         return 1

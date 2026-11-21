@@ -22,6 +22,7 @@
 
 from __future__ import annotations
 
+import importlib
 import zipfile
 from pathlib import Path
 
@@ -64,6 +65,55 @@ def test_verify_docs_resolves_package_project_paths() -> None:
     assert FIXTURES == expected_root / "fixtures"
     assert TOOLS == expected_root / "src" / "webadmin_api_docs" / "tools"
     assert all(path.is_file() for path in REQUIRED_FILES)
+
+
+def test_validate_sanitization_directories_groups_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    verify_docs = importlib.import_module(
+        "webadmin_api_docs.tools.verify_docs"
+    )
+    directories = (tmp_path / "capture-a", tmp_path / "capture-b")
+    directories[0].mkdir()
+    directories[1].mkdir()
+
+    def fail(directory: Path) -> None:
+        raise ValueError(f"bad directory: {directory.name}")
+
+    monkeypatch.setattr(verify_docs, "validate_sanitization", fail)
+
+    with pytest.raises(ExceptionGroup) as exc_info:
+        verify_docs.validate_sanitization_directories(directories)
+
+    assert len(exc_info.value.exceptions) == 2
+    for exc in exc_info.value.exceptions:
+        notes = getattr(exc, "__notes__", ())
+        assert any(str(note).startswith("Directory: ") for note in notes)
+
+
+def test_run_handles_sanitization_exception_group(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    verify_docs = importlib.import_module(
+        "webadmin_api_docs.tools.verify_docs"
+    )
+
+    monkeypatch.setattr(verify_docs, "REQUIRED_FILES", ())
+    monkeypatch.setattr(verify_docs, "CAPTURE_DIRS", ())
+
+    def fail(directories: tuple[Path, ...]) -> None:
+        exc = ValueError("bad fixture")
+        exc.add_note("Directory: capture-a")
+        raise ExceptionGroup("Sanitization failed", [exc])
+
+    monkeypatch.setattr(
+        verify_docs,
+        "validate_sanitization_directories",
+        fail,
+    )
+
+    assert verify_docs.run() == 1
 
 
 def test_package_cli_lists_sources_and_discovery_tools() -> None:
