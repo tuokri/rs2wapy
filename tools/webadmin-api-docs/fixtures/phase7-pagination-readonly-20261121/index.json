@@ -1,0 +1,306 @@
+{
+  "captures": [
+    {
+      "name": "login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-page.request.json",
+      "response": "login-page.html"
+    },
+    {
+      "name": "login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "login-submit.request.json",
+      "response": "login-submit.html"
+    },
+    {
+      "name": "policy-tracking-pagination-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-tracking-pagination-baseline.request.json",
+      "response": "policy-tracking-pagination-baseline.html"
+    },
+    {
+      "name": "policy-tracking-firstpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-tracking-firstpage.request.json",
+      "response": "policy-tracking-firstpage.html"
+    },
+    {
+      "name": "policy-tracking-previouspage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-tracking-previouspage.request.json",
+      "response": "policy-tracking-previouspage.html"
+    },
+    {
+      "name": "policy-tracking-nextpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-tracking-nextpage.request.json",
+      "response": "policy-tracking-nextpage.html"
+    },
+    {
+      "name": "policy-tracking-lastpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/tracking",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-tracking-lastpage.request.json",
+      "response": "policy-tracking-lastpage.html"
+    },
+    {
+      "name": "policy-members-pagination-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-members-pagination-baseline.request.json",
+      "response": "policy-members-pagination-baseline.html"
+    },
+    {
+      "name": "policy-members-firstpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-members-firstpage.request.json",
+      "response": "policy-members-firstpage.html"
+    },
+    {
+      "name": "policy-members-previouspage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-members-previouspage.request.json",
+      "response": "policy-members-previouspage.html"
+    },
+    {
+      "name": "policy-members-nextpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-members-nextpage.request.json",
+      "response": "policy-members-nextpage.html"
+    },
+    {
+      "name": "policy-members-lastpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/members",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-members-lastpage.request.json",
+      "response": "policy-members-lastpage.html"
+    },
+    {
+      "name": "policy-bans-pagination-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-bans-pagination-baseline.request.json",
+      "response": "policy-bans-pagination-baseline.html"
+    },
+    {
+      "name": "policy-bans-firstpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-bans-firstpage.request.json",
+      "response": "policy-bans-firstpage.html"
+    },
+    {
+      "name": "policy-bans-previouspage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-bans-previouspage.request.json",
+      "response": "policy-bans-previouspage.html"
+    },
+    {
+      "name": "policy-bans-nextpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-bans-nextpage.request.json",
+      "response": "policy-bans-nextpage.html"
+    },
+    {
+      "name": "policy-bans-lastpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/bans",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-bans-lastpage.request.json",
+      "response": "policy-bans-lastpage.html"
+    },
+    {
+      "name": "policy-session-pagination-baseline",
+      "method": "GET",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-session-pagination-baseline.request.json",
+      "response": "policy-session-pagination-baseline.html"
+    },
+    {
+      "name": "policy-session-firstpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-session-firstpage.request.json",
+      "response": "policy-session-firstpage.html"
+    },
+    {
+      "name": "policy-session-previouspage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-session-previouspage.request.json",
+      "response": "policy-session-previouspage.html"
+    },
+    {
+      "name": "policy-session-nextpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-session-nextpage.request.json",
+      "response": "policy-session-nextpage.html"
+    },
+    {
+      "name": "policy-session-lastpage",
+      "method": "POST",
+      "url": "{{BASE_URL}}/policy/session",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "policy-session-lastpage.request.json",
+      "response": "policy-session-lastpage.html"
+    },
+    {
+      "name": "pagination-readonly-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "pagination-readonly-logout.request.json",
+      "response": "pagination-readonly-logout.html"
+    }
+  ],
+  "failures": []
+}

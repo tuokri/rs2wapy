@@ -1,0 +1,217 @@
+{
+  "captures": [
+    {
+      "name": "session-a-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-a-login-page.request.json",
+      "response": "session-a-login-page.html"
+    },
+    {
+      "name": "session-a-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-a-login-submit.request.json",
+      "response": "session-a-login-submit.html"
+    },
+    {
+      "name": "session-a-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-a-current.request.json",
+      "response": "session-a-current.html"
+    },
+    {
+      "name": "session-a-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-a-players.request.json",
+      "response": "session-a-players.html"
+    },
+    {
+      "name": "session-a-squads",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/squads",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-a-squads.request.json",
+      "response": "session-a-squads.html"
+    },
+    {
+      "name": "session-a-chat",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-a-chat.request.json",
+      "response": "session-a-chat.html"
+    },
+    {
+      "name": "session-a-chat-data-baseline",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "session-a-chat-data-baseline.request.json",
+      "response": "session-a-chat-data-baseline.txt"
+    },
+    {
+      "name": "session-b-login-page",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-b-login-page.request.json",
+      "response": "session-b-login-page.html"
+    },
+    {
+      "name": "session-b-login-submit",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-b-login-submit.request.json",
+      "response": "session-b-login-submit.html"
+    },
+    {
+      "name": "session-b-current",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-b-current.request.json",
+      "response": "session-b-current.html"
+    },
+    {
+      "name": "session-b-players",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/players",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-b-players.request.json",
+      "response": "session-b-players.html"
+    },
+    {
+      "name": "session-b-squads",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/squads",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-b-squads.request.json",
+      "response": "session-b-squads.html"
+    },
+    {
+      "name": "session-b-chat",
+      "method": "GET",
+      "url": "{{BASE_URL}}/current/chat",
+      "status": 200,
+      "headers": {
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-b-chat.request.json",
+      "response": "session-b-chat.html"
+    },
+    {
+      "name": "session-b-chat-data-baseline",
+      "method": "POST",
+      "url": "{{BASE_URL}}/current/chat/data",
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Connection": "Close"
+      },
+      "request": "session-b-chat-data-baseline.request.json",
+      "response": "session-b-chat-data-baseline.txt"
+    },
+    {
+      "name": "session-1-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-1-logout.request.json",
+      "response": "session-1-logout.html"
+    },
+    {
+      "name": "session-2-logout",
+      "method": "GET",
+      "url": "{{BASE_URL}}/",
+      "status": 200,
+      "headers": {
+        "Set-Cookie": "sessionid={{REDACTED}}; path=/ServerAdmin/",
+        "Server": "UnrealEngine IpDrv Web Server Build 7258",
+        "Content-Type": "text/html",
+        "Connection": "Close"
+      },
+      "request": "session-2-logout.request.json",
+      "response": "session-2-logout.html"
+    }
+  ],
+  "failures": []
+}
