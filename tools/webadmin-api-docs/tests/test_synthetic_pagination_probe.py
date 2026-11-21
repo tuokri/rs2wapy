@@ -28,17 +28,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+from probe_webadmin import Capture
 from synthetic_pagination_probe import DEFAULT_BACKUP_DIR
+from synthetic_pagination_probe import build_page_sequence_summary
 from synthetic_pagination_probe import count_route_row_fields
 from synthetic_pagination_probe import count_synthetic_bans_in_html
 from synthetic_pagination_probe import count_synthetic_route_markers
 from synthetic_pagination_probe import extract_hidden_index
+from synthetic_pagination_probe import extract_page_row_keys
 from synthetic_pagination_probe import inspect_synthetic_configs
 from synthetic_pagination_probe import prepare_synthetic_temp_files
 from synthetic_pagination_probe import remove_synthetic_bans
 from synthetic_pagination_probe import remove_synthetic_table_entries
 from synthetic_pagination_probe import synthetic_member_rows
 from synthetic_pagination_probe import synthetic_tracking_rows
+from synthetic_pagination_probe import validate_baseline_backups
 
 
 def test_synthetic_rows_have_unique_markers_and_bans() -> None:
@@ -70,6 +74,31 @@ def test_backup_dir_uses_user_home_without_session_state() -> None:
     backup_dir_text = str(DEFAULT_BACKUP_DIR)
     assert ".copilot" not in backup_dir_text
     assert "session-state" not in backup_dir_text
+
+
+def test_validate_baseline_backups_rejects_synthetic_markers(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "ROTrackDb.ini").write_text(
+        "[ROGame.TrackDb]\n"
+        'Table_Players=(PlayerNames=("synthetic-tracking-001"))\n',
+        encoding="utf-8",
+    )
+    (tmp_path / "ROMemberDb.ini").write_text(
+        "[ROGame.MemberDb]\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "ROGame.ini").write_text(
+        "[Engine.AccessControl]\n",
+        encoding="utf-8",
+    )
+
+    try:
+        validate_baseline_backups(tmp_path)
+    except RuntimeError as error:
+        assert "contains synthetic data" in str(error)
+    else:
+        raise AssertionError("synthetic baseline backup was accepted")
 
 
 def test_synthetic_ban_row_reason_count() -> None:
@@ -109,6 +138,47 @@ def test_page_boundary_helpers() -> None:
     assert count_synthetic_route_markers(tracking, "policy/tracking") == 3
     assert count_synthetic_route_markers(members, "policy/members") == 2
     assert count_synthetic_route_markers(bans, "policy/bans") == 2
+
+
+def test_page_sequence_duplicate_and_index_summary() -> None:
+    captures = [
+        Capture(
+            name="policy-tracking-baseline",
+            method="GET",
+            url="",
+            status=200,
+            headers={},
+            body=(
+                '<input name="__FirstVisibleRowIndex" value="0"/>'
+                '<input name="__PlayerName_0" value="same"/>'
+            ),
+        ),
+        Capture(
+            name="policy-tracking-sequence-next-1",
+            method="POST",
+            url="",
+            status=200,
+            headers={},
+            body=(
+                '<input name="__FirstVisibleRowIndex" value="25"/>'
+                '<input name="__PlayerName_25" value="same"/>'
+                '<input name="__PlayerName_25" value="same"/>'
+            ),
+        ),
+    ]
+
+    summary = build_page_sequence_summary(captures)
+    tracking = summary["policy/tracking"]
+    assert isinstance(tracking, dict)
+    pages = tracking["pages"]
+    assert isinstance(pages, dict)
+    assert pages["baseline"]["first_visible_row_index"] == 0
+    assert pages["sequence-next-1"]["row_fields"] == 2
+    assert pages["sequence-next-1"]["unique_row_fields"] == 1
+    assert extract_page_row_keys(
+        captures[1].body,
+        "policy/tracking",
+    ) == ["25", "25"]
 
 
 def test_synthetic_cleanup_preserves_real_rows() -> None:

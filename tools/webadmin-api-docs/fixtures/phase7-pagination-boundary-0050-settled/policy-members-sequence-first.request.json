@@ -1,0 +1,9 @@
+{
+  "form": {
+    "__CurrentTabIndex": "0",
+    "__FirstVisibleRowIndex": "0",
+    "action": "firstpage"
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/members"
+}

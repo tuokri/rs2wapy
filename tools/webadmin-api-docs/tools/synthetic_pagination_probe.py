@@ -373,7 +373,7 @@ def build_page_boundary_summary(captures: list[Capture]) -> dict[str, object]:
     for route in ("policy/tracking", "policy/members", "policy/bans"):
         route_name = route.replace("/", "-")
         actions: dict[str, object] = {}
-        for action in ("baseline", *PAGINATION_ACTIONS):
+        for action in ("baseline", *PAGINATION_ACTIONS, "tab0", "tab1"):
             capture = next(
                 (
                     item
@@ -401,6 +401,99 @@ def build_page_boundary_summary(captures: list[Capture]) -> dict[str, object]:
             }
         boundary_summary[route] = actions
     return boundary_summary
+
+
+def extract_page_row_keys(body: str, route: str) -> list[str]:
+    """Extract rendered row-key identifiers for stale/duplicate-page checks."""
+    field_name = {
+        "policy/tracking": "__PlayerName",
+        "policy/members": "__MemberName",
+        "policy/bans": "__UniqueId",
+    }[route]
+    return re.findall(
+        rf'name="{re.escape(field_name)}_(\d+)"',
+        body,
+        re.IGNORECASE,
+    )
+
+
+def build_page_sequence_summary(captures: list[Capture]) -> dict[str, object]:
+    """Summarize an ordered first/next/previous/last page sequence."""
+    sequence_summary: dict[str, object] = {}
+    for route in ("policy/tracking", "policy/members", "policy/bans"):
+        route_name = route.replace("/", "-")
+        pages: dict[str, object] = {}
+        duplicate_keys: dict[str, list[str]] = {}
+        for action in (
+            "baseline",
+            "sequence-first",
+            "sequence-next-1",
+            "sequence-next-2",
+            "sequence-prev",
+            "sequence-last",
+            "sequence-prev-after-last",
+        ):
+            capture = next(
+                (
+                    item
+                    for item in captures
+                    if item.name == f"{route_name}-{action}"
+                ),
+                None,
+            )
+            if capture is None:
+                continue
+            keys = extract_page_row_keys(capture.body, route)
+            pages[action] = {
+                "row_fields": len(keys),
+                "unique_row_fields": len(set(keys)),
+                "synthetic_markers": count_synthetic_route_markers(
+                    capture.body,
+                    route,
+                ),
+                "first_visible_row_index": extract_hidden_index(
+                    capture.body,
+                    "__FirstVisibleRowIndex",
+                ),
+                "current_tab_index": extract_hidden_index(
+                    capture.body,
+                    "__CurrentTabIndex",
+                ),
+            }
+            key_counts: dict[str, int] = {}
+            for key in keys:
+                key_counts[key] = key_counts.get(key, 0) + 1
+            repeated_on_page = sorted(
+                key
+                for key, count in key_counts.items()
+                if count > 1
+            )
+            if repeated_on_page:
+                duplicate_keys[action] = repeated_on_page
+
+        repeated_across_pages: dict[str, list[str]] = {}
+        all_seen: set[str] = set()
+        for action in pages:
+            capture = next(
+                (
+                    item
+                    for item in captures
+                    if item.name == f"{route_name}-{action}"
+                ),
+                None,
+            )
+            if capture is None:
+                continue
+            key_set = set(extract_page_row_keys(capture.body, route))
+            repeated_across_pages[action] = sorted(key_set & all_seen)
+            all_seen |= key_set
+
+        sequence_summary[route] = {
+            "pages": pages,
+            "repeated_across_pages": repeated_across_pages,
+            "duplicate_keys_on_page": duplicate_keys,
+        }
+    return sequence_summary
 
 
 def inspect_synthetic_configs(
@@ -580,6 +673,73 @@ def restart_and_seed_synthetic_configs(
     return backups, stats, process.pid
 
 
+def validate_baseline_backups(backup_dir: Path) -> dict[str, Path]:
+    """Require exact pre-synthetic backup files before a boundary run."""
+    backups = backup_mapping_for_dir(backup_dir)
+    for name, path in backups.items():
+        if not path.is_file():
+            raise RuntimeError(f"missing baseline {name} backup: {path}")
+        content = path.read_text(encoding="utf-8", errors="replace")
+        has_synthetic_marker = bool(
+            re.search(
+                r"synthetic-tracking|synthetic-punk|synthetic-member",
+                content,
+                re.IGNORECASE,
+            )
+        )
+        has_synthetic_ban = bool(
+            re.search(
+                r"A=40\d{5},B=17825793",
+                content,
+                re.IGNORECASE,
+            )
+        )
+        if has_synthetic_marker or has_synthetic_ban:
+            raise RuntimeError(
+                f"baseline {name} backup contains synthetic data: {path}"
+            )
+    return backups
+
+
+def wait_for_webadmin(base_url: str, wait_seconds: int) -> None:
+    """Wait until WebAdmin answers on the expected listener."""
+    normalized = base_url.rstrip("/") + "/"
+    deadline = time.monotonic() + wait_seconds
+    while time.monotonic() < deadline:
+        try:
+            response = httpx2.get(normalized, timeout=5)
+            if response.status_code == 200:
+                return
+        except httpx2.RequestError:
+            pass
+        time.sleep(1)
+    raise RuntimeError(
+        f"WebAdmin did not become ready within {wait_seconds} seconds"
+    )
+
+
+def restore_and_restart_baseline(
+    backup_dir: Path,
+    server_map: str,
+) -> int:
+    """Restore exact baseline configs and restart the known VNGame server."""
+    pids = find_live_vngame_pids()
+    if pids:
+        stop_vngame(pids)
+    backups = validate_baseline_backups(backup_dir)
+    restore_config_files(backups)
+    process = subprocess.Popen(
+        [
+            str(SERVER_EXECUTABLE),
+            server_map,
+            "-log",
+            "-FORCELOGFLUSH",
+        ],
+        cwd=str(SERVER_EXECUTABLE.parent),
+    )
+    return process.pid
+
+
 def selected_value(body: str, select_id: str) -> tuple[str, tuple[str, ...]]:
     """Read one selected value and all options from a change-page select."""
     select_match = re.search(
@@ -740,6 +900,62 @@ def verify_live_routes(
                         },
                     )
                 )
+            if route in ("policy/tracking", "policy/members"):
+                captures.append(
+                    probe.request(
+                        f"{route_name}-tab1",
+                        route,
+                        {
+                            "action": "",
+                            "__CurrentTabIndex": "1",
+                            "__FirstVisibleRowIndex": "0",
+                        },
+                    )
+                )
+                captures.append(
+                    probe.request(
+                        f"{route_name}-tab0",
+                        route,
+                        {
+                            "action": "",
+                            "__CurrentTabIndex": "0",
+                            "__FirstVisibleRowIndex": "0",
+                        },
+                    )
+                )
+            current_index = "0"
+            current_tab = "0"
+            sequence_actions = (
+                ("sequence-first", "firstpage"),
+                ("sequence-next-1", "nextpage"),
+                ("sequence-next-2", "nextpage"),
+                ("sequence-prev", "previouspage"),
+                ("sequence-last", "lastpage"),
+                ("sequence-prev-after-last", "previouspage"),
+            )
+            for capture_name, action in sequence_actions:
+                capture = probe.request(
+                    f"{route_name}-{capture_name}",
+                    route,
+                    {
+                        "action": action,
+                        "__CurrentTabIndex": current_tab,
+                        "__FirstVisibleRowIndex": current_index,
+                    },
+                )
+                captures.append(capture)
+                returned_index = extract_hidden_index(
+                    capture.body,
+                    "__FirstVisibleRowIndex",
+                )
+                returned_tab = extract_hidden_index(
+                    capture.body,
+                    "__CurrentTabIndex",
+                )
+                if returned_index is not None:
+                    current_index = str(returned_index)
+                if returned_tab is not None:
+                    current_tab = str(returned_tab)
         for capture in captures:
             tracking_names.update(
                 re.findall(r"synthetic-tracking-(\d+)", capture.body)
@@ -780,6 +996,7 @@ def verify_live_routes(
         DEFAULT_GAME_INI,
     )
     page_boundaries = build_page_boundary_summary(captures)
+    page_sequence = build_page_sequence_summary(captures)
     summary: dict[str, object] = {
         "config": config_stats,
         "routes": {
@@ -791,6 +1008,7 @@ def verify_live_routes(
             "ban_count": ban_reason_count,
         },
         "page_boundaries": page_boundaries,
+        "page_sequence": page_sequence,
         "failures": failures,
     }
 
@@ -987,6 +1205,128 @@ def verify_command(
     ) as error:
         raise click.ClickException(str(error)) from error
     click.echo(json.dumps(summary, sort_keys=True))
+
+
+@cli.command("boundary")
+@click.option(
+    "--counts",
+    default="0,1,24,25,26,50,1000",
+    show_default=True,
+)
+@click.option(
+    "--backup-dir",
+    type=click.Path(path_type=Path),
+    default=DEFAULT_BACKUP_DIR,
+    show_default=True,
+)
+@click.option("--server-map", default="VNTE-CuaViet", show_default=True)
+@click.option(
+    "--base-url",
+    default="http://127.0.0.1:8080/ServerAdmin/",
+    show_default=True,
+)
+@click.option("--username", default=None)
+@click.option("--password", default=None)
+@click.option("--wait-seconds", type=click.IntRange(1, 600), default=180)
+def boundary_command(
+    counts: str,
+    backup_dir: Path,
+    server_map: str,
+    base_url: str,
+    username: str | None,
+    password: str | None,
+    wait_seconds: int,
+) -> None:
+    """Run live synthetic-count boundaries and restore the baseline."""
+    try:
+        parsed_counts = [
+            int(part.strip())
+            for part in counts.split(",")
+            if part.strip()
+        ]
+        if not parsed_counts:
+            raise RuntimeError("at least one synthetic boundary count is required")
+        if any(count < 0 or count > MAX_SYNTHETIC_ROWS for count in parsed_counts):
+            raise RuntimeError(
+                f"synthetic counts must be between 0 and {MAX_SYNTHETIC_ROWS}"
+            )
+        validate_baseline_backups(backup_dir)
+        resolved_username, resolved_password = login_credentials(
+            username,
+            password,
+        )
+    except (
+        OSError,
+        RuntimeError,
+        httpx2.RequestError,
+    ) as error:
+        raise click.ClickException(str(error)) from error
+
+    summaries: list[dict[str, object]] = []
+    restoration_error: Exception | None = None
+    try:
+        for count in parsed_counts:
+            try:
+                _, stats, started_pid = restart_and_seed_synthetic_configs(
+                    count,
+                    backup_dir,
+                    server_map,
+                )
+                wait_for_webadmin(base_url, wait_seconds)
+                output = (
+                    ROOT
+                    / "fixtures"
+                    / f"phase7-pagination-boundary-{count:04d}"
+                )
+                summary = verify_live_routes(
+                    base_url,
+                    resolved_username,
+                    resolved_password,
+                    output,
+                )
+                summaries.append(
+                    {
+                        "count": count,
+                        "started_pid": started_pid,
+                        "config": stats,
+                        "summary": summary,
+                    }
+                )
+            except (
+                OSError,
+                RuntimeError,
+                httpx2.RequestError,
+            ) as error:
+                summaries.append(
+                    {
+                        "count": count,
+                        "started_pid": None,
+                        "failure": str(error),
+                    }
+                )
+    finally:
+        try:
+            restored_pid = restore_and_restart_baseline(
+                backup_dir,
+                server_map,
+            )
+            wait_for_webadmin(base_url, wait_seconds)
+        except (
+            OSError,
+            RuntimeError,
+            httpx2.RequestError,
+        ) as error:
+            restoration_error = error
+
+    result: dict[str, object] = {
+        "boundary_runs": summaries,
+        "baseline_restored": restoration_error is None,
+    }
+    if restoration_error is not None:
+        result["restoration_error"] = str(restoration_error)
+    else:
+        result["restored_pid"] = restored_pid
+    click.echo(json.dumps(result, sort_keys=True))
 
 
 @cli.command("restore")

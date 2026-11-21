@@ -1,0 +1,797 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Tracking</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/policy/tracking</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Tracking</h2>
+<p id="pageDescription">Overview of players being tracked.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+
+<div id="content">
+
+<fieldset>
+	<legend>Tracking</legend>
+	<div id="settingsWrapper">
+		<div id="Tab_0" class="SettingsGroup">
+			<h4>Overview</h4>
+			<dl>
+			<form method="post" action="/ServerAdmin/policy/tracking">
+	<input type="hidden" name="action" id="action" value="" />
+	<input type="hidden" name="details" id="details" value="" />
+	<input type="hidden" name="uniqueid" id="uniqueid" value="{{UNIQUE_ID_26}}" />
+	<input type="hidden" name="playername" id="playername" value="" />
+	<input type="hidden" name="noteid" id="noteid" value="" />
+	<input type="hidden" name="__CurrentTabIndex" id="__CurrentTabIndex" value="0" />
+	<input type="hidden" name="__Submitter" id="__Submitter" value="" />
+    <input type="hidden" name="__FirstVisibleRowIndex" id="__FirstVisibleRowIndex" value="50" />
+</form>
+
+<table id="tracking" class="grid">
+	<thead>
+<tr style="border:0">
+	<td colspan="6" style="text-align:left;border:0">
+		<button type="button" name="__FirstPage" value="" id="__FirstPage" >|&lt;&lt;</button>
+		<button type="button" name="__PreviousPage" value="" id="__PreviousPage" >&lt;&lt;</button>
+	</td>
+	<td colspan="6" style="text-align:right;border:0">
+		<button type="button" name="__NextPage" value="" id="__NextPage" >&gt;&gt;</button>
+		<button type="button" name="__LastPage" value="" id="__LastPage" >&gt;&gt;|</button>
+	</td>
+	<tr style="border:0"><td style="border:0" colspan="12">&nbsp;</td></tr>
+</tr>
+</thead>
+<tfoot>
+<tr style="border:0">
+	<tr style="border:0"><td style="border:0" colspan="12">&nbsp;</td></tr>
+	<td colspan="6" style="text-align:left;border:0">
+		<button type="button" name="__FirstPage" value="" id="__FirstPage" >|&lt;&lt;</button>
+		<button type="button" name="__PreviousPage" value="" id="__PreviousPage" >&lt;&lt;</button>
+	</td>
+	<td colspan="6" style="text-align:right;border:0">
+		<button type="button" name="__NextPage" value="" id="__NextPage" >&gt;&gt;</button>
+		<button type="button" name="__LastPage" value="" id="__LastPage" >&gt;&gt;|</button>
+	</td>
+</tr>
+</tfoot>
+
+	<tbody>
+		<tr>
+			<th>#</th>
+			<th nowrap>Player name</th>
+			<th nowrap title="The unique ID for this game account.">Unique ID</th>
+			<th nowrap title="The Steam community ID.">Steam ID</th>
+			<th nowrap>Alias</th>
+			<th nowrap># K/S/B</th>
+			<th nowrap># Notes</th>
+			<th nowrap>Created</th>
+			<th nowrap># Connects</th>
+			<th nowrap>Last Seen</th>
+			<th colspan="2">Actions</th>
+		</tr>
+		<tr>
+    <input type="hidden" name="__UniqueId_51" id="__UniqueId_51" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_51" id="__PlayerName_51" value="" />
+	<td nowrap class="center">51</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_104}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_129}}/" target="_blank">{{UNIQUE_ID_129}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_51" id="__Action_51">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_51" value="51">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_52" id="__UniqueId_52" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_52" id="__PlayerName_52" value="" />
+	<td nowrap class="center">52</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_105}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_130}}/" target="_blank">{{UNIQUE_ID_130}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_52" id="__Action_52">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_52" value="52">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_53" id="__UniqueId_53" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_53" id="__PlayerName_53" value="" />
+	<td nowrap class="center">53</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_106}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_131}}/" target="_blank">{{UNIQUE_ID_131}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_53" id="__Action_53">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_53" value="53">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_54" id="__UniqueId_54" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_54" id="__PlayerName_54" value="" />
+	<td nowrap class="center">54</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_107}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_132}}/" target="_blank">{{UNIQUE_ID_132}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_54" id="__Action_54">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_54" value="54">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_55" id="__UniqueId_55" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_55" id="__PlayerName_55" value="" />
+	<td nowrap class="center">55</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_108}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_133}}/" target="_blank">{{UNIQUE_ID_133}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_55" id="__Action_55">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_55" value="55">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_56" id="__UniqueId_56" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_56" id="__PlayerName_56" value="" />
+	<td nowrap class="center">56</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_109}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_134}}/" target="_blank">{{UNIQUE_ID_134}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_56" id="__Action_56">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_56" value="56">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_57" id="__UniqueId_57" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_57" id="__PlayerName_57" value="" />
+	<td nowrap class="center">57</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_110}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_135}}/" target="_blank">{{UNIQUE_ID_135}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_57" id="__Action_57">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_57" value="57">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_58" id="__UniqueId_58" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_58" id="__PlayerName_58" value="" />
+	<td nowrap class="center">58</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_111}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_136}}/" target="_blank">{{UNIQUE_ID_136}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_58" id="__Action_58">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_58" value="58">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_59" id="__UniqueId_59" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_59" id="__PlayerName_59" value="" />
+	<td nowrap class="center">59</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_112}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_137}}/" target="_blank">{{UNIQUE_ID_137}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_59" id="__Action_59">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_59" value="59">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_60" id="__UniqueId_60" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_60" id="__PlayerName_60" value="" />
+	<td nowrap class="center">60</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_113}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_138}}/" target="_blank">{{UNIQUE_ID_138}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_60" id="__Action_60">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_60" value="60">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_61" id="__UniqueId_61" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_61" id="__PlayerName_61" value="" />
+	<td nowrap class="center">61</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_114}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_139}}/" target="_blank">{{UNIQUE_ID_139}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_61" id="__Action_61">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_61" value="61">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_62" id="__UniqueId_62" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_62" id="__PlayerName_62" value="" />
+	<td nowrap class="center">62</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_115}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_140}}/" target="_blank">{{UNIQUE_ID_140}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_62" id="__Action_62">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_62" value="62">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_63" id="__UniqueId_63" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_63" id="__PlayerName_63" value="" />
+	<td nowrap class="center">63</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_116}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_141}}/" target="_blank">{{UNIQUE_ID_141}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_63" id="__Action_63">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_63" value="63">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_64" id="__UniqueId_64" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_64" id="__PlayerName_64" value="" />
+	<td nowrap class="center">64</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_117}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_142}}/" target="_blank">{{UNIQUE_ID_142}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_64" id="__Action_64">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_64" value="64">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_65" id="__UniqueId_65" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_65" id="__PlayerName_65" value="" />
+	<td nowrap class="center">65</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_118}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_143}}/" target="_blank">{{UNIQUE_ID_143}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_65" id="__Action_65">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_65" value="65">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_66" id="__UniqueId_66" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_66" id="__PlayerName_66" value="" />
+	<td nowrap class="center">66</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_119}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_144}}/" target="_blank">{{UNIQUE_ID_144}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_66" id="__Action_66">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_66" value="66">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_67" id="__UniqueId_67" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_67" id="__PlayerName_67" value="" />
+	<td nowrap class="center">67</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_120}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_145}}/" target="_blank">{{UNIQUE_ID_145}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_67" id="__Action_67">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_67" value="67">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_68" id="__UniqueId_68" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_68" id="__PlayerName_68" value="" />
+	<td nowrap class="center">68</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_121}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_146}}/" target="_blank">{{UNIQUE_ID_146}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_68" id="__Action_68">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_68" value="68">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_69" id="__UniqueId_69" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_69" id="__PlayerName_69" value="" />
+	<td nowrap class="center">69</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_122}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_147}}/" target="_blank">{{UNIQUE_ID_147}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_69" id="__Action_69">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_69" value="69">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_70" id="__UniqueId_70" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_70" id="__PlayerName_70" value="" />
+	<td nowrap class="center">70</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_123}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_148}}/" target="_blank">{{UNIQUE_ID_148}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_70" id="__Action_70">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_70" value="70">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_71" id="__UniqueId_71" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_71" id="__PlayerName_71" value="" />
+	<td nowrap class="center">71</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_124}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_149}}/" target="_blank">{{UNIQUE_ID_149}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_71" id="__Action_71">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_71" value="71">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_72" id="__UniqueId_72" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_72" id="__PlayerName_72" value="" />
+	<td nowrap class="center">72</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_125}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_150}}/" target="_blank">{{UNIQUE_ID_150}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_72" id="__Action_72">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_72" value="72">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_73" id="__UniqueId_73" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_73" id="__PlayerName_73" value="" />
+	<td nowrap class="center">73</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_126}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_151}}/" target="_blank">{{UNIQUE_ID_151}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_73" id="__Action_73">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_73" value="73">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_74" id="__UniqueId_74" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_74" id="__PlayerName_74" value="" />
+	<td nowrap class="center">74</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_127}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_152}}/" target="_blank">{{UNIQUE_ID_152}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_74" id="__Action_74">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_74" value="74">go</button>
+	</td>
+</tr>
+<tr>
+    <input type="hidden" name="__UniqueId_75" id="__UniqueId_75" value="{{UNIQUE_ID_26}}" />
+    <input type="hidden" name="__PlayerName_75" id="__PlayerName_75" value="" />
+	<td nowrap class="center">75</td>
+	<td nowrap></td>
+	<td nowrap class="center">{{UNIQUE_ID_128}}</td>
+	<td nowrap class="center"><a style="a:link" href="http://steamcommunity.com/profiles/{{UNIQUE_ID_153}}/" target="_blank">{{UNIQUE_ID_153}}</a></td>
+	<td nowrap class="center"></td>
+	<td nowrap class="center">0/0/1</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center">2026/11/21<br />15:59</td>
+	<td nowrap class="center">0</td>
+	<td nowrap class="center"></td>
+
+	<td style="border-right:0">
+		<select style="width:100%" name="__Action_75" id="__Action_75">
+			<option value="showdetails">Details</option><option value="attachalias">Attach Alias</option><option value="attachnote">Attach Note</option>
+		</select>
+	</td>
+	<td style="border-left:0">
+		<button type="button" name="__Go" id="__Go_75" value="75">go</button>
+	</td>
+</tr>
+
+	</tbody>
+</table>
+
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+	
+});
+
+function Submit(){
+	$($('input[name=__Submitter]')[0].form).submit();
+}
+
+function ShowConfirmDialog(msg, callback){
+	messageConfirm(msg, function(accept){
+		if (accept){
+			callback();
+		}
+	});
+}
+
+$('button[name=__Go]').click(function(){
+    var vIndex = $(this).val();
+	var vUniqueId = $('input[name=__UniqueId_'+vIndex+']').val();
+	var vPlayerName = $('input[name=__PlayerName_'+vIndex+']').val();
+	var vAction = $('select[name=__Action_'+vIndex+']').val();
+    $('input[name=action]').val(vAction);
+    $('input[name=uniqueid]').val(vUniqueId);
+    $('input[name=playername]').val(vPlayerName);
+
+	if ((vAction.length > 0) && (vUniqueId.length > 0)){
+		if (vAction == 'showdetails'){
+			Submit();
+		} else if (vAction == 'deleteentry'){
+			ShowConfirmDialog('Delete entry for player %s?'.replace('%s', vPlayerName), Submit);
+		} else if (vAction == 'attachalias'){
+			ShowInputDialog('Alias for player %s'.replace('%s', vPlayerName), '', Submit);
+		} else if (vAction == 'deletealias'){
+			ShowConfirmDialog('Delete alias for player %s?'.replace('%s', vPlayerName), Submit);
+		} else if (vAction == 'attachnote'){
+			ShowTextDialog('Note for player %s'.replace('%s', vPlayerName), '', Submit);
+		}
+	}
+});
+
+//]]>
+</script>
+
+<script type="text/javascript" src="/images/dialog_kick.js?gzip"></script>
+<script type="text/javascript" src="/images/dialog_picktemplate.js?gzip"></script>
+<script type="text/javascript" src="/images/dialog_input.js?gzip"></script>
+<script type="text/javascript" src="/images/dialog_text.js?gzip"></script>
+<script type="text/javascript" src="/images/paging.js?gzip"></script>
+
+			</dl>
+		</div>
+		<div id="Tab_1" class="SettingsGroup">
+			<h4>Settings</h4>
+			<dl>
+			
+			</dl>
+		</div>
+	</div>
+</fieldset>
+
+</div>
+
+<script type="text/javascript" src="/images/dynamictabs.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

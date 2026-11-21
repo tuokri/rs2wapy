@@ -371,6 +371,15 @@ endpoints:
     auth: required
     fields: [action, uniqueid, playername, banid, __Submitter, __IdType, __UniqueId, __PlayerName, __Reason, __ExpNumber, __ExpUnit, __NotifyPlayers]
     response: full-html
+    pagination:
+      live_verified: false
+      hidden_index: absent
+      controls: absent
+      settled_50_row_fields: 100
+      settled_1000_row_fields: 2000
+      synthetic_markers:
+        settled_50: 50
+        settled_1000: 1000
     writes:
       add: live-verified-restored
       revoke: live-verified
@@ -418,6 +427,13 @@ endpoints:
     auth: required
     fields: [action, uniqueid, playername, noteid, details, __Input, __Text, __CurrentTabIndex, __FirstVisibleRowIndex]
     pagination_actions: [firstpage, previouspage, nextpage, lastpage]
+    pagination:
+      live_verified: true
+      page_size: 25
+      settled_50_indexes: [0, 25, 50, 100]
+      settled_1000_indexes: [0, 25, 50, 1975, 2000]
+      duplicate_keys_on_page: none
+      reverse_sort_control: absent
     response: full-html
     writes:
       attachalias: live-verified-restored
@@ -432,6 +448,13 @@ endpoints:
     auth: required
     fields: [action, uniqueid, membername, __CurrentTabIndex, __FirstVisibleRowIndex]
     pagination_actions: [firstpage, previouspage, nextpage, lastpage]
+    pagination:
+      live_verified: true
+      page_size: 25
+      settled_50_indexes: [0, 25, 50]
+      settled_1000_indexes: [0, 25, 50, 975, 1000]
+      duplicate_keys_on_page: none
+      reverse_sort_control: absent
     response: full-html
     fixture: get-policy-members
     verification: live-verified

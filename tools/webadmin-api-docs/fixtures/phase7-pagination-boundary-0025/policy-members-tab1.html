@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Rising Storm 2: Vietnam WebAdmin - Members</title>
+	<link rel="stylesheet" type="text/css" href="/images/ro2.css?gzip" title="Rising Storm 2: Vietnam" />
+	 
+	<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+	<meta name="generator" content="Rising Storm 2: Vietnam WebAdmin" />
+	<script type="text/javascript" src="/images/jquery.js?gzip"></script>
+	<link href='http://fonts.googleapis.com/css?family=Special+Elite&amp;v1' rel='stylesheet' type='text/css' />
+	
+</head>
+<body>
+
+<div id="header">
+<h1><span>Rising Storm 2 WebAdmin</span></h1>
+<h3 id="pageUri">/policy/members</h3>
+<h4 id="adminName">Welcome <span class="username">{{ADMIN_NAME}}</span></h4>
+<h2 id="pageTitle">Members</h2>
+<p id="pageDescription">Manage the members for this server.</p>
+</div>
+
+<div id="messages">
+
+</div>
+
+
+<div id="content">
+
+<fieldset>
+	<legend>Members</legend>
+	<div id="settingsWrapper">
+		<div id="Tab_0" class="SettingsGroup">
+			<h4>Overview</h4>
+			<dl>
+			
+			</dl>
+		</div>
+		<div id="Tab_1" class="SettingsGroup">
+			<h4>Settings</h4>
+			<dl>
+			<form method="post" action="/ServerAdmin/policy/members">
+	<input type="hidden" name="__CurrentTabIndex" id="__CurrentTabIndex" value="1" />
+	
+	<dl id="settingsWrapper">
+<dt title="Setting ID: bBroadcastWelcomeMembers" id="settings_bBroadcastWelcomeMembers_label" name="settings_bBroadcastWelcomeMembers_label"><label for="settings_bBroadcastWelcomeMembers" title="If enabled, then a welcome message is broadcast to all players when a member joins the server."> Broadcast Welcome Members</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bBroadcastWelcomeMembers" value="0" id="settings_bBroadcastWelcomeMembers_0" checked="checked"  /><label for="settings_bBroadcastWelcomeMembers_0">Disabled</label>
+<input type="radio" name="settings_bBroadcastWelcomeMembers" value="1" id="settings_bBroadcastWelcomeMembers_1"   /><label for="settings_bBroadcastWelcomeMembers_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bReserveSlotsForMembers" id="settings_bReserveSlotsForMembers_label" name="settings_bReserveSlotsForMembers_label"><label for="settings_bReserveSlotsForMembers" title="If enabled, then server slots are reserved for members. If too less slots available, then a non-member shall be kicked from the server."> Reserve Slots For Members</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bReserveSlotsForMembers" value="0" id="settings_bReserveSlotsForMembers_0" checked="checked"  /><label for="settings_bReserveSlotsForMembers_0">Disabled</label>
+<input type="radio" name="settings_bReserveSlotsForMembers" value="1" id="settings_bReserveSlotsForMembers_1"   /><label for="settings_bReserveSlotsForMembers_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bAdminsSupersedeNormalMembers" id="settings_bAdminsSupersedeNormalMembers_label" name="settings_bAdminsSupersedeNormalMembers_label"><label for="settings_bAdminsSupersedeNormalMembers" title="If enabled, Admins will have priority over non-admin members for reserved slots. &quot;Reserve Slots for Members&quot; setting MUST be Enabled for this to function."> Admins Supersede Normal Members</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAdminsSupersedeNormalMembers" value="0" id="settings_bAdminsSupersedeNormalMembers_0" checked="checked"  /><label for="settings_bAdminsSupersedeNormalMembers_0">Disabled</label>
+<input type="radio" name="settings_bAdminsSupersedeNormalMembers" value="1" id="settings_bAdminsSupersedeNormalMembers_1"   /><label for="settings_bAdminsSupersedeNormalMembers_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bMembersMayAlwaysSpectate" id="settings_bMembersMayAlwaysSpectate_label" name="settings_bMembersMayAlwaysSpectate_label"><label for="settings_bMembersMayAlwaysSpectate" title="If enabled, then a member may always join as a spectator. Even if the server is full."> Members May Always Spectate</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bMembersMayAlwaysSpectate" value="0" id="settings_bMembersMayAlwaysSpectate_0" checked="checked"  /><label for="settings_bMembersMayAlwaysSpectate_0">Disabled</label>
+<input type="radio" name="settings_bMembersMayAlwaysSpectate" value="1" id="settings_bMembersMayAlwaysSpectate_1"   /><label for="settings_bMembersMayAlwaysSpectate_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: IdleTimeThreshold" id="settings_IdleTimeThreshold_label" name="settings_IdleTimeThreshold_label"><label for="settings_IdleTimeThreshold" title="A player which is idle for a longer time than this value will be kicked if there is no free slot available and a member tries to join the server."> Idle Time Threshold</label></dt>
+<dd class="" >
+  <input type="text" id="settings_IdleTimeThreshold" name="settings_IdleTimeThreshold" value="30" title="Minimum: 0; Maximum: 3600"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_IdleTimeThreshold');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 3600, step: 60, page: 60*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: PingThreshold" id="settings_PingThreshold_label" name="settings_PingThreshold_label"><label for="settings_PingThreshold" title="A player with a ping above this value will be kicked if there is no free slot available and a member tries to join the server."> Ping Threshold</label></dt>
+<dd class="" >
+  <input type="text" id="settings_PingThreshold" name="settings_PingThreshold" value="0" title="Minimum: 0; Maximum: 999"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_PingThreshold');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 999, step: 50, page: 50*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: MaxMembers" id="settings_MaxMembers_label" name="settings_MaxMembers_label"><label for="settings_MaxMembers" title="If set to anything other than zero, then non-members will not get kicked any more if there are equal to or more members on this server than the setting indicates."> Max Members</label></dt>
+<dd class="" >
+  <input type="text" id="settings_MaxMembers" name="settings_MaxMembers" value="0" title="Minimum: 0; Maximum: 64"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_MaxMembers');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 64, step: 0, page: 0*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: bAutoSignInAdmins" id="settings_bAutoSignInAdmins_label" name="settings_bAutoSignInAdmins_label"><label for="settings_bAutoSignInAdmins" title="If enabled, then members marker as admins will automatically sign-in as an admin when they join the server. If disabled, then not though they can login without the admin password."> Auto Sign In Admins</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bAutoSignInAdmins" value="0" id="settings_bAutoSignInAdmins_0"   /><label for="settings_bAutoSignInAdmins_0">Disabled</label>
+<input type="radio" name="settings_bAutoSignInAdmins" value="1" id="settings_bAutoSignInAdmins_1" checked="checked"  /><label for="settings_bAutoSignInAdmins_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: bRestrictAdminLoginToMembersOnly" id="settings_bRestrictAdminLoginToMembersOnly_label" name="settings_bRestrictAdminLoginToMembersOnly_label"><label for="settings_bRestrictAdminLoginToMembersOnly" title="If set, then only a member (marked as admin) can sign-in as an admin."> Restrict Admin Login To Members Only</label></dt>
+<dd class="" >
+  <input type="radio" name="settings_bRestrictAdminLoginToMembersOnly" value="0" id="settings_bRestrictAdminLoginToMembersOnly_0"   /><label for="settings_bRestrictAdminLoginToMembersOnly_0">Disabled</label>
+<input type="radio" name="settings_bRestrictAdminLoginToMembersOnly" value="1" id="settings_bRestrictAdminLoginToMembersOnly_1" checked="checked"  /><label for="settings_bRestrictAdminLoginToMembersOnly_1">Enabled</label>
+
+  
+</dd>
+<dt title="Setting ID: PingLimitModifier" id="settings_PingLimitModifier_label" name="settings_PingLimitModifier_label"><label for="settings_PingLimitModifier" title="Modifies the ping-limit for members allowing members to join with a higher ping than non-members."> Ping Limit Modifier</label></dt>
+<dd class="" >
+  <input type="text" id="settings_PingLimitModifier" name="settings_PingLimitModifier" value="1.0000" title="Minimum: 1.0000; Maximum: 3.0000"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_PingLimitModifier');
+  if (false) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 1.0000, max: 3.0000, step: 0.1000, page: 0.1000*10, asint: false});
+});
+//]]>
+</script>
+
+  
+</dd>
+<dt title="Setting ID: DebugLevel" id="settings_DebugLevel_label" name="settings_DebugLevel_label"><label for="settings_DebugLevel" title="?INT?WebAdmin.ROMembersSettings Tooltips.DebugLevel?"> Debug Level</label></dt>
+<dd class="" >
+  <input type="text" id="settings_DebugLevel" name="settings_DebugLevel" value="0" title="Minimum: 0; Maximum: 3"  />
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+  var elm = $('#settings_DebugLevel');
+  if (true) elm.numeric("\n");
+  else elm.numeric();
+  elm.SpinButton({min: 0, max: 3, step: 0, page: 0*10, asint: true});
+});
+//]]>
+</script>
+
+  
+</dd>
+
+</dl>
+
+
+	<button type="submit" name="action" id="action" value="savesettings">save settings</button>
+</form>
+
+			</dl>
+		</div>
+	</div>
+</fieldset>
+
+</div>
+
+<script type="text/javascript" src="/images/dynamictabs.js?gzip"></script>
+
+
+<div id="menu">
+<h2>Navigation</h2>
+
+<ul class="navigation">
+<li><a href="/ServerAdmin/current" title="The current game status."><span>Current Game</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/current/change" title="Change the current map or game mode."><span>Change Map</span></a></li>
+<li><a href="/ServerAdmin/current/chat" title="This console allows you to chat with the players on the server."><span>Chat console</span></a></li>
+<li><a href="/ServerAdmin/current/players" title="Manage the players currently on the server."><span>Players</span></a></li>
+<li><a href="/ServerAdmin/current/squads" title="Manage the squads currently on the server."><span>Squads</span></a></li>
+<li><a href="/ServerAdmin/current/workshoptool" title="Manage the current Steam Workshop items on this server."><span>Steam Workshop Tool</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/console" title="Execute console commands as if they are directly entered on the console of the server. You may not have access to the same commands as you would when logged in as admin when playing on the server."><span>Management Console</span></a></li>
+<li><a href="/ServerAdmin/policy" title="Change the IP policies that determine who can join the server."><span>Access Policy</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/policy/members" title="Manage the members for this server."><span>Members</span></a></li>
+<li><a href="/ServerAdmin/policy/bans" title="Change account ban records. These records ban a single online account."><span>Banned IDs</span></a></li>
+<li><a href="/ServerAdmin/policy/session" title="View current session bans."><span>Session Bans</span></a></li>
+<li><a href="/ServerAdmin/policy/toxicplayers" title="Manage the toxic players in this server."><span>Toxic Players</span></a></li>
+<li><a href="/ServerAdmin/policy/tracking" title="Overview of players being tracked."><span>Tracking</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings" title=""><span>Settings</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general" title="Change various server wide settings. These settings affect all game modes. Changes will take effect in the next level."><span>General</span></a>
+<ul class="navigation">
+<li><a href="/ServerAdmin/settings/general/gameplay" title="Server wide gameplay settings. These settings affect all game modes. Changes will take effect in the next level."><span>Gameplay</span></a></li>
+<li><a href="/ServerAdmin/settings/general/passwords" title="Change the game and/or administration passwords."><span>Passwords</span></a></li>
+<li><a href="/ServerAdmin/settings/general/welcome" title="Change the content of the screen shown when players join."><span>Welcome Screen</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/settings/campaign" title="Change the region configuration for the campaign mode."><span>Campaign</span></a></li>
+<li><a href="/ServerAdmin/settings/gametypes" title="Change the default settings of the gametypes. Changes will take effect in the next level."><span>Gametypes</span></a></li>
+<li><a href="/ServerAdmin/settings/maplist" title="Change the game mode specific map cycles. each game type can have a single map cycle."><span>Map Cycles</span></a></li>
+<li><a href="/ServerAdmin/settings/mutators" title="Change settings for mutators. Not all mutators can be configured. Changes will take effect in the next level."><span>Mutators</span></a></li>
+<li><a href="/ServerAdmin/settings/serveractors" title="Server actors are special addons that often add extra functionality to the server."><span>Server Actors</span></a></li>
+<li><a href="/ServerAdmin/settings/system" title="Change the web administration configuration."><span>WebAdmin</span></a></li>
+
+</ul>
+</li>
+<li><a href="/ServerAdmin/multiadmin" title="Manage WebAdmin administrators."><span>Administrators</span></a></li>
+<li><a href="/ServerAdmin/logout" title="Log out from the webadmin and clear all authentication information."><span>Log out</span></a></li>
+
+</ul>
+
+</div>
+
+
+
+
+<div id="footer">
+Copyright 2016 Tripwire Interactive LLC
+&#8212;
+<a href="/ServerAdmin/about">About the Rising Storm 2 WebAdmin</a>
+</div>
+
+</body>
+</html>
+

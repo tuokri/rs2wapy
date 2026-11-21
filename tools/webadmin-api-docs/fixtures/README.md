@@ -133,6 +133,15 @@ The same capture directory was reused for the 1000-row retry after the 6000-row
 startup attempt failed to restore a healthy WebAdmin listener and left the live
 tracking config unusable. The 1000-row pass survived restart and verified 1000
 synthetic tracking, member, and ban entries.
+`phase7-pagination-boundary-0000/`, `phase7-pagination-boundary-0001/`,
+`phase7-pagination-boundary-0024/`, `phase7-pagination-boundary-0025/`,
+`phase7-pagination-boundary-0026/`, and
+`phase7-pagination-boundary-0050-settled/` record boundary counts with exact
+baseline restoration. Settled 50-row verification found 25-row tracking/member
+pages, 50 synthetic members/tracking rows, 50 synthetic banned-ID reasons, and
+no banned-ID paging controls. The settled 1000-row pass in
+`phase7-pagination-synthetic-live-20261121/` found 1000 synthetic entries in
+each route family and confirmed the tracking/member page-size boundary.
 `phase5-post-mapcycle-readonly-20261120/` records the new-map baseline after
 automatic travel to Hill 937, including both controlled-player rows and clean ban tables.
 `phase5-role-ready-readonly-20261120/` records one controlled Commander on

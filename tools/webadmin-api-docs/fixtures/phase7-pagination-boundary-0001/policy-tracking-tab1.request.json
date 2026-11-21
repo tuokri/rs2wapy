@@ -1,0 +1,9 @@
+{
+  "form": {
+    "__CurrentTabIndex": "1",
+    "__FirstVisibleRowIndex": "0",
+    "action": ""
+  },
+  "method": "POST",
+  "url": "{{BASE_URL}}/policy/tracking"
+}

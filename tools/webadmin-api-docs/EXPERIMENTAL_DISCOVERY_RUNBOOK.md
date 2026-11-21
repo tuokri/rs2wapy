@@ -692,16 +692,17 @@ baseline plaintext-auth evidence.
 
 ## Phase 7 — Synthetic large-list and database pagination discovery
 
-Target: **8–12 stateful scenarios**. This phase is deferred until the server
-can be isolated on a disposable database/configuration snapshot and populated
-with synthetic records. It is required for complete pagination and large-list
-documentation, but is separate from normal player/moderation testing.
+Target: **8–12 stateful scenarios**. The tracking, member, and banned-ID route
+families now have live synthetic boundary evidence from restart-safe
+configuration snapshots. Session-ban and toxic-player route boundaries remain
+separate from normal player/moderation testing.
 
 The `tools/synthetic_pagination_probe.py` utility provides configurable
-config-backed passes (60, 1000, or another approved count). It refuses to overwrite live databases while
-`VNGame.exe` is running; `seed --restart` stops only the known server executable,
-backs up and temp-validates `ROTrackDb.ini`, `ROMemberDb.ini`, and `ROGame.ini`,
-copies the synthetic rows, and restarts the exact live server command.
+config-backed passes (60, 1000, or another approved count). It refuses to
+overwrite live databases while `VNGame.exe` is running; `seed --restart`
+stops only the known server executable, backs up and temp-validates
+`ROTrackDb.ini`, `ROMemberDb.ini`, and `ROGame.ini`, copies the synthetic
+rows, and restarts the exact live server command.
 
 Observed in the 2026-11-21 live test: 60 rows rendered successfully after a
 restart-safe pass. A 6000-row pass did not restore a healthy WebAdmin listener
@@ -709,23 +710,34 @@ and the live tracking config later became unusable, so the exact baseline
 backups were restored. A clean 1000-row retry survived restart, and config plus
 WebAdmin verification found 1000 synthetic tracking, member, and ban entries.
 
-> **HUMAN REQUIRED — provide a disposable pagination test profile**
+The live boundary pass also measured 0, 1, 24, 25, 26, 50, and 1000-row
+states. Tracking and members expose 25-row pages. Settled 50-row verification
+used indexes 0, 25, 50 for members and 0, 25, 50, 100 for tracking. Settled
+1000-row verification used member indexes 0, 25, 50, 975/1000 and tracking
+indexes 0, 25, 50, 1975/2000. Banned-ID pages exposed no hidden paging index or
+paging controls and rendered 100 row fields at 50 synthetic rows and 2000 row
+fields at 1000 synthetic rows. No sort/reverse-sort controls were present in
+the three route pages. Each synthetic run restored the exact baseline afterward.
+
+> **HUMAN REQUIRED — remaining session-ban/toxic-player profile**
 >
-> Create a restorable snapshot of the server databases/configuration used by
-> tracking, members, ID bans, session bans, and toxic-player state. Supply a
-> supported fake-data generator or operator procedure that creates synthetic
-> records without using real players, public IP addresses, real Steam/Epic
-> identities, or real ban policy entries. A normal server database backup and
-> exact restore procedure are mandatory before seeding.
+> Tracking, members, and ID bans now have a restart-safe synthetic-profile
+> procedure and exact baseline restore. Session-ban and toxic-player large-list
+> boundaries still need a disposable, reversible fixture mechanism with no real
+> account identities or public IP addresses.
 
 ### 7.1 Seed and boundary matrix
 
 - **Agent:** record the current/empty state and exact row/page count controls
   for every target route before seeding.
+  - Observed: tracking and members have 25-row pages; banned-ID pages expose no
+    paging controls and render one full table.
 - **Agent:** generate and capture boundary sets for at least:
   0 records, 1 record, one record below the observed page size, exactly the
   observed page size, one record above it, two pages, and a deliberately
   large/overflow set approved by the human.
+  - Observed: boundary fixtures cover 0, 1, 24, 25, 26, 50, and 1000 synthetic
+    rows; exact baseline restoration completed after each pass.
 - **Agent:** test `firstpage`, `previouspage`, `nextpage`, `lastpage`,
   `__FirstVisibleRowIndex`, `__CurrentTabIndex`, sort fields, and reverse
   sorting around each boundary. Record clamping, index drift, empty-final-page
@@ -744,10 +756,10 @@ invalidate the others:
 | Route family | Synthetic-data scenario | Required evidence |
 | --- | --- | --- |
 | `/current/players` | Generate enough controlled bots or fixture-backed rows to exceed the live page size without affecting public players. | First/last page, sorting and reverse sorting, player-key stability across pages, spectator/bot rendering, final-page/empty-state behavior. |
-| `/policy/tracking` | Generate synthetic tracking records with aliases, notes, and active/revoked punk entries. | Page size, tabs, `__FirstVisibleRowIndex`, detail-dialog IDs, note/alias identity across pages, and stale/delete behavior. |
-| `/policy/bans` | Generate synthetic unique-ID bans with every supported ID type and finite/Never expiry variants. | Page size, duplicate/unknown IDs, revoke/edit selection, sorting/paging, and identity preservation after revoke. |
+| `/policy/tracking` | Generate synthetic tracking records with aliases, notes, and active/revoked punk entries. | Page size, tabs, `__FirstVisibleRowIndex`, detail-dialog IDs, note/alias identity across pages, and stale/delete behavior. Live result: 25-row pages; tab 1 has no row fields and tab 0 restores the list. |
+| `/policy/bans` | Generate synthetic unique-ID bans with every supported ID type and finite/Never expiry variants. | Page size, duplicate/unknown IDs, revoke/edit selection, sorting/paging, and identity preservation after revoke. Live result: full table only; no hidden paging index or first/previous/next/last controls. |
 | `/policy/session` | Generate synthetic session-ban records or the same supported fixture mechanism, where explicit human authorization permits it. | Page-size behavior, multiple revoke selection, comma-separated IDs, unknown/expired records, and the `ZeroNetID` dummy-row transition. |
-| `/policy/members` | Generate synthetic member records with tabs, expiry variants, and Admin/non-Admin flags. | Tab persistence, first/previous/next/last paging, update/delete behavior, duplicate IDs, and stale display-name/name-ID distinctions. |
+| `/policy/members` | Generate synthetic member records with tabs, expiry variants, and Admin/non-Admin flags. | Tab persistence, first/previous/next/last paging, update/delete behavior, duplicate IDs, and stale display-name/name-ID distinctions. Live result: 25-row pages; tab 1 has no row fields and tab 0 restores the list. |
 | `/policy/toxicplayers` | Generate synthetic toxic entries only if a controlled, reversible mechanism exists. | Page size, sorting/paging, add/remove identity, and whether creation is source-only or live-supported. |
 
 If no supported fake-data seeding mechanism exists for a route, record
