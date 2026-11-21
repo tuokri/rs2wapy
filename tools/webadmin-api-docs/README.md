@@ -50,7 +50,7 @@ At each development checkpoint, run:
 ```bash
 uv run ty check .
 uv run ruff check .
-uv run python tools/verify_docs.py
+uv run python -m webadmin_api_docs.tools.verify_docs
 ```
 
 All tool CLIs use Click while retaining their established long option names,
@@ -61,13 +61,13 @@ repository.
 
 ## Reproducing captures
 
-The synchronous `httpx2` probe in `tools/probe_webadmin.py` never writes
+The synchronous `httpx2` probe in `webadmin_api_docs.tools.probe_webadmin` never writes
 credentials to disk. Supply them through environment variables and write only
 sanitized output to `fixtures/`:
 
 ```bash
 RS2_WEBADMIN_USERNAME=... RS2_WEBADMIN_PASSWORD=... \
-uv run python tools/probe_webadmin.py \
+uv run python -m webadmin_api_docs.tools.probe_webadmin \
     --base-url http://example.invalid:8080 \
     --output fixtures/capture
 ```
@@ -77,7 +77,7 @@ development server. The policy probe adds then removes one TEST-NET address in
 the same authenticated session. The probe records requests and responses,
 replacing volatile and sensitive values with placeholders.
 
-`tools/player_action_probe.py` is a separate, controlled moderation probe. It
+`webadmin_api_docs.tools.player_action_probe` is a separate, controlled moderation probe. It
 requires an explicitly named authorized player, mutes then unmutes that player,
 submits a session-ban request, and always submits a session-ban revoke followed
 by a fresh policy-table check. Use it only when the named player has authorized
@@ -85,7 +85,7 @@ the temporary disruption:
 
 ```bash
 RS2_WEBADMIN_USERNAME=... RS2_WEBADMIN_PASSWORD=... \
-uv run python tools/player_action_probe.py \
+uv run python -m webadmin_api_docs.tools.player_action_probe \
     --base-url http://example.invalid:8080/ServerAdmin/ \
     --player-name controlled-player \
     --output fixtures/player-actions
@@ -95,41 +95,41 @@ Add `--permanent-ban-roundtrip` only for a player who explicitly authorizes a
 temporary ID ban and reconnection. It sends `banid` and performs the same
 immediate revoke/readback cleanup.
 
-For that ban sequence alone, prefer `tools/banid_roundtrip_probe.py`. It
+For that ban sequence alone, prefer `webadmin_api_docs.tools.banid_roundtrip_probe`. It
 avoids chaining a session-ban before the permanent-ban request, verifies the
 active ID-ban row, revokes it in a mandatory cleanup path, and leaves the
 human reconnect as a separate explicit checkpoint.
 
-`tools/multiadmin_probe.py` captures the MultiAdmin/SHA-1 profile with a
+`webadmin_api_docs.tools.multiadmin_probe` captures the MultiAdmin/SHA-1 profile with a
 primary account, an enabled secondary account, and a disabled account. It is
-read-only except for login/session creation. `tools/readonly_profile_probe.py`
+read-only except for login/session creation. `webadmin_api_docs.tools.readonly_profile_probe`
 captures unauthenticated/login boundaries, session isolation, route errors,
 and `/data` selectors without changing gameplay or configuration.
-`tools/multiadmin_permission_probe.py` temporarily enables a named disposable
+`webadmin_api_docs.tools.multiadmin_permission_probe` temporarily enables a named disposable
 restricted account, captures allowed and denied reads, and restores its profile
 in a `finally` cleanup path. Use it only with explicit authorization.
-`tools/empty_state_probe.py` captures empty-server selectors, safe refreshes,
+`webadmin_api_docs.tools.empty_state_probe` captures empty-server selectors, safe refreshes,
 sorting, and chat polling without sending chat or changing game state.
-`tools/phase3_core_probe.py` saves and restores server notes, submits harmless
+`webadmin_api_docs.tools.phase3_core_probe` saves and restores server notes, submits harmless
 console commands, and adds then revokes a synthetic short-lived ID ban with
 fresh-state verification in each cleanup path. Use it only on an authorized
 development server.
-`tools/travel_roundtrip_probe.py` refuses to start unless the Current page has
+`webadmin_api_docs.tools.travel_roundtrip_probe` refuses to start unless the Current page has
 no players, travels to one alternate map, and restores the complete prior
 change-map selection. It uses a short remembered login because travel expires
 the session-only cookie.
-`tools/policy_validation_probe.py` tests only a reserved TEST-NET policy,
+`webadmin_api_docs.tools.policy_validation_probe` tests only a reserved TEST-NET policy,
 including malformed input, duplicate/add/update/delete behavior, and removes
 every created row before returning.
-`tools/welcome_settings_probe.py` saves a temporary MOTD marker and restores
+`webadmin_api_docs.tools.welcome_settings_probe` saves a temporary MOTD marker and restores
 the complete welcome-screen form, including the browser-derived toggle value.
 It uses fresh-page readback rather than server log text as its state authority.
-`tools/console_log_probe.py` submits only `help`, `status`, and `version` so
+`webadmin_api_docs.tools.console_log_probe` submits only `help`, `status`, and `version` so
 their response pages can be correlated with an operator-provided server log.
 No raw logs are captured into the repository.
 
 For the full kick then permanent-ID-ban lifecycle, use
-`tools/kick_ban_probe.py`. It pauses for reconnection between the kick and ban,
+`webadmin_api_docs.tools.kick_ban_probe`. It pauses for reconnection between the kick and ban,
 uses `__ExpUnit=Never`, revokes the resulting ID-ban immediately, and confirms
 another reconnect. It is only appropriate for an explicitly authorized player.
 
@@ -142,7 +142,7 @@ handler that falls through to kicking the target.
 Validate committed captures with:
 
 ```bash
-uv run python tools/verify_docs.py
+uv run python -m webadmin_api_docs.tools.verify_docs
 ```
 
 ## Evidence states

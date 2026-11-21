@@ -110,13 +110,13 @@ states:
   - travelling
   - logged_out
 large_list_pagination_discovery:
-  verification: prerequisite-unavailable
-  status: deferred-synthetic-database-snapshot-required
+  verification: live-tracking-members-bans
+  status: session-ban-toxic-player-boundaries-unverified
   synthetic_config_attempt_20261121:
-    result: no_live_synthetic_rows_observed
+    result: initial_reload_attempt_no_live_synthetic_rows
     server_recovery: configs-restored-and-server-responsive
-    script: tools/seed_synthetic_pagination.ps1
-    retry_required: restart-safe-config-reload-confirmation
+    script: webadmin_api_docs.tools.synthetic_pagination_probe
+    retry_required: completed-with-restart-safe-seed
   routes:
     - /current/players
     - /policy/tracking

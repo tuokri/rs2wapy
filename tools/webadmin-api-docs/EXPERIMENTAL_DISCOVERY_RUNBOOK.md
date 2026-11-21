@@ -208,7 +208,7 @@ authorization. Do not repeat completed scenarios merely to reconstruct evidence.
    snapshots. Start the dedicated server and WebAdmin, wait for the
    match timer/current game to stabilize, then capture `/current`,
    `/current/players`, `/current/squads`, `/policy/bans`, and `/policy/session`.
-   The retained seed script `tools/seed_synthetic_pagination.ps1` is operator-only;
+   The synthetic seeder is `webadmin_api_docs.tools.synthetic_pagination_probe`;
    restore its three backups before server restart and rerun only after a clean
    synthetic seed/level reload plan is approved.
 2. Recheck the previously observed `ZeroNetID` session-ban dummy. It is now
@@ -348,7 +348,8 @@ Use this template for every numbered scenario below.
 6. **Agent:** restore state in `finally`-style cleanup, even if the preceding
    readback failed.
 7. **Agent:** fetch fresh state, verify restoration, sanitize captures, update
-   `contract.yaml` and the API reference, and run `tools/verify_docs.py`.
+   `contract.yaml` and the API reference, and run
+   `uv run python -m webadmin_api_docs.tools.verify_docs`.
 
 ## Phase 0 — Baseline and test harness
 
@@ -368,7 +369,8 @@ Use this template for every numbered scenario below.
 
 ### 0.2 Validate the capture harness before mutation
 
-- **Agent:** run an authenticated read-only crawl and `tools/verify_docs.py`.
+- **Agent:** run an authenticated read-only crawl and
+  `uv run python -m webadmin_api_docs.tools.verify_docs`.
 - **Agent:** prove that sanitization removes visible player-table names, player
   keys, unique IDs, IPs, cookies, tokens, passwords, and hash values.
 - **Agent:** run an intentional fixture-verifier failure only against a local
@@ -697,7 +699,7 @@ families now have live synthetic boundary evidence from restart-safe
 configuration snapshots. Session-ban and toxic-player route boundaries remain
 separate from normal player/moderation testing.
 
-The `tools/synthetic_pagination_probe.py` utility provides configurable
+The `webadmin_api_docs.tools.synthetic_pagination_probe` utility provides configurable
 config-backed passes (60, 1000, or another approved count). It refuses to
 overwrite live databases while `VNGame.exe` is running; `seed --restart`
 stops only the known server executable, backs up and temp-validates
@@ -777,7 +779,8 @@ After each completed phase:
 3. **Agent:** distinguish observed behavior from source-only/template-only
    behavior; do not turn a bundled page into a supported endpoint without a
    live response.
-4. **Agent:** run syntax checks, YAML parse, and `tools/verify_docs.py`.
+4. **Agent:** run syntax checks, YAML parse, and
+   `uv run python -m webadmin_api_docs.tools.verify_docs`.
 5. **Human required:** review the restoration checklist before starting the
    next phase.
 

@@ -17,7 +17,7 @@ environment. At each meaningful checkpoint, run:
 ```bash
 uv run ty check .
 uv run ruff check .
-uv run python tools/verify_docs.py
+uv run python -m webadmin_api_docs.tools.verify_docs
 ```
 
 The fixture verifier is offline and may also be run through `uv run` once the

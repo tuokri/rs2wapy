@@ -42,7 +42,7 @@ def main(context: click.Context, log_level: LogLevel) -> None:
     """Configure project logging and direct users to the discovery tools."""
     configure_logging(log_level)
     if context.invoked_subcommand is None:
-        logger.info("use a documented tool in 'tools/' to run a discovery probe")
+        logger.info("use a documented discovery probe module to run a live check")
 
 
 main.add_command(sources)
