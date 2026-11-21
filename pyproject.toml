@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "Rising Storm 2: Vietnam WebAdmin Python Interface"
 readme = "README.md"
 requires-python = ">=3.12"
-license-files = { paths = ["LICENSE"] }
+license-files = ["LICENSE"]
 keywords = ["automation webadmin ue3 rcon"]
 authors = [
     { name = "Tuomo Kriikkula", email = "tuokri@tuta.io" },
