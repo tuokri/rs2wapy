@@ -25,9 +25,9 @@
 from __future__ import annotations
 
 import concurrent
+import concurrent.futures
 import json
 import re
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import click
@@ -296,15 +296,13 @@ def run() -> int:
             directory.name: capture_names(directory) for directory in CAPTURE_DIRS
         }
 
-        futures: list[concurrent.futures.Future] = []
-        with ThreadPoolExecutor() as executor:
+        futures: list[concurrent.futures.Future[None]] = []
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             for directory in CAPTURE_DIRS:
                 futures.append(executor.submit(validate_sanitization, directory))
 
         for future in futures:
-            exc = future.exception()
-            if exc:
-                raise exc
+            future.result()
 
     except (OSError, ValueError, json.JSONDecodeError) as error:
         logger.error("documentation validation error: {}", error)

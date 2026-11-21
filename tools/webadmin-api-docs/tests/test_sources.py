@@ -26,7 +26,9 @@ import zipfile
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 
+from webadmin_api_docs import main
 from webadmin_api_docs.paths import project_root
 from webadmin_api_docs.sources import DEPOTDOWNLOADER_PINS
 from webadmin_api_docs.sources import LocalSourceConfig
@@ -62,6 +64,16 @@ def test_verify_docs_resolves_package_project_paths() -> None:
     assert FIXTURES == expected_root / "fixtures"
     assert TOOLS == expected_root / "src" / "webadmin_api_docs" / "tools"
     assert all(path.is_file() for path in REQUIRED_FILES)
+
+
+def test_package_cli_lists_sources_and_discovery_tools() -> None:
+    result = CliRunner().invoke(main, ["--help"])
+
+    assert result.exit_code == 0
+    assert "sources" in result.output
+    assert "verify-docs" in result.output
+    assert "synthetic" in result.output
+    assert "probe-webadmin" in result.output
 
 
 def test_setup_requires_sdk_before_selecting_download(tmp_path: Path) -> None:

@@ -22,15 +22,65 @@
 
 from __future__ import annotations
 
+import importlib
+import pkgutil
+
 import click
 from loguru import logger
 
+from webadmin_api_docs import tools
 from webadmin_api_docs.logging import LogLevel
 from webadmin_api_docs.logging import configure_logging
 from webadmin_api_docs.sources import sources
 
 
-@click.group(invoke_without_command=True)
+class DiscoveryGroup(click.Group):
+    """Click group that imports discovery probe modules only when selected."""
+
+    def discovery_names(self) -> list[str]:
+        names: list[str] = []
+        for module_info in pkgutil.iter_modules(tools.__path__):
+            if module_info.name == "synthetic_pagination_probe":
+                names.append("synthetic")
+            else:
+                names.append(module_info.name.replace("_", "-"))
+        return sorted(set(names))
+
+    def list_commands(self, ctx: click.Context) -> list[str]:
+        names = super().list_commands(ctx)
+        names.extend(self.discovery_names())
+        return sorted(set(names))
+
+    def get_command(
+        self,
+        ctx: click.Context,
+        cmd_name: str,
+    ) -> click.Command | None:
+        command = super().get_command(ctx, cmd_name)
+        if command is not None:
+            return command
+
+        module_name = (
+            "synthetic_pagination_probe"
+            if cmd_name == "synthetic"
+            else cmd_name.replace("-", "_")
+        )
+        try:
+            module = importlib.import_module(
+                f"webadmin_api_docs.tools.{module_name}"
+            )
+        except ModuleNotFoundError:
+            return None
+        if module_name == "synthetic_pagination_probe":
+            command = getattr(module, "cli", None)
+        else:
+            command = getattr(module, "main", None)
+        if isinstance(command, click.Command):
+            return command
+        return None
+
+
+@click.group(cls=DiscoveryGroup, invoke_without_command=True)
 @click.option(
     "--log-level",
     default="INFO",
