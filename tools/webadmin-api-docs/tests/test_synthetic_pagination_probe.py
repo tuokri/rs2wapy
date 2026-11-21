@@ -24,8 +24,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from webadmin_api_docs.paths import project_root
 from webadmin_api_docs.tools.probe_webadmin import Capture
 from webadmin_api_docs.tools.synthetic_pagination_probe import DEFAULT_BACKUP_DIR
+from webadmin_api_docs.tools.synthetic_pagination_probe import DEFAULT_VERIFY_OUTPUT
+from webadmin_api_docs.tools.synthetic_pagination_probe import ROOT
 from webadmin_api_docs.tools.synthetic_pagination_probe import (
     build_page_sequence_summary,
 )
@@ -71,6 +74,15 @@ def test_synthetic_rows_support_6000_rows() -> None:
     assert "synthetic-punk-6000" in punks[-1]
     assert "synthetic-member-6000" in members[-1]
     assert "A=40006000,B=17825793" in bans[-1]
+
+
+def test_synthetic_paths_use_package_project_root() -> None:
+    root = project_root()
+
+    assert ROOT == root
+    assert DEFAULT_VERIFY_OUTPUT == (
+        root / "fixtures" / "phase7-pagination-synthetic-live-20261121"
+    )
 
 
 def test_backup_dir_uses_user_home_without_session_state() -> None:

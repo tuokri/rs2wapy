@@ -41,6 +41,7 @@ from udk_configparser import UDKConfigParser
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.logging import configure_logging
 from webadmin_api_docs.logging import logger
+from webadmin_api_docs.paths import project_root
 from webadmin_api_docs.tools.probe_webadmin import Capture
 from webadmin_api_docs.tools.probe_webadmin import Sanitizer
 from webadmin_api_docs.tools.probe_webadmin import WebAdminProbe
@@ -51,7 +52,7 @@ DEFAULT_MEMBER_DB = Path(r"O:\rs2server\ROGame\Config\ROMemberDb.ini")
 DEFAULT_GAME_INI = Path(r"O:\rs2server\ROGame\Config\ROGame.ini")
 DEFAULT_BACKUP_DIR = Path.home() / ".rs2wapy" / "synthetic-pagination-backups"
 SERVER_EXECUTABLE = Path(r"O:\rs2server\Binaries\Win64\VNGame.exe")
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = project_root()
 DEFAULT_VERIFY_OUTPUT = ROOT / "fixtures" / "phase7-pagination-synthetic-live-20261121"
 
 TRACK_DUMMY_PLAYER = '(PlayerID="xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE",NetId=(Uid=(A=0,B=0)),SteamId64="0x0",PlayerNames=("xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE"),Created="12/14/1980 0:00:01",LastSeen="12/14/1980 0:00:01",alias=(Who=(Name=,NetId=(Uid=(A=0,B=0))),Created=,alias=),NoteIds=,PunkIds=("xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE"),NrOf=(Kicks=0,SessionBans=0,Bans=0,Connects=0),Track=False)'

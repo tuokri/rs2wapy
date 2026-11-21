@@ -41,6 +41,7 @@ import httpx2
 
 from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.logging import logger
+from webadmin_api_docs.paths import project_root
 
 CONFIG_NAME: Final = ".webadmin-api-docs.local.toml"
 SOURCE_DATA_DIRECTORY: Final = ".source-data"
@@ -108,11 +109,6 @@ class SetupPlan:
     web_assets_dir: Path
     web_assets_external: bool
     fetch_web_assets: bool
-
-
-def project_root() -> Path:
-    """Resolve the project root without assuming a checkout location."""
-    return Path(__file__).resolve().parents[2]
 
 
 def config_path(root: Path) -> Path:

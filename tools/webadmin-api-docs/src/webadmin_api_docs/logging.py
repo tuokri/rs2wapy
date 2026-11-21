@@ -23,13 +23,14 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 from loguru import logger
 
+from webadmin_api_docs.paths import project_root
+
 type LogLevel = str | int
 
-_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+_PROJECT_ROOT = project_root()
 _LOG_DIRECTORY = _PROJECT_ROOT / "logs"
 _LOG_FORMAT = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "

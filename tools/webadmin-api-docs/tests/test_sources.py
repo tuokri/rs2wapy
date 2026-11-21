@@ -27,6 +27,7 @@ from pathlib import Path
 
 import pytest
 
+from webadmin_api_docs.paths import project_root
 from webadmin_api_docs.sources import DEPOTDOWNLOADER_PINS
 from webadmin_api_docs.sources import LocalSourceConfig
 from webadmin_api_docs.sources import SourceConfigurationError
@@ -37,7 +38,6 @@ from webadmin_api_docs.tools.verify_docs import FIXTURES
 from webadmin_api_docs.tools.verify_docs import REQUIRED_FILES
 from webadmin_api_docs.tools.verify_docs import ROOT
 from webadmin_api_docs.tools.verify_docs import TOOLS
-from webadmin_api_docs.tools.verify_docs import project_root
 
 
 def create_sdk(root: Path) -> Path:

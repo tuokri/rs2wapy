@@ -26,7 +26,6 @@ from __future__ import annotations
 
 import json
 import re
-import tomllib
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -36,24 +35,7 @@ from webadmin_api_docs.cli import CLICK_CONTEXT_SETTINGS
 from webadmin_api_docs.cli import exit_with_status
 from webadmin_api_docs.logging import configure_logging
 from webadmin_api_docs.logging import logger
-
-
-def project_root() -> Path:
-    """Locate the webadmin-api-docs project in a source or editable checkout."""
-    module_path = Path(__file__).resolve()
-    for candidate in (module_path.parent, *module_path.parents):
-        pyproject = candidate / "pyproject.toml"
-        if not pyproject.is_file():
-            continue
-        try:
-            payload = tomllib.loads(pyproject.read_text(encoding="utf-8"))
-        except OSError, tomllib.TOMLDecodeError:
-            continue
-        project = payload.get("project")
-        if isinstance(project, dict) and project.get("name") == "webadmin-api-docs":
-            return candidate.resolve()
-    raise RuntimeError("unable to locate the webadmin-api-docs project root")
-
+from webadmin_api_docs.paths import project_root
 
 ROOT = project_root()
 FIXTURES = ROOT / "fixtures"
@@ -307,6 +289,7 @@ def run() -> int:
     if missing:
         logger.warning("missing required files: {}", ", ".join(missing))
         return 1
+
     try:
         names_by_directory = {
             directory.name: capture_names(directory) for directory in CAPTURE_DIRS
