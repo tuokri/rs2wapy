@@ -54,6 +54,11 @@ DEFAULT_BACKUP_DIR = Path.home() / ".rs2wapy" / "synthetic-pagination-backups"
 SERVER_EXECUTABLE = Path(r"O:\rs2server\Binaries\Win64\VNGame.exe")
 ROOT = project_root()
 DEFAULT_VERIFY_OUTPUT = ROOT / "fixtures" / "phase7-pagination-synthetic-live-20261121"
+BACKUP_FILE_NAMES = {
+    "track": "ROTrackDb.ini",
+    "members": "ROMemberDb.ini",
+    "game": "ROGame.ini",
+}
 
 TRACK_DUMMY_PLAYER = '(PlayerID="xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE",NetId=(Uid=(A=0,B=0)),SteamId64="0x0",PlayerNames=("xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE"),Created="12/14/1980 0:00:01",LastSeen="12/14/1980 0:00:01",alias=(Who=(Name=,NetId=(Uid=(A=0,B=0))),Created=,alias=),NoteIds=,PunkIds=("xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE"),NrOf=(Kicks=0,SessionBans=0,Bans=0,Connects=0),Track=False)'
 TRACK_DUMMY_PUNK = '(PunkId="xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE",PlayerID="xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE",Admin=(Name=,NetId=(Uid=(A=0,B=0))),Created="12/14/1980 0:00:01",Closed=,PunkName="xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE",Reason="xxMEMBER_DUMMY_ENTRY_DO_NOT_REMOVE",Expires=,Type=PunkType_None,Status=PunkStatus_None,Offline=True)'
@@ -90,7 +95,7 @@ def backup_config_files(
     ):
         if not source.is_file():
             raise RuntimeError(f"missing config file: {source}")
-        destination = backup_dir / source.name
+        destination = backup_dir / BACKUP_FILE_NAMES[name]
         if destination.exists() and not overwrite:
             logger.info("preserving existing baseline backup '{}'", destination)
         else:
@@ -118,9 +123,8 @@ def restore_config_files(backups: dict[str, Path]) -> None:
 def backup_mapping_for_dir(backup_dir: Path) -> dict[str, Path]:
     """Resolve the expected source-name backups inside a directory."""
     return {
-        "track": backup_dir / DEFAULT_TRACK_DB.name,
-        "members": backup_dir / DEFAULT_MEMBER_DB.name,
-        "game": backup_dir / DEFAULT_GAME_INI.name,
+        name: backup_dir / filename
+        for name, filename in BACKUP_FILE_NAMES.items()
     }
 
 

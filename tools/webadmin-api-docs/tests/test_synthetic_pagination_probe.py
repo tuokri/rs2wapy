@@ -29,6 +29,7 @@ from webadmin_api_docs.tools.probe_webadmin import Capture
 from webadmin_api_docs.tools.synthetic_pagination_probe import DEFAULT_BACKUP_DIR
 from webadmin_api_docs.tools.synthetic_pagination_probe import DEFAULT_VERIFY_OUTPUT
 from webadmin_api_docs.tools.synthetic_pagination_probe import ROOT
+from webadmin_api_docs.tools.synthetic_pagination_probe import backup_mapping_for_dir
 from webadmin_api_docs.tools.synthetic_pagination_probe import (
     build_page_sequence_summary,
 )
@@ -92,6 +93,14 @@ def test_backup_dir_uses_user_home_without_session_state() -> None:
     backup_dir_text = str(DEFAULT_BACKUP_DIR)
     assert ".copilot" not in backup_dir_text
     assert "session-state" not in backup_dir_text
+
+
+def test_backup_mapping_uses_plain_ini_basenames(tmp_path: Path) -> None:
+    assert backup_mapping_for_dir(tmp_path) == {
+        "track": tmp_path / "ROTrackDb.ini",
+        "members": tmp_path / "ROMemberDb.ini",
+        "game": tmp_path / "ROGame.ini",
+    }
 
 
 def test_validate_baseline_backups_rejects_synthetic_markers(
